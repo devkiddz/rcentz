@@ -3,8 +3,9 @@
 # MASTER BLUEPRINT
 
 **Living Architecture & Product Document**
-**Version:** 1.0
-**Status:** Active
+**Version:** 1.1
+**Status:** Active / Living Document
+**Last Updated:** 2026-08-31
 
 ---
 
@@ -179,7 +180,7 @@ Possible visibility levels:
 
 ```text
 INTERNAL
-CLIENT_VISIBLE
+CLIENT
 PUBLIC
 ```
 
@@ -756,34 +757,28 @@ The system should minimize duplicated sources of truth.
 
 # 23. Initial Build Order
 
-The initial product should be developed in the following broad order:
+Rcentz should be built in a dependency-aware order. The sequence is a guide, not a rigid lock, and may overlap when a foundational dependency needs to be established earlier.
 
-1. Create the Rcentz project.
-2. Install the foundation dependencies.
-3. Establish folder and architectural conventions.
-4. Configure Tailwind.
-5. Configure shadcn/ui.
-6. Establish the theme/UI token system.
-7. Create the Prisma/database foundation.
-8. Design and seed the initial data model.
-9. Build the Rcentz UI Canvas/scaling foundation.
-10. Build global navigation and core layout.
-11. Build the database-driven homepage.
-12. Build the portfolio/project showcase.
-13. Build services.
-14. Build the commerce foundation.
-15. Build authentication and user systems.
-16. Build the Admin control center.
-17. Expand client project tracking.
-18. Build content/community systems.
-19. Build messaging, notifications and support.
-20. Expand analytics.
-21. Harden SEO and performance.
-22. Prepare the architecture for future applications.
+1. Create the Rcentz project and development environment.
+2. Establish architecture, folder responsibilities and documentation conventions.
+3. Establish PostgreSQL + Prisma and the initial data model.
+4. Establish authentication infrastructure and persistent identity.
+5. Integrate client-side authentication, session state and protected-surface boundaries.
+6. Establish the Rcentz UI Canvas, semantic design tokens and responsive design foundation.
+7. Build application shells and navigation for public, auth, client and admin surfaces.
+8. Build the database-driven public homepage.
+9. Build the portfolio/project showcase engine.
+10. Build the services engine and request/quote workflow.
+11. Build the shared commerce foundation.
+12. Expand client project-management capabilities.
+13. Build the Admin control center as the management authority for shared business data.
+14. Build content/community systems.
+15. Build messaging, notifications and support.
+16. Expand analytics and business intelligence.
+17. Harden SEO, accessibility, security and performance.
+18. Prepare the architecture for future installable/native applications.
 
-The exact order may change when implementation reveals better dependencies.
-
-The blueprint defines direction, not an unchangeable sequence.
+The implementation may deliberately establish a later capability early when it is a dependency for multiple surfaces. Documentation must describe the real implementation state rather than forcing the code to pretend it followed an obsolete sequence.
 
 ---
 
@@ -810,6 +805,8 @@ TEST
   ↓
 DOCUMENT
   ↓
+COMMIT / PUSH
+  ↓
 NEXT MODULE
 ```
 
@@ -824,6 +821,8 @@ Each architectural decision should be:
 * Testable
 
 The developer should understand why a system exists, not merely know how to reproduce its code.
+
+AI-assisted development may be used to prepare proposed code or complete files, but implementation authority remains with the developer: proposed work is reviewed, implemented locally, tested, audited and only then committed. Speed must not remove the audit trail or the developer's understanding of the system.
 
 ---
 
@@ -988,60 +987,48 @@ Security requirements should be considered while designing systems rather than a
 
 This blueprint is intentionally a **living document**.
 
-As implementation progresses, the document may be updated with:
+It may change when the product direction, system boundaries or long-term architectural intent changes. It should not become a daily implementation log.
 
-* New capabilities
-* Architectural decisions
-* New constraints
-* Important discoveries
-* Rejected approaches
-* Lessons learned
-* Changes to system boundaries
-* Changes to product direction
+Use the documentation according to its actual responsibility:
 
-However, changes should be intentional.
+* `MASTER-BLUEPRINT.md` — product vision, system capabilities and long-term direction.
+* `ARCHITECTURE.md` — engineering conventions, code boundaries, data flow and implementation rules.
+* `MILESTONES.md` — current implementation progress, exit criteria, decisions and immediate next work.
 
-The blueprint should not become a random changelog.
-
-Implementation progress belongs primarily in:
-
-```text
-MILESTONES.md
-```
-
-Important architectural decisions belong in:
-
-```text
-DECISIONS.md
-```
-
-The Master Blueprint should continue describing the **current intended architecture and product vision**.
+Future documents may be introduced when their responsibility becomes real, but the blueprint should not reference documents as existing authorities before they exist in the repository.
 
 ---
 
 # 31. Relationship Between Project Documents
 
-The Rcentz documentation system should eventually follow this hierarchy:
+The current documentation hierarchy is:
 
 ```text
-                    MASTER-BLUEPRINT.md
-                             │
-                   Product + Architecture
-                             │
-             ┌───────────────┼───────────────┐
-             ↓               ↓               ↓
-       MILESTONES.md   DECISIONS.md   DEVELOPMENT.md
-             │               │               │
-             ↓               ↓               ↓
-        Progress        Why decisions    Development
-                         were made        conventions
-                             │
-                             └──────┬──────┘
-                                    ↓
-                               ACTUAL CODE
+MASTER-BLUEPRINT.md
+        │
+        │ defines
+        ↓
+PRODUCT VISION + SYSTEM DIRECTION
+        │
+        ↓
+ARCHITECTURE.md
+        │
+        │ defines
+        ↓
+ENGINEERING RULES + RESPONSIBILITY BOUNDARIES
+        │
+        ↓
+MILESTONES.md
+        │
+        │ tracks
+        ↓
+IMPLEMENTATION STATE + NEXT WORK
+        │
+        ↓
+ACTUAL CODEBASE
 ```
 
-Each document should have a specific responsibility.
+When documents disagree about implementation state, the verified codebase and latest tested behavior take precedence, and the documentation should then be corrected.
 
 ---
 

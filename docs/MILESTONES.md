@@ -4,8 +4,9 @@
 
 **Project:** Rcentz System
 **Document:** Development Milestones
-**Version:** 1.0
-**Status:** Living Document
+**Version:** 1.1
+**Status:** Active / Living Document
+**Last Updated:** 2026-08-31
 
 ---
 
@@ -125,7 +126,7 @@ M18 Mobile / Future Application Readiness
 
 # 5. M01 — Project Foundation
 
-**Status:** ⬜ Not Started
+**Status:** 🟡 In Progress
 
 ## Objective
 
@@ -156,18 +157,19 @@ The project should:
 
 ## Exit Criteria
 
-* [ ] Application starts locally
-* [ ] TypeScript compiles
-* [ ] Tailwind works
-* [ ] shadcn/ui works
-* [ ] Environment configuration is established
-* [ ] Initial Git repository is clean
+* [x] Application starts locally
+* [x] TypeScript compiles
+* [x] Tailwind foundation is installed
+* [ ] shadcn/ui foundation is established
+* [ ] Required shared UI/icon dependencies are established
+* [x] Environment configuration is sufficient for the current database/auth foundation
+* [x] Git repository and `main` branch are established
 
 ---
 
 # 6. M02 — Architecture & Folder Conventions
 
-**Status:** ⬜ Not Started
+**Status:** 🟡 In Progress
 
 ## Objective
 
@@ -188,6 +190,8 @@ docs/
 ```
 
 The exact structure may evolve during implementation, but responsibilities must remain clearly separated.
+
+Planned top-level boundaries should be created when real implementation requires them. Empty `features/`, `components/` or `server/` directories should not be created merely to make the repository resemble the target architecture.
 
 ## Scope
 
@@ -214,11 +218,11 @@ The architecture should make it possible to reuse business logic across:
 
 ## Exit Criteria
 
-* [ ] Folder architecture documented
-* [ ] Responsibilities defined
-* [ ] First feature boundary established
-* [ ] Server/data-access conventions established
-* [ ] Architecture reviewed
+* [x] Folder architecture documented
+* [x] Responsibilities defined
+* [ ] First business `features/` boundary established in code
+* [x] Server/data-access conventions documented
+* [x] Architecture reviewed and recorded in `docs/ARCHITECTURE.md`
 
 ---
 
@@ -296,7 +300,7 @@ Mobile:
 
 # 8. M04 — Database Foundation
 
-**Status:** ⬜ Not Started
+**Status:** 🟡 In Progress
 
 ## Objective
 
@@ -350,16 +354,20 @@ The database should be the source of truth for information that needs to appear 
 
 Avoid maintaining duplicate hardcoded versions of database-driven content.
 
+### Current Implementation Note — 2026-08-31
+
+The repository already contains the foundational Prisma schema and migration history. Authentication persistence is using this database foundation successfully. The schema is a broad system foundation; individual domain models remain subject to refinement when their engines are implemented. Seed strategy and initial business seed data are still pending.
+
 ## Exit Criteria
 
-* [ ] PostgreSQL configured
-* [ ] Prisma configured
-* [ ] Schema established
-* [ ] Migrations working
-* [ ] Prisma Client generated
+* [x] PostgreSQL/Neon configured for current development
+* [x] Prisma configured
+* [x] Foundational schema established
+* [x] Migrations working
+* [x] Prisma Client generated and consumed by application infrastructure
 * [ ] Seed strategy established
-* [ ] Initial data successfully seeded
-* [ ] Database architecture reviewed
+* [ ] Initial business data successfully seeded
+* [x] Database architecture reviewed at foundation level
 
 ---
 
@@ -613,7 +621,7 @@ Examples:
 
 # 14. M10 — Authentication & User System
 
-**Status:** ⬜ Not Started
+**Status:** 🟡 In Progress
 
 ## Objective
 
@@ -643,15 +651,57 @@ SUPER_ADMIN
 * Staff profiles
 * Authentication-aware navigation
 
+## Current Implementation Note — 2026-08-31
+
+The Better Auth + Prisma + PostgreSQL/Neon server foundation has been validated locally.
+
+Before client-facing authentication work continues, the data foundation is being normalized for the production architecture:
+
+```text
+Better Auth 1.7 account identity
+        +
+Prisma 7 configuration
+        +
+Canonical Project model
+        +
+PortfolioProfile presentation layer
+        ↓
+Real Seed Data
+```
+
+The browser auth client is same-origin and deployment configuration is owned by `BETTER_AUTH_URL`.
+
+The next authentication work after the database foundation is validated remains:
+
+```text
+Session State
+   ↓
+Auth Shell
+   ↓
+Register UI
+   ↓
+Login UI
+   ↓
+Logout
+   ↓
+Auth-Aware Navigation
+   ↓
+Protected Application Surface
+```
+
 ## Exit Criteria
 
-* [ ] Registration works
-* [ ] Login works
-* [ ] Sessions work
-* [ ] Role-based access established
-* [ ] Client profile established
-* [ ] Staff profile established
-* [ ] Protected areas established
+* [x] Registration validated through Better Auth
+* [x] Login validated through Better Auth
+* [x] Session retrieval validated
+* [ ] Logout integrated into application UI
+* [ ] Email verification flow completed
+* [ ] Role-based authorization established at server boundaries
+* [ ] Client profile flow established
+* [ ] Staff profile flow established
+* [ ] Authentication-aware navigation established
+* [ ] Protected application surfaces established
+* [ ] Production-safe auth client configuration verified
 
 ---
 
@@ -1199,7 +1249,7 @@ Project updates should eventually support visibility levels.
 
 ```text
 INTERNAL
-CLIENT_VISIBLE
+CLIENT
 PUBLIC
 ```
 
@@ -1266,7 +1316,11 @@ Important architectural decisions should be recorded here as they are made.
 
 | Date | Decision | Reason | Status |
 | ---- | -------- | ------ | ------ |
-| TBD  | TBD      | TBD    | Active |
+| 2026-08-31 | Use a modular monolith with explicit internal boundaries | Preserve maintainability and reuse without premature distributed-system complexity | Active |
+| 2026-08-31 | PostgreSQL + Prisma are the persistent business-data source of truth | Public, client and admin surfaces must consume consistent underlying data | Active |
+| 2026-08-31 | Use Better Auth with Prisma persistence for the authentication foundation | Establish reusable identity/session infrastructure before protected application surfaces | Active |
+| 2026-08-31 | Authentication uses a dedicated application shell rather than the public Navbar | Keep auth focused and preserve clear application-surface boundaries | Active |
+| 2026-08-31 | Create `features/`, `components/` and `server/` boundaries when real code requires them | Avoid empty-folder architecture while preserving documented responsibilities | Active |
 
 ---
 
@@ -1278,7 +1332,9 @@ This prevents the project from repeatedly reconsidering decisions that have alre
 
 | Date | Rejected Approach | Reason | Replacement |
 | ---- | ----------------- | ------ | ----------- |
-| TBD  | TBD               | TBD    | TBD         |
+| 2026-08-31 | Treat Rcentz as a conventional portfolio website | It would not operate the actual business or demonstrate the intended system capabilities | SaaS-like living business platform |
+| 2026-08-31 | Premature microservices | Adds operational complexity before independent deployment/scaling is justified | Modular monolith with extractable boundaries |
+| 2026-08-31 | UI-only authorization | Hidden UI does not protect server data or mutations | Server/business-layer authorization |
 
 ---
 
@@ -1298,23 +1354,31 @@ Examples:
 
 | Date | Lesson | Impact |
 | ---- | ------ | ------ |
-| TBD  | TBD    | TBD    |
+| 2026-08-31 | Living documentation can become stale within the same development day | Verify milestone status against code and tested behavior before planning the next module |
+| 2026-08-31 | Framework-sensitive Next.js work must be checked against the installed version | Avoid relying on older App Router assumptions when Next.js 16 behavior differs |
+| 2026-08-31 | A validated local foundation is not automatically production-ready | Track temporary development configuration, security boundaries and deployment requirements explicitly |
 
 ---
 
 # 30. Current Development State
 
-**Current Milestone:** M01 — Project Foundation
+**Primary Active Milestone:** M04 — Database Foundation
 
-**Current Module:** TBD
+**Supporting Active Foundations:** M01 — Project Foundation; M02 — Architecture & Folder Conventions; M10 — Authentication & User System
 
-**Current File:** TBD
+**Current Module:** Production Data Foundation / Pre-Seed Normalization
 
-**Current Objective:** TBD
+**Current File:** `prisma/schema.prisma`
+
+**Current Objective:** Validate the revised Prisma 7 schema, Better Auth 1.7 account contract and canonical Project → PortfolioProfile architecture, then establish idempotent real portfolio seed data before building database-driven application surfaces.
+
+**Known Production Gaps:** Migration strategy must be chosen deliberately; real seed data has not yet been applied; authorization/business validators for cross-project and polymorphic-owner invariants still need implementation in the server layer.
 
 **Blocking Issues:** None recorded
 
-**Last Completed Milestone:** None
+**Last Fully Completed Milestone:** None — foundational milestones remain active until their full exit criteria are satisfied.
+
+**Latest Validated Foundation:** Better Auth registration/login/session retrieval with Prisma persistence; repository architecture and database model re-audited before real seed data.
 
 ---
 
@@ -1338,7 +1402,7 @@ REVIEW
 UPDATE THIS DOCUMENT
 ```
 
-Do not begin a new major milestone until the current milestone's required foundation is stable enough to support it.
+Do not begin unrelated major work until the active foundational dependencies are stable enough to support it. Milestones may overlap when one provides infrastructure required by another; such overlap must be recorded explicitly rather than hidden.
 
 ---
 

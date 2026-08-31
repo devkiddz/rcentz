@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rcentz Systems
 
-## Getting Started
+Rcentz Systems is a production-focused business and software platform built with Next.js, TypeScript, Prisma, PostgreSQL, and Better Auth.
 
-First, run the development server:
+It is not a conventional portfolio site. The platform is designed to operate real Rcentz business workflows while publicly demonstrating the engineering behind them.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Product surfaces
+
+- Public website and live portfolio
+- Services and service requests
+- Client project management
+- Commerce for digital and physical products
+- Content and community
+- Messaging, support, and notifications
+- Analytics
+- Admin and internal management
+
+## Architecture
+
+Rcentz is intentionally structured as a modular monolith.
+
+```text
+User
+  ↓
+Application surface
+  ↓
+Feature / engine
+  ↓
+Business logic
+  ↓
+Data access
+  ↓
+PostgreSQL
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The database is the canonical source for business data shared across public, client, and administrative surfaces.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Canonical project model
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+A project exists once in the database.
 
-## Learn More
+```text
+Project
+  ├── Internal management
+  ├── Client tracking
+  └── PortfolioProfile? → public presentation
+```
 
-To learn more about Next.js, take a look at the following resources:
+This prevents the public portfolio and project-management system from maintaining conflicting copies of the same project.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Prisma ORM 7
+- PostgreSQL / Neon
+- Better Auth
+- pnpm
 
-## Deploy on Vercel
+## Local setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Install dependencies.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm install
+```
+
+2. Create `.env` from `.env.example` and provide a PostgreSQL connection plus Better Auth secret.
+
+3. Validate and generate Prisma.
+
+```bash
+pnpm db:format
+pnpm db:validate
+pnpm db:generate
+```
+
+4. Apply development migrations.
+
+```bash
+pnpm db:migrate
+```
+
+5. Start the application.
+
+```bash
+pnpm dev
+```
+
+## Quality checks
+
+Before committing meaningful work:
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+## Documentation
+
+- `docs/MASTER-BLUEPRINT.md` — product direction
+- `docs/ARCHITECTURE.md` — engineering conventions
+- `docs/MILESTONES.md` — implementation progress
+
+Rcentz is developed deliberately, one auditable module at a time.

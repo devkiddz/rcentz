@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -72,6 +72,15 @@ enum ProjectPhaseStatus {
   ACTIVE
   COMPLETED
   ON_HOLD
+  CANCELLED
+}
+
+enum ProjectMilestoneStatus {
+  PLANNED
+  IN_PROGRESS
+  BLOCKED
+  REVIEW
+  COMPLETED
   CANCELLED
 }
 
@@ -161,7 +170,6 @@ enum QuoteStatus {
 enum ProductType {
   DIGITAL
   PHYSICAL
-  SERVICE
   BUNDLE
 }
 
@@ -192,13 +200,10 @@ enum CartStatus {
 
 enum OrderStatus {
   PENDING
+  CONFIRMED
   PROCESSING
-  PAID
-  FULFILLED
-  SHIPPED
-  DELIVERED
+  COMPLETED
   CANCELLED
-  REFUNDED
 }
 
 enum PaymentStatus {
@@ -263,9 +268,9 @@ enum ReactionType {
 enum ConversationType {
   DIRECT
   PROJECT
-  SUPPORT
   SERVICE
   ORDER
+  SUPPORT
   GROUP
 }
 
@@ -273,13 +278,6 @@ enum ConversationStatus {
   ACTIVE
   ARCHIVED
   BLOCKED
-}
-
-enum MessageStatus {
-  SENT
-  DELIVERED
-  READ
-  DELETED
 }
 
 enum AttachmentType {
@@ -366,18 +364,6 @@ enum AnalyticsEventType {
   OTHER
 }
 
-enum MediaOwnerType {
-  USER
-  PROJECT
-  PRODUCT
-  BLOG
-  MESSAGE
-  TICKET
-  ORDER
-  SERVICE
-  SYSTEM
-}
-
 enum SeoRobots {
   INDEX_FOLLOW
   INDEX_NOFOLLOW
@@ -391,7 +377,7 @@ enum SeoRobots {
 
 model User {
   id            String     @id @default(cuid())
-  name          String?
+  name          String
   email         String     @unique
   emailVerified Boolean    @default(false)
   image         String?
@@ -409,8 +395,7 @@ model User {
   clientProfile ClientProfile?
   staffProfile  StaffProfile?
 
-  portfolioProjects PortfolioProject[] @relation("PortfolioOwner")
-  clientProjects    ClientProject[]    @relation("ClientProjects")
+  clientProjects Project[] @relation("ProjectClient")
 
   assignedProjects    ProjectAssignment[]
   createdAttributions ProjectAttribution[]
@@ -423,12 +408,12 @@ model User {
   createdTasks  ProjectTask[] @relation("TaskCreator")
   assignedTasks ProjectTask[] @relation("TaskAssignee")
 
-  createdProjectUpdates ProjectUpdate[]   @relation("ProjectUpdateAuthor")
+  createdProjectUpdates ProjectUpdate[] @relation("ProjectUpdateAuthor")
   projectActivities     ProjectActivity[]
-  uploadedProjectFiles  ProjectFile[]     @relation("ProjectFileUploader")
+  uploadedProjectFiles  ProjectFile[]   @relation("ProjectFileUploader")
 
   serviceRequests ServiceRequest[]
-  quotes          Quote[]          @relation("QuoteClient")
+  quotes          Quote[] @relation("QuoteClient")
 
   orders Order[]
   carts  Cart[]
@@ -437,7 +422,7 @@ model User {
   reactions Reaction[]
 
   conversations ConversationParticipant[]
-  sentMessages  Message[]                 @relation("MessageSender")
+  sentMessages  Message[] @relation("MessageSender")
 
   notifications          Notification[]
   notificationPreference NotificationPreference?
@@ -446,7 +431,6 @@ model User {
 
   createdTickets  SupportTicket[] @relation("TicketCreator")
   assignedTickets SupportTicket[] @relation("TicketAssignee")
-  ticketMessages  TicketMessage[]
 
   analyticsEvents   AnalyticsEvent[]
   analyticsSessions AnalyticsSession[]
@@ -465,11 +449,11 @@ model User {
 }
 
 model Account {
-  id                    String    @id @default(cuid())
+  id                    String   @id @default(cuid())
   accountId             String
   providerId            String
+  issuer                String
   userId                String
-  issuer                String?
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -477,12 +461,13 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([providerId, accountId])
+  @@unique([issuer, accountId])
+  @@index([providerId])
   @@index([userId])
   @@map("account")
 }
@@ -587,12 +572,12 @@ model Service {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  category  ServiceCategory? @relation(fields: [categoryId], references: [id])
+  category  ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdBy User             @relation("ServiceCreator", fields: [createdById], references: [id])
 
   requests ServiceRequest[]
   media    MediaAsset[]
-  seo      SeoMetadata?
+  seo           SeoMetadata?
 
   @@index([categoryId])
   @@index([createdById])
@@ -612,10 +597,12 @@ model ServiceRequest {
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
 
-  user    User           @relation(fields: [userId], references: [id])
-  service Service        @relation(fields: [serviceId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
   quote   Quote?
-  project ClientProject?
+  project Project?
+
+  conversations Conversation[]
 
   @@index([userId])
   @@index([serviceId])
@@ -664,16 +651,16 @@ model QuoteItem {
 }
 
 // =========================================================
-// CLIENT PROJECT MANAGEMENT
+// PROJECT MANAGEMENT — CANONICAL PROJECT SOURCE
 // =========================================================
 
-model ClientProject {
+model Project {
   id               String  @id @default(cuid())
-  clientId         String
+  clientId         String?
   serviceRequestId String? @unique
 
   name            String
-  slug            String  @unique
+  slug            String @unique
   description     String?
   purpose         String?
   vision          String?
@@ -694,13 +681,17 @@ model ClientProject {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  client         User            @relation("ClientProjects", fields: [clientId], references: [id])
-  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
+  client         User?           @relation("ProjectClient", fields: [clientId], references: [id], onDelete: SetNull)
+  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+
+  portfolio    PortfolioProfile?
+  technologies ProjectTechnology[]
 
   phases     ProjectPhase[]
   milestones ProjectMilestone[]
-  features   ProjectFeature[]
-  tasks      ProjectTask[]
+  features            ProjectFeature[]
+  featureDependencies ProjectFeatureDependency[]
+  tasks               ProjectTask[]
 
   updates      ProjectUpdate[]
   activities   ProjectActivity[]
@@ -708,16 +699,56 @@ model ClientProject {
   attributions ProjectAttribution[]
   files        ProjectFile[]
 
-  analytics    ProjectAnalytics? @relation("ClientProjectAnalytics")
-  conversation Conversation?
-  media        MediaAsset[]
+  analytics     ProjectAnalytics?
+  conversations Conversation[]
+  media         MediaAsset[]
+  comments      Comment[]
+  reactions     Reaction[]
+  seo           SeoMetadata?
 
   @@index([clientId])
   @@index([status])
   @@index([visibility])
   @@index([type])
   @@index([createdAt])
+  @@index([updatedAt])
   @@index([expectedEndAt])
+}
+
+model PortfolioProfile {
+  id        String @id @default(cuid())
+  projectId String @unique
+
+  tagline       String?
+  summary       String?
+  challenge     String?
+  solution      String?
+  outcome       String?
+  liveUrl       String?
+  repositoryUrl String?
+  featured      Boolean   @default(false)
+  publishedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([featured])
+  @@index([publishedAt])
+}
+
+model ProjectTechnology {
+  id        String @id @default(cuid())
+  projectId String
+  name      String
+  slug      String
+  icon      String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, slug])
+  @@index([projectId])
 }
 
 model ProjectPhase {
@@ -739,8 +770,8 @@ model ProjectPhase {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project   ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy User          @relation("PhaseCreator", fields: [createdById], references: [id])
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("PhaseCreator", fields: [createdById], references: [id])
 
   milestones ProjectMilestone[]
   features   ProjectFeature[]
@@ -760,25 +791,27 @@ model ProjectMilestone {
 
   title       String
   description String?
-  sortOrder   Int     @default(0)
-  progress    Int     @default(0)
-  completed   Boolean @default(false)
+  status      ProjectMilestoneStatus @default(PLANNED)
+  sortOrder   Int                    @default(0)
+  progress    Int                    @default(0)
 
   dueDate     DateTime?
+  startedAt   DateTime?
   completedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   phase   ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
 
   tasks ProjectTask[]
 
   @@index([projectId])
   @@index([phaseId])
+  @@index([status])
   @@index([dueDate])
-  @@index([completed])
+  @@index([sortOrder])
 }
 
 model ProjectFeature {
@@ -808,12 +841,12 @@ model ProjectFeature {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   phase   ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
 
   createdBy   User  @relation("FeatureCreator", fields: [createdById], references: [id])
-  nominatedBy User? @relation("FeatureNominator", fields: [nominatedById], references: [id])
-  assignedTo  User? @relation("FeatureAssignee", fields: [assignedToId], references: [id])
+  nominatedBy User? @relation("FeatureNominator", fields: [nominatedById], references: [id], onDelete: SetNull)
+  assignedTo  User? @relation("FeatureAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
 
   tasks ProjectTask[]
 
@@ -829,17 +862,22 @@ model ProjectFeature {
   @@index([status])
   @@index([priority])
   @@index([dueDate])
+  @@index([sortOrder])
 }
 
 model ProjectFeatureDependency {
+  projectId          String
   featureId          String
   dependsOnFeatureId String
 
-  feature ProjectFeature @relation("FeatureDependencies", fields: [featureId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  dependsOnFeature ProjectFeature @relation("FeatureDependents", fields: [dependsOnFeatureId], references: [id], onDelete: Cascade)
+  feature ProjectFeature @relation( "FeatureDependencies", fields: [featureId], references: [id], onDelete: Cascade )
+
+  dependsOnFeature ProjectFeature @relation( "FeatureDependents", fields: [dependsOnFeatureId], references: [id],  onDelete: Cascade )
 
   @@id([featureId, dependsOnFeatureId])
+  @@index([projectId])
   @@index([dependsOnFeatureId])
 }
 
@@ -868,13 +906,13 @@ model ProjectTask {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project   ClientProject     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
   phase     ProjectPhase?     @relation(fields: [phaseId], references: [id], onDelete: SetNull)
   milestone ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   feature   ProjectFeature?   @relation(fields: [featureId], references: [id], onDelete: SetNull)
 
   createdBy  User  @relation("TaskCreator", fields: [createdById], references: [id])
-  assignedTo User? @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  assignedTo User? @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([phaseId])
@@ -885,6 +923,7 @@ model ProjectTask {
   @@index([status])
   @@index([priority])
   @@index([dueDate])
+  @@index([sortOrder])
 }
 
 model ProjectAssignment {
@@ -895,8 +934,8 @@ model ProjectAssignment {
   assignedAt DateTime  @default(now())
   removedAt  DateTime?
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User          @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
 
   @@unique([projectId, userId])
   @@index([userId])
@@ -917,8 +956,8 @@ model ProjectUpdate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  author  User?         @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User?   @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
   media MediaAsset[]
 
@@ -942,8 +981,8 @@ model ProjectActivity {
 
   createdAt DateTime @default(now())
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([userId])
@@ -965,8 +1004,8 @@ model ProjectFile {
 
   createdAt DateTime @default(now())
 
-  project  ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  uploader User?         @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploader User?   @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([uploaderId])
@@ -976,90 +1015,16 @@ model ProjectFile {
 model ProjectAttribution {
   id        String   @id @default(cuid())
   projectId String
-  userId    String
+  userId    String?
+  name      String?
   role      String?
   createdAt DateTime @default(now())
 
-  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@unique([projectId, userId])
   @@index([projectId])
   @@index([userId])
-}
-
-// =========================================================
-// PORTFOLIO
-// =========================================================
-
-model PortfolioProject {
-  id      String  @id @default(cuid())
-  ownerId String?
-
-  title       String
-  slug        String  @unique
-  tagline     String?
-  description String?
-
-  type       ProjectType
-  status     ProjectStatus     @default(COMPLETED)
-  visibility ProjectVisibility @default(PUBLIC)
-  featured   Boolean           @default(false)
-
-  liveUrl       String?
-  repositoryUrl String?
-
-  startedAt   DateTime?
-  completedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  owner        User?                    @relation("PortfolioOwner", fields: [ownerId], references: [id])
-  technologies ProjectTechnology[]
-  updates      PortfolioProjectUpdate[]
-  media        MediaAsset[]
-  comments     Comment[]
-  reactions    Reaction[]
-  analytics    ProjectAnalytics?        @relation("PortfolioProjectAnalytics")
-  seo          SeoMetadata?
-
-  @@index([ownerId])
-  @@index([visibility])
-  @@index([status])
-  @@index([featured])
-  @@index([createdAt])
-}
-
-model ProjectTechnology {
-  id        String  @id @default(cuid())
-  projectId String
-  name      String
-  slug      String
-  icon      String?
-
-  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@unique([projectId, slug])
-  @@index([projectId])
-}
-
-model PortfolioProjectUpdate {
-  id        String @id @default(cuid())
-  projectId String
-
-  title    String
-  content  String
-  progress Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  media   MediaAsset[]
-
-  @@index([projectId])
-  @@index([createdAt])
 }
 
 // =========================================================
@@ -1101,9 +1066,8 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category   ProductCategory? @relation(fields: [categoryId], references: [id])
+  category   ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   variants   ProductVariant[]
-  inventory  InventoryItem[]
   digital    DigitalProduct?
   media      MediaAsset[]
   cartItems  CartItem[]
@@ -1124,6 +1088,7 @@ model ProductVariant {
   sku        String?  @unique
   price      Decimal? @db.Decimal(14, 2)
   attributes Json?
+  isDefault  Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1135,6 +1100,7 @@ model ProductVariant {
   orderItems         OrderItem[]
 
   @@index([productId])
+  @@index([isDefault])
 }
 
 model DigitalProduct {
@@ -1156,9 +1122,8 @@ model DigitalProduct {
 }
 
 model InventoryItem {
-  id        String  @id @default(cuid())
-  productId String
-  variantId String? @unique
+  id        String @id @default(cuid())
+  variantId String @unique
 
   quantity          Int @default(0)
   reserved          Int @default(0)
@@ -1166,18 +1131,16 @@ model InventoryItem {
 
   updatedAt DateTime @updatedAt
 
-  product   Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant   ProductVariant?     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant      @relation(fields: [variantId], references: [id], onDelete: Cascade)
   movements InventoryMovement[]
 
-  @@index([productId])
   @@index([variantId])
 }
 
 model InventoryMovement {
-  id          String  @id @default(cuid())
+  id          String @id @default(cuid())
   inventoryId String
-  variantId   String?
+  variantId   String
 
   type     InventoryMovementType
   quantity Int
@@ -1185,8 +1148,8 @@ model InventoryMovement {
 
   createdAt DateTime @default(now())
 
-  inventory InventoryItem   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  inventory InventoryItem  @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@index([inventoryId])
   @@index([variantId])
@@ -1203,7 +1166,7 @@ model Cart {
   updatedAt DateTime  @updatedAt
   expiresAt DateTime?
 
-  user  User?      @relation(fields: [userId], references: [id])
+  user  User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   items CartItem[]
 
   @@index([userId])
@@ -1211,10 +1174,10 @@ model Cart {
 }
 
 model CartItem {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   cartId    String
   productId String
-  variantId String?
+  variantId String
 
   quantity  Int     @default(1)
   unitPrice Decimal @db.Decimal(14, 2)
@@ -1222,10 +1185,11 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart    Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product         @relation(fields: [productId], references: [id])
-  variant ProductVariant? @relation(fields: [variantId], references: [id])
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+  variant ProductVariant @relation(fields: [variantId], references: [id])
 
+  @@unique([cartId, variantId])
   @@index([cartId])
   @@index([productId])
   @@index([variantId])
@@ -1254,12 +1218,13 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user        User?             @relation(fields: [userId], references: [id])
-  items       OrderItem[]
-  payments    Payment[]
-  deliveries  DigitalDelivery[]
-  fulfillment OrderFulfillment?
-  media       MediaAsset[]
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+  payments      Payment[]
+  deliveries    DigitalDelivery[]
+  fulfillment   OrderFulfillment?
+  media         MediaAsset[]
+  conversations Conversation[]
 
   @@index([userId])
   @@index([status])
@@ -1267,21 +1232,24 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   orderId   String
   productId String
-  variantId String?
+  variantId String
 
   productName String
+  variantName String?
   quantity    Int
   unitPrice   Decimal @db.Decimal(14, 2)
   total       Decimal @db.Decimal(14, 2)
 
   createdAt DateTime @default(now())
 
-  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product         @relation(fields: [productId], references: [id])
-  variant ProductVariant? @relation(fields: [variantId], references: [id])
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+  variant ProductVariant @relation(fields: [variantId], references: [id])
+
+  digitalDelivery DigitalDelivery?
 
   @@index([orderId])
   @@index([productId])
@@ -1301,8 +1269,8 @@ model Payment {
   metadata  Json?
 
   paidAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -1329,9 +1297,10 @@ model OrderFulfillment {
 }
 
 model DigitalDelivery {
-  id        String @id @default(cuid())
-  orderId   String
-  productId String
+  id               String @id @default(cuid())
+  orderId          String
+  orderItemId      String @unique
+  digitalProductId String
 
   token  String                @unique
   status DigitalDeliveryStatus @default(PENDING)
@@ -1343,11 +1312,12 @@ model DigitalDelivery {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product DigitalProduct @relation(fields: [productId], references: [id])
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem      OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  digitalProduct DigitalProduct @relation(fields: [digitalProductId], references: [id])
 
   @@index([orderId])
-  @@index([productId])
+  @@index([digitalProductId])
   @@index([status])
 }
 
@@ -1372,7 +1342,7 @@ model BlogPost {
   categoryId String?
 
   title   String
-  slug    String  @unique
+  slug    String @unique
   excerpt String?
   content String
 
@@ -1383,7 +1353,7 @@ model BlogPost {
   updatedAt DateTime @updatedAt
 
   author   User          @relation("PostAuthor", fields: [authorId], references: [id])
-  category BlogCategory? @relation(fields: [categoryId], references: [id])
+  category BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   tags      BlogPostTag[]
   comments  Comment[]
@@ -1418,6 +1388,8 @@ model BlogPostTag {
 // =========================================================
 // COMMENTS / REACTIONS
 // =========================================================
+// Application validation must enforce exactly one target:
+// either postId OR projectId.
 
 model Comment {
   id        String  @id @default(cuid())
@@ -1432,9 +1404,9 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User              @relation(fields: [userId], references: [id])
-  post    BlogPost?         @relation(fields: [postId], references: [id], onDelete: Cascade)
-  project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id])
+  post    BlogPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
   replies Comment[] @relation("CommentReplies")
@@ -1443,6 +1415,7 @@ model Comment {
   @@index([postId])
   @@index([projectId])
   @@index([parentId])
+  @@index([status])
   @@index([createdAt])
 }
 
@@ -1456,9 +1429,9 @@ model Reaction {
 
   createdAt DateTime @default(now())
 
-  user    User              @relation(fields: [userId], references: [id])
-  post    BlogPost?         @relation(fields: [postId], references: [id], onDelete: Cascade)
-  project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id])
+  post    BlogPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, type])
   @@unique([userId, projectId, type])
@@ -1471,22 +1444,35 @@ model Reaction {
 // =========================================================
 // MESSAGING
 // =========================================================
+// Application validation must enforce at most one contextual owner
+// for PROJECT / SERVICE / ORDER / SUPPORT conversations.
 
 model Conversation {
   id     String             @id @default(cuid())
   type   ConversationType
   status ConversationStatus @default(ACTIVE)
 
-  subject   String?
-  projectId String? @unique
+  subject          String?
+  projectId        String?
+  serviceRequestId String?
+  orderId          String?
+  supportTicketId  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   participants ConversationParticipant[]
   messages     Message[]
-  project      ClientProject?            @relation(fields: [projectId], references: [id])
 
+  project        Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  order          Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  supportTicket  SupportTicket?  @relation(fields: [supportTicketId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([serviceRequestId])
+  @@index([orderId])
+  @@index([supportTicketId])
   @@index([type])
   @@index([status])
   @@index([updatedAt])
@@ -1498,6 +1484,7 @@ model ConversationParticipant {
   userId         String
 
   joinedAt   DateTime  @default(now())
+  leftAt     DateTime?
   lastReadAt DateTime?
   mutedAt    DateTime?
 
@@ -1513,8 +1500,7 @@ model Message {
   conversationId String
   senderId       String
 
-  body   String?
-  status MessageStatus @default(SENT)
+  body String?
 
   replyToId String?
   editedAt  DateTime?
@@ -1534,7 +1520,7 @@ model Message {
   @@index([senderId])
   @@index([replyToId])
   @@index([createdAt])
-  @@index([status])
+  @@index([deletedAt])
 }
 
 model MessageAttachment {
@@ -1597,39 +1583,19 @@ model SupportTicket {
   status   TicketStatus   @default(OPEN)
   priority TicketPriority @default(NORMAL)
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   resolvedAt DateTime?
 
   creator  User  @relation("TicketCreator", fields: [creatorId], references: [id])
-  assignee User? @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  assignee User? @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
 
-  messages TicketMessage[]
+  conversations Conversation[]
 
   @@index([creatorId])
   @@index([assigneeId])
   @@index([status])
   @@index([priority])
-  @@index([createdAt])
-}
-
-model TicketMessage {
-  id       String @id @default(cuid())
-  ticketId String
-  userId   String
-
-  body String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user   User          @relation(fields: [userId], references: [id])
-
-  media MediaAsset[]
-
-  @@index([ticketId])
-  @@index([userId])
   @@index([createdAt])
 }
 
@@ -1652,7 +1618,7 @@ model Notification {
   metadata Json?
 
   readAt    DateTime?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1725,6 +1691,27 @@ model AnalyticsEvent {
   @@index([createdAt])
 }
 
+model ProjectAnalytics {
+  id        String @id @default(cuid())
+  projectId String @unique
+
+  views       Int @default(0)
+  uniqueViews Int @default(0)
+  reactions   Int @default(0)
+  comments    Int @default(0)
+  shares      Int @default(0)
+  downloads   Int @default(0)
+
+  lastViewedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([lastViewedAt])
+}
+
 // =========================================================
 // AUDIT LOGS
 // =========================================================
@@ -1755,10 +1742,10 @@ model AuditLog {
 // =========================================================
 // MEDIA
 // =========================================================
+// Application validation must enforce exactly one owner relation.
 
 model MediaAsset {
-  id        String         @id @default(cuid())
-  ownerType MediaOwnerType
+  id String @id @default(cuid())
 
   url      String
   publicId String?
@@ -1777,44 +1764,35 @@ model MediaAsset {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId             String?
-  serviceId          String?
-  clientProjectId    String?
-  projectUpdateId    String?
-  portfolioProjectId String?
-  portfolioUpdateId  String?
-  productId          String?
-  blogPostId         String?
-  ticketMessageId    String?
-  orderId            String?
+  userId          String?
+  serviceId       String?
+  projectId       String?
+  projectUpdateId String?
+  productId       String?
+  blogPostId      String?
+  orderId         String?
 
-  user             User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  service          Service?                @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  clientProject    ClientProject?          @relation(fields: [clientProjectId], references: [id], onDelete: Cascade)
-  projectUpdate    ProjectUpdate?          @relation(fields: [projectUpdateId], references: [id], onDelete: Cascade)
-  portfolioProject PortfolioProject?       @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
-  portfolioUpdate  PortfolioProjectUpdate? @relation(fields: [portfolioUpdateId], references: [id], onDelete: Cascade)
-  product          Product?                @relation(fields: [productId], references: [id], onDelete: Cascade)
-  blogPost         BlogPost?               @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  ticketMessage    TicketMessage?          @relation(fields: [ticketMessageId], references: [id], onDelete: Cascade)
-  order            Order?                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user          User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service       Service?       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectUpdate ProjectUpdate? @relation(fields: [projectUpdateId], references: [id], onDelete: Cascade)
+  product       Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  blogPost      BlogPost?      @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  order         Order?         @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@index([ownerType])
   @@index([userId])
   @@index([serviceId])
-  @@index([clientProjectId])
+  @@index([projectId])
   @@index([projectUpdateId])
-  @@index([portfolioProjectId])
-  @@index([portfolioUpdateId])
   @@index([productId])
   @@index([blogPostId])
-  @@index([ticketMessageId])
   @@index([orderId])
 }
 
 // =========================================================
 // SEO
 // =========================================================
+// Application validation must enforce exactly one owner relation.
 
 model SeoMetadata {
   id String @id @default(cuid())
@@ -1834,42 +1812,13 @@ model SeoMetadata {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  serviceId          String? @unique
-  productId          String? @unique
-  blogPostId         String? @unique
-  portfolioProjectId String? @unique
+  serviceId  String? @unique
+  productId  String? @unique
+  blogPostId String? @unique
+  projectId  String? @unique
 
-  service          Service?          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  product          Product?          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  blogPost         BlogPost?         @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  portfolioProject PortfolioProject? @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
-}
-
-// =========================================================
-// PROJECT ANALYTICS
-// =========================================================
-
-model ProjectAnalytics {
-  id String @id @default(cuid())
-
-  views       Int @default(0)
-  uniqueViews Int @default(0)
-  likes       Int @default(0)
-  comments    Int @default(0)
-  shares      Int @default(0)
-  downloads   Int @default(0)
-
-  lastViewedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  clientProjectId    String? @unique
-  portfolioProjectId String? @unique
-
-  clientProject ClientProject? @relation("ClientProjectAnalytics", fields: [clientProjectId], references: [id], onDelete: Cascade)
-
-  portfolioProject PortfolioProject? @relation("PortfolioProjectAnalytics", fields: [portfolioProjectId], references: [id], onDelete: Cascade)
-
-  @@index([lastViewedAt])
+  service  Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  product  Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  blogPost BlogPost? @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  project  Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
