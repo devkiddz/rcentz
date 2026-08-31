@@ -390,98 +390,101 @@ enum SeoRobots {
 // =========================================================
 
 model User {
-  id                     String                    @id @default(cuid())
-  name                   String?
-  email                  String                    @unique
-  emailVerified          Boolean                   @default(false)
-  image                  String?
-  role                   UserRole                  @default(USER)
-  status                 UserStatus                @default(ACTIVE)
-  phone                  String?
-  bio                    String?
-  createdAt              DateTime                  @default(now())
-  updatedAt              DateTime                  @updatedAt
-  lastSeenAt             DateTime?
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  emailVerified Boolean    @default(false)
+  image         String?
+  role          UserRole   @default(USER)
+  status        UserStatus @default(ACTIVE)
+  phone         String?
+  bio           String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  lastSeenAt    DateTime?
 
-  accounts               Account[]
-  sessions               Session[]
+  accounts Account[]
+  sessions Session[]
 
-  clientProfile          ClientProfile?
-  staffProfile           StaffProfile?
+  clientProfile ClientProfile?
+  staffProfile  StaffProfile?
 
-  portfolioProjects      PortfolioProject[]        @relation("PortfolioOwner")
-  clientProjects         ClientProject[]           @relation("ClientProjects")
+  portfolioProjects PortfolioProject[] @relation("PortfolioOwner")
+  clientProjects    ClientProject[]    @relation("ClientProjects")
 
-  assignedProjects       ProjectAssignment[]
-  createdAttributions    ProjectAttribution[]
+  assignedProjects    ProjectAssignment[]
+  createdAttributions ProjectAttribution[]
 
-  createdPhases           ProjectPhase[]            @relation("PhaseCreator")
-  createdFeatures         ProjectFeature[]          @relation("FeatureCreator")
-  nominatedFeatures       ProjectFeature[]          @relation("FeatureNominator")
-  assignedFeatures        ProjectFeature[]          @relation("FeatureAssignee")
+  createdPhases     ProjectPhase[]   @relation("PhaseCreator")
+  createdFeatures   ProjectFeature[] @relation("FeatureCreator")
+  nominatedFeatures ProjectFeature[] @relation("FeatureNominator")
+  assignedFeatures  ProjectFeature[] @relation("FeatureAssignee")
 
-  createdTasks            ProjectTask[]             @relation("TaskCreator")
-  assignedTasks           ProjectTask[]             @relation("TaskAssignee")
+  createdTasks  ProjectTask[] @relation("TaskCreator")
+  assignedTasks ProjectTask[] @relation("TaskAssignee")
 
-  createdProjectUpdates   ProjectUpdate[]           @relation("ProjectUpdateAuthor")
-  projectActivities       ProjectActivity[]
-  uploadedProjectFiles    ProjectFile[]             @relation("ProjectFileUploader")
+  createdProjectUpdates ProjectUpdate[]   @relation("ProjectUpdateAuthor")
+  projectActivities     ProjectActivity[]
+  uploadedProjectFiles  ProjectFile[]     @relation("ProjectFileUploader")
 
-  serviceRequests        ServiceRequest[]
-  quotes                 Quote[]                   @relation("QuoteClient")
+  serviceRequests ServiceRequest[]
+  quotes          Quote[]          @relation("QuoteClient")
 
-  orders                 Order[]
-  carts                  Cart[]
+  orders Order[]
+  carts  Cart[]
 
-  comments               Comment[]
-  reactions              Reaction[]
+  comments  Comment[]
+  reactions Reaction[]
 
-  conversations          ConversationParticipant[]
-  sentMessages           Message[]                 @relation("MessageSender")
+  conversations ConversationParticipant[]
+  sentMessages  Message[]                 @relation("MessageSender")
 
   notifications          Notification[]
   notificationPreference NotificationPreference?
 
-  assistanceRequests     AssistanceRequest[]
+  assistanceRequests AssistanceRequest[]
 
-  createdTickets         SupportTicket[]            @relation("TicketCreator")
-  assignedTickets        SupportTicket[]            @relation("TicketAssignee")
-  ticketMessages         TicketMessage[]
+  createdTickets  SupportTicket[] @relation("TicketCreator")
+  assignedTickets SupportTicket[] @relation("TicketAssignee")
+  ticketMessages  TicketMessage[]
 
-  analyticsEvents        AnalyticsEvent[]
-  analyticsSessions      AnalyticsSession[]
+  analyticsEvents   AnalyticsEvent[]
+  analyticsSessions AnalyticsSession[]
 
-  auditLogs              AuditLog[]
+  auditLogs AuditLog[]
 
-  createdServices        Service[]                 @relation("ServiceCreator")
-  authoredPosts          BlogPost[]                @relation("PostAuthor")
+  createdServices Service[]  @relation("ServiceCreator")
+  authoredPosts   BlogPost[] @relation("PostAuthor")
 
-  mediaAssets            MediaAsset[]
+  mediaAssets MediaAsset[]
 
   @@index([role])
   @@index([status])
   @@index([createdAt])
+  @@map("user")
 }
 
 model Account {
-  id                   String    @id @default(cuid())
-  accountId            String
-  providerId           String
-  userId               String
-  accessToken          String?
-  refreshToken         String?
-  idToken              String?
-  accessTokenExpiresAt DateTime?
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  issuer                String?
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
-  scope                String?
-  password             String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, accountId])
   @@index([userId])
+  @@map("account")
 }
 
 model Session {
@@ -498,6 +501,7 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+  @@map("session")
 }
 
 model Verification {
@@ -510,6 +514,7 @@ model Verification {
 
   @@index([identifier])
   @@index([expiresAt])
+  @@map("verification")
 }
 
 // =========================================================
@@ -604,11 +609,11 @@ model ServiceRequest {
   budget      Decimal?             @db.Decimal(14, 2)
   currency    String               @default("NGN")
   status      ServiceRequestStatus @default(PENDING)
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 
-  user    User          @relation(fields: [userId], references: [id])
-  service Service       @relation(fields: [serviceId], references: [id])
+  user    User           @relation(fields: [userId], references: [id])
+  service Service        @relation(fields: [serviceId], references: [id])
   quote   Quote?
   project ClientProject?
 
@@ -628,7 +633,7 @@ model Quote {
   tax              Decimal     @default(0) @db.Decimal(14, 2)
   total            Decimal     @db.Decimal(14, 2)
   currency         String      @default("NGN")
-  status            QuoteStatus @default(DRAFT)
+  status           QuoteStatus @default(DRAFT)
   validUntil       DateTime?
   acceptedAt       DateTime?
   rejectedAt       DateTime?
@@ -663,49 +668,49 @@ model QuoteItem {
 // =========================================================
 
 model ClientProject {
-  id               String           @id @default(cuid())
+  id               String  @id @default(cuid())
   clientId         String
-  serviceRequestId String?          @unique
+  serviceRequestId String? @unique
 
-  name             String
-  slug             String           @unique
-  description      String?
-  purpose          String?
-  vision           String?
-  expectedOutcome  String?
+  name            String
+  slug            String  @unique
+  description     String?
+  purpose         String?
+  vision          String?
+  expectedOutcome String?
 
-  type             ProjectType
-  status           ProjectStatus    @default(PLANNING)
-  visibility       ProjectVisibility @default(PRIVATE)
+  type       ProjectType
+  status     ProjectStatus     @default(PLANNING)
+  visibility ProjectVisibility @default(PRIVATE)
 
-  progress         Int              @default(0)
-  budget           Decimal?         @db.Decimal(14, 2)
-  currency         String           @default("NGN")
+  progress Int      @default(0)
+  budget   Decimal? @db.Decimal(14, 2)
+  currency String   @default("NGN")
 
-  startedAt        DateTime?
-  expectedEndAt    DateTime?
-  completedAt      DateTime?
+  startedAt     DateTime?
+  expectedEndAt DateTime?
+  completedAt   DateTime?
 
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  client         User                @relation("ClientProjects", fields: [clientId], references: [id])
-  serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id])
+  client         User            @relation("ClientProjects", fields: [clientId], references: [id])
+  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
 
-  phases         ProjectPhase[]
-  milestones     ProjectMilestone[]
-  features       ProjectFeature[]
-  tasks          ProjectTask[]
+  phases     ProjectPhase[]
+  milestones ProjectMilestone[]
+  features   ProjectFeature[]
+  tasks      ProjectTask[]
 
-  updates        ProjectUpdate[]
-  activities     ProjectActivity[]
-  assignments    ProjectAssignment[]
-  attributions   ProjectAttribution[]
-  files          ProjectFile[]
+  updates      ProjectUpdate[]
+  activities   ProjectActivity[]
+  assignments  ProjectAssignment[]
+  attributions ProjectAttribution[]
+  files        ProjectFile[]
 
-  analytics      ProjectAnalytics?   @relation("ClientProjectAnalytics")
-  conversation   Conversation?
-  media          MediaAsset[]
+  analytics    ProjectAnalytics? @relation("ClientProjectAnalytics")
+  conversation Conversation?
+  media        MediaAsset[]
 
   @@index([clientId])
   @@index([status])
@@ -716,30 +721,30 @@ model ClientProject {
 }
 
 model ProjectPhase {
-  id           String             @id @default(cuid())
-  projectId    String
-  createdById  String
+  id          String @id @default(cuid())
+  projectId   String
+  createdById String
 
-  name         String
-  slug         String
-  description  String?
-  status       ProjectPhaseStatus @default(PLANNED)
-  progress     Int                @default(0)
-  sortOrder    Int                @default(0)
+  name        String
+  slug        String
+  description String?
+  status      ProjectPhaseStatus @default(PLANNED)
+  progress    Int                @default(0)
+  sortOrder   Int                @default(0)
 
-  startedAt    DateTime?
+  startedAt     DateTime?
   expectedEndAt DateTime?
-  completedAt  DateTime?
+  completedAt   DateTime?
 
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  project      ClientProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy    User               @relation("PhaseCreator", fields: [createdById], references: [id])
+  project   ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User          @relation("PhaseCreator", fields: [createdById], references: [id])
 
-  milestones   ProjectMilestone[]
-  features     ProjectFeature[]
-  tasks        ProjectTask[]
+  milestones ProjectMilestone[]
+  features   ProjectFeature[]
+  tasks      ProjectTask[]
 
   @@unique([projectId, slug])
   @@index([projectId])
@@ -749,21 +754,21 @@ model ProjectPhase {
 }
 
 model ProjectMilestone {
-  id          String   @id @default(cuid())
-  projectId   String
-  phaseId     String?
+  id        String  @id @default(cuid())
+  projectId String
+  phaseId   String?
 
   title       String
   description String?
-  sortOrder   Int      @default(0)
-  progress    Int      @default(0)
-  completed   Boolean  @default(false)
+  sortOrder   Int     @default(0)
+  progress    Int     @default(0)
+  completed   Boolean @default(false)
 
   dueDate     DateTime?
   completedAt DateTime?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
   phase   ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
@@ -777,43 +782,43 @@ model ProjectMilestone {
 }
 
 model ProjectFeature {
-  id              String                @id @default(cuid())
-  projectId       String
-  phaseId         String?
+  id        String  @id @default(cuid())
+  projectId String
+  phaseId   String?
 
-  createdById     String
-  nominatedById   String?
-  assignedToId    String?
+  createdById   String
+  nominatedById String?
+  assignedToId  String?
 
-  name            String
-  slug            String
-  description     String?
+  name        String
+  slug        String
+  description String?
 
-  status          ProjectFeatureStatus  @default(PROPOSED)
-  priority        ProjectFeaturePriority @default(NORMAL)
-  progress        Int                   @default(0)
-  sortOrder       Int                   @default(0)
+  status    ProjectFeatureStatus   @default(PROPOSED)
+  priority  ProjectFeaturePriority @default(NORMAL)
+  progress  Int                    @default(0)
+  sortOrder Int                    @default(0)
 
-  nominatedAt     DateTime?
-  approvedAt      DateTime?
-  startedAt       DateTime?
-  completedAt     DateTime?
-  dueDate         DateTime?
+  nominatedAt DateTime?
+  approvedAt  DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  dueDate     DateTime?
 
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  project       ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  phase         ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase   ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
 
-  createdBy     User          @relation("FeatureCreator", fields: [createdById], references: [id])
-  nominatedBy   User?         @relation("FeatureNominator", fields: [nominatedById], references: [id])
-  assignedTo    User?         @relation("FeatureAssignee", fields: [assignedToId], references: [id])
+  createdBy   User  @relation("FeatureCreator", fields: [createdById], references: [id])
+  nominatedBy User? @relation("FeatureNominator", fields: [nominatedById], references: [id])
+  assignedTo  User? @relation("FeatureAssignee", fields: [assignedToId], references: [id])
 
-  tasks         ProjectTask[]
+  tasks ProjectTask[]
 
-  dependencies  ProjectFeatureDependency[] @relation("FeatureDependencies")
-  dependents    ProjectFeatureDependency[] @relation("FeatureDependents")
+  dependencies ProjectFeatureDependency[] @relation("FeatureDependencies")
+  dependents   ProjectFeatureDependency[] @relation("FeatureDependents")
 
   @@unique([projectId, slug])
   @@index([projectId])
@@ -827,49 +832,49 @@ model ProjectFeature {
 }
 
 model ProjectFeatureDependency {
-  featureId        String
+  featureId          String
   dependsOnFeatureId String
 
-  feature          ProjectFeature @relation("FeatureDependencies",fields: [featureId],references: [id],onDelete: Cascade)
+  feature ProjectFeature @relation("FeatureDependencies", fields: [featureId], references: [id], onDelete: Cascade)
 
-  dependsOnFeature ProjectFeature @relation("FeatureDependents",fields: [dependsOnFeatureId],references: [id],onDelete: Cascade)
+  dependsOnFeature ProjectFeature @relation("FeatureDependents", fields: [dependsOnFeatureId], references: [id], onDelete: Cascade)
 
   @@id([featureId, dependsOnFeatureId])
   @@index([dependsOnFeatureId])
 }
 
 model ProjectTask {
-  id            String             @id @default(cuid())
-  projectId     String
-  phaseId       String?
-  milestoneId   String?
-  featureId     String?
+  id          String  @id @default(cuid())
+  projectId   String
+  phaseId     String?
+  milestoneId String?
+  featureId   String?
 
-  createdById   String
-  assignedToId  String?
+  createdById  String
+  assignedToId String?
 
-  title         String
-  description   String?
+  title       String
+  description String?
 
-  status        ProjectTaskStatus   @default(TODO)
-  priority      ProjectTaskPriority @default(NORMAL)
-  progress      Int                @default(0)
-  sortOrder     Int                @default(0)
+  status    ProjectTaskStatus   @default(TODO)
+  priority  ProjectTaskPriority @default(NORMAL)
+  progress  Int                 @default(0)
+  sortOrder Int                 @default(0)
 
-  dueDate       DateTime?
-  startedAt     DateTime?
-  completedAt   DateTime?
+  dueDate     DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
 
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  project       ClientProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  phase         ProjectPhase?      @relation(fields: [phaseId], references: [id], onDelete: SetNull)
-  milestone     ProjectMilestone?  @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
-  feature       ProjectFeature?    @relation(fields: [featureId], references: [id], onDelete: SetNull)
+  project   ClientProject     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase     ProjectPhase?     @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+  milestone ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  feature   ProjectFeature?   @relation(fields: [featureId], references: [id], onDelete: SetNull)
 
-  createdBy     User               @relation("TaskCreator", fields: [createdById], references: [id])
-  assignedTo    User?              @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdBy  User  @relation("TaskCreator", fields: [createdById], references: [id])
+  assignedTo User? @relation("TaskAssignee", fields: [assignedToId], references: [id])
 
   @@index([projectId])
   @@index([phaseId])
@@ -883,11 +888,11 @@ model ProjectTask {
 }
 
 model ProjectAssignment {
-  id         String        @id @default(cuid())
+  id         String    @id @default(cuid())
   projectId  String
   userId     String
   role       String?
-  assignedAt DateTime      @default(now())
+  assignedAt DateTime  @default(now())
   removedAt  DateTime?
 
   project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -899,23 +904,23 @@ model ProjectAssignment {
 }
 
 model ProjectUpdate {
-  id          String                   @id @default(cuid())
-  projectId   String
-  authorId    String?
+  id        String  @id @default(cuid())
+  projectId String
+  authorId  String?
 
   title       String
   description String
-  type        ProjectUpdateType        @default(GENERAL)
-  visibility  ProjectUpdateVisibility  @default(CLIENT)
+  type        ProjectUpdateType       @default(GENERAL)
+  visibility  ProjectUpdateVisibility @default(CLIENT)
   progress    Int?
 
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  project     ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  author      User?         @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User?         @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
-  media       MediaAsset[]
+  media MediaAsset[]
 
   @@index([projectId])
   @@index([authorId])
@@ -925,9 +930,9 @@ model ProjectUpdate {
 }
 
 model ProjectActivity {
-  id          String                  @id @default(cuid())
-  projectId   String
-  userId      String?
+  id        String  @id @default(cuid())
+  projectId String
+  userId    String?
 
   type        ActivityType
   title       String
@@ -935,7 +940,7 @@ model ProjectActivity {
   visibility  ProjectUpdateVisibility @default(CLIENT)
   metadata    Json?
 
-  createdAt   DateTime                @default(now())
+  createdAt DateTime @default(now())
 
   project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -948,7 +953,7 @@ model ProjectActivity {
 }
 
 model ProjectFile {
-  id         String                  @id @default(cuid())
+  id         String  @id @default(cuid())
   projectId  String
   uploaderId String?
 
@@ -958,10 +963,10 @@ model ProjectFile {
   size       Int?
   visibility ProjectUpdateVisibility @default(CLIENT)
 
-  createdAt  DateTime                @default(now())
+  createdAt DateTime @default(now())
 
-  project    ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  uploader   User?         @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+  project  ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploader User?         @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([uploaderId])
@@ -988,27 +993,27 @@ model ProjectAttribution {
 // =========================================================
 
 model PortfolioProject {
-  id            String            @id @default(cuid())
-  ownerId       String?
+  id      String  @id @default(cuid())
+  ownerId String?
 
-  title         String
-  slug          String            @unique
-  tagline       String?
-  description   String?
+  title       String
+  slug        String  @unique
+  tagline     String?
+  description String?
 
-  type          ProjectType
-  status        ProjectStatus     @default(COMPLETED)
-  visibility    ProjectVisibility @default(PUBLIC)
-  featured      Boolean           @default(false)
+  type       ProjectType
+  status     ProjectStatus     @default(COMPLETED)
+  visibility ProjectVisibility @default(PUBLIC)
+  featured   Boolean           @default(false)
 
   liveUrl       String?
   repositoryUrl String?
 
-  startedAt     DateTime?
-  completedAt   DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
 
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   owner        User?                    @relation("PortfolioOwner", fields: [ownerId], references: [id])
   technologies ProjectTechnology[]
@@ -1027,7 +1032,7 @@ model PortfolioProject {
 }
 
 model ProjectTechnology {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   projectId String
   name      String
   slug      String
@@ -1040,12 +1045,12 @@ model ProjectTechnology {
 }
 
 model PortfolioProjectUpdate {
-  id        String   @id @default(cuid())
+  id        String @id @default(cuid())
   projectId String
 
-  title     String
-  content   String
-  progress  Int?
+  title    String
+  content  String
+  progress Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1074,27 +1079,27 @@ model ProductCategory {
 }
 
 model Product {
-  id               String        @id @default(cuid())
-  categoryId       String?
+  id         String  @id @default(cuid())
+  categoryId String?
 
   name             String
-  slug             String        @unique
+  slug             String  @unique
   shortDescription String?
   description      String?
 
-  type             ProductType
-  status           ProductStatus @default(DRAFT)
+  type   ProductType
+  status ProductStatus @default(DRAFT)
 
-  price            Decimal       @db.Decimal(14, 2)
-  compareAtPrice   Decimal?      @db.Decimal(14, 2)
-  currency         String        @default("NGN")
+  price          Decimal  @db.Decimal(14, 2)
+  compareAtPrice Decimal? @db.Decimal(14, 2)
+  currency       String   @default("NGN")
 
-  sku              String?       @unique
-  trackInventory   Boolean       @default(true)
-  featured         Boolean       @default(false)
+  sku            String? @unique
+  trackInventory Boolean @default(true)
+  featured       Boolean @default(false)
 
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   category   ProductCategory? @relation(fields: [categoryId], references: [id])
   variants   ProductVariant[]
@@ -1112,16 +1117,16 @@ model Product {
 }
 
 model ProductVariant {
-  id         String   @id @default(cuid())
-  productId  String
+  id        String @id @default(cuid())
+  productId String
 
   name       String
   sku        String?  @unique
   price      Decimal? @db.Decimal(14, 2)
   attributes Json?
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
   inventory          InventoryItem?
@@ -1133,8 +1138,8 @@ model ProductVariant {
 }
 
 model DigitalProduct {
-  id          String   @id @default(cuid())
-  productId   String   @unique
+  id        String @id @default(cuid())
+  productId String @unique
 
   description String?
   version     String?
@@ -1143,26 +1148,26 @@ model DigitalProduct {
   fileType    String?
   downloadUrl String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   product    Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   deliveries DigitalDelivery[]
 }
 
 model InventoryItem {
-  id                String   @id @default(cuid())
-  productId         String
-  variantId         String?  @unique
+  id        String  @id @default(cuid())
+  productId String
+  variantId String? @unique
 
-  quantity          Int      @default(0)
-  reserved          Int      @default(0)
-  lowStockThreshold Int      @default(5)
+  quantity          Int @default(0)
+  reserved          Int @default(0)
+  lowStockThreshold Int @default(5)
 
-  updatedAt         DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
-  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant   ProductVariant?  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  product   Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant?     @relation(fields: [variantId], references: [id], onDelete: Cascade)
   movements InventoryMovement[]
 
   @@index([productId])
@@ -1170,15 +1175,15 @@ model InventoryItem {
 }
 
 model InventoryMovement {
-  id          String                @id @default(cuid())
+  id          String  @id @default(cuid())
   inventoryId String
   variantId   String?
 
-  type        InventoryMovementType
-  quantity    Int
-  reason      String?
+  type     InventoryMovementType
+  quantity Int
+  reason   String?
 
-  createdAt   DateTime              @default(now())
+  createdAt DateTime @default(now())
 
   inventory InventoryItem   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
@@ -1194,8 +1199,8 @@ model Cart {
   sessionId String?    @unique
   status    CartStatus @default(ACTIVE)
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   expiresAt DateTime?
 
   user  User?      @relation(fields: [userId], references: [id])
@@ -1206,19 +1211,19 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   cartId    String
   productId String
   variantId String?
 
-  quantity  Int      @default(1)
-  unitPrice Decimal  @db.Decimal(14, 2)
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(14, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product        @relation(fields: [productId], references: [id])
+  cart    Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@index([cartId])
@@ -1227,29 +1232,29 @@ model CartItem {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String?
+  id     String  @id @default(cuid())
+  userId String?
 
-  orderNumber     String      @unique
-  status          OrderStatus @default(PENDING)
+  orderNumber String      @unique
+  status      OrderStatus @default(PENDING)
 
-  subtotal        Decimal     @db.Decimal(14, 2)
-  discount        Decimal     @default(0) @db.Decimal(14, 2)
-  tax             Decimal     @default(0) @db.Decimal(14, 2)
-  shipping        Decimal     @default(0) @db.Decimal(14, 2)
-  total           Decimal     @db.Decimal(14, 2)
+  subtotal Decimal @db.Decimal(14, 2)
+  discount Decimal @default(0) @db.Decimal(14, 2)
+  tax      Decimal @default(0) @db.Decimal(14, 2)
+  shipping Decimal @default(0) @db.Decimal(14, 2)
+  total    Decimal @db.Decimal(14, 2)
 
-  currency        String      @default("NGN")
+  currency String @default("NGN")
 
   customerName    String?
   customerEmail   String?
   customerPhone   String?
   shippingAddress Json?
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User?              @relation(fields: [userId], references: [id])
+  user        User?             @relation(fields: [userId], references: [id])
   items       OrderItem[]
   payments    Payment[]
   deliveries  DigitalDelivery[]
@@ -1262,20 +1267,20 @@ model Order {
 }
 
 model OrderItem {
-  id          String   @id @default(cuid())
-  orderId     String
-  productId   String
-  variantId   String?
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  variantId String?
 
   productName String
   quantity    Int
-  unitPrice   Decimal  @db.Decimal(14, 2)
-  total       Decimal  @db.Decimal(14, 2)
+  unitPrice   Decimal @db.Decimal(14, 2)
+  total       Decimal @db.Decimal(14, 2)
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product        @relation(fields: [productId], references: [id])
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@index([orderId])
@@ -1284,20 +1289,20 @@ model OrderItem {
 }
 
 model Payment {
-  id        String          @id @default(cuid())
-  orderId   String
+  id      String @id @default(cuid())
+  orderId String
 
-  amount    Decimal         @db.Decimal(14, 2)
-  currency  String          @default("NGN")
-  provider  PaymentProvider
-  status    PaymentStatus   @default(PENDING)
+  amount   Decimal         @db.Decimal(14, 2)
+  currency String          @default("NGN")
+  provider PaymentProvider
+  status   PaymentStatus   @default(PENDING)
 
-  reference String?         @unique
+  reference String? @unique
   metadata  Json?
 
   paidAt    DateTime?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -1307,8 +1312,8 @@ model Payment {
 }
 
 model OrderFulfillment {
-  id              String            @id @default(cuid())
-  orderId         String            @unique
+  id      String @id @default(cuid())
+  orderId String @unique
 
   status          FulfillmentStatus @default(PENDING)
   trackingNumber  String?
@@ -1317,28 +1322,28 @@ model OrderFulfillment {
   deliveredAt     DateTime?
   shippingAddress Json?
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model DigitalDelivery {
-  id               String                @id @default(cuid())
-  orderId          String
-  productId        String
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
 
-  token            String                @unique
-  status           DigitalDeliveryStatus @default(PENDING)
+  token  String                @unique
+  status DigitalDeliveryStatus @default(PENDING)
 
-  downloadCount    Int                   @default(0)
+  downloadCount    Int       @default(0)
   expiresAt        DateTime?
   lastDownloadedAt DateTime?
 
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  order   Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product DigitalProduct @relation(fields: [productId], references: [id])
 
   @@index([orderId])
@@ -1362,23 +1367,23 @@ model BlogCategory {
 }
 
 model BlogPost {
-  id          String         @id @default(cuid())
-  authorId    String
-  categoryId  String?
+  id         String  @id @default(cuid())
+  authorId   String
+  categoryId String?
 
-  title       String
-  slug        String         @unique
-  excerpt     String?
-  content     String
+  title   String
+  slug    String  @unique
+  excerpt String?
+  content String
 
   status      BlogPostStatus @default(DRAFT)
   publishedAt DateTime?
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  author    User          @relation("PostAuthor", fields: [authorId], references: [id])
-  category  BlogCategory? @relation(fields: [categoryId], references: [id])
+  author   User          @relation("PostAuthor", fields: [authorId], references: [id])
+  category BlogCategory? @relation(fields: [categoryId], references: [id])
 
   tags      BlogPostTag[]
   comments  Comment[]
@@ -1415,20 +1420,20 @@ model BlogPostTag {
 // =========================================================
 
 model Comment {
-  id        String        @id @default(cuid())
+  id        String  @id @default(cuid())
   userId    String
   postId    String?
   projectId String?
   parentId  String?
 
-  body      String
-  status    CommentStatus @default(PENDING)
+  body   String
+  status CommentStatus @default(PENDING)
 
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user    User             @relation(fields: [userId], references: [id])
-  post    BlogPost?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id])
+  post    BlogPost?         @relation(fields: [postId], references: [id], onDelete: Cascade)
   project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
@@ -1442,22 +1447,21 @@ model Comment {
 }
 
 model Reaction {
-  id        String       @id @default(cuid())
-  userId    String
-  type      ReactionType
+  id     String       @id @default(cuid())
+  userId String
+  type   ReactionType
 
   postId    String?
   projectId String?
 
-  createdAt DateTime     @default(now())
+  createdAt DateTime @default(now())
 
-  user    User             @relation(fields: [userId], references: [id])
-  post    BlogPost?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id])
+  post    BlogPost?         @relation(fields: [postId], references: [id], onDelete: Cascade)
   project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, type])
   @@unique([userId, projectId, type])
-
   @@index([userId])
   @@index([postId])
   @@index([projectId])
@@ -1469,19 +1473,19 @@ model Reaction {
 // =========================================================
 
 model Conversation {
-  id           String             @id @default(cuid())
-  type         ConversationType
-  status       ConversationStatus @default(ACTIVE)
+  id     String             @id @default(cuid())
+  type   ConversationType
+  status ConversationStatus @default(ACTIVE)
 
-  subject      String?
-  projectId    String?            @unique
+  subject   String?
+  projectId String? @unique
 
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   participants ConversationParticipant[]
   messages     Message[]
-  project      ClientProject?           @relation(fields: [projectId], references: [id])
+  project      ClientProject?            @relation(fields: [projectId], references: [id])
 
   @@index([type])
   @@index([status])
@@ -1489,13 +1493,13 @@ model Conversation {
 }
 
 model ConversationParticipant {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   conversationId String
   userId         String
 
-  joinedAt       DateTime @default(now())
-  lastReadAt     DateTime?
-  mutedAt        DateTime?
+  joinedAt   DateTime  @default(now())
+  lastReadAt DateTime?
+  mutedAt    DateTime?
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1505,19 +1509,19 @@ model ConversationParticipant {
 }
 
 model Message {
-  id             String        @id @default(cuid())
+  id             String @id @default(cuid())
   conversationId String
   senderId       String
 
-  body           String?
-  status         MessageStatus @default(SENT)
+  body   String?
+  status MessageStatus @default(SENT)
 
-  replyToId      String?
-  editedAt       DateTime?
-  deletedAt      DateTime?
+  replyToId String?
+  editedAt  DateTime?
+  deletedAt DateTime?
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("MessageSender", fields: [senderId], references: [id])
@@ -1534,9 +1538,9 @@ model Message {
 }
 
 model MessageAttachment {
-  id           String         @id @default(cuid())
-  messageId    String
-  type         AttachmentType
+  id        String         @id @default(cuid())
+  messageId String
+  type      AttachmentType
 
   url          String
   thumbnailUrl String?
@@ -1544,14 +1548,14 @@ model MessageAttachment {
   mimeType     String?
   size         Int?
 
-  width        Int?
-  height       Int?
-  duration     Int?
-  caption      String?
-  sortOrder    Int            @default(0)
+  width     Int?
+  height    Int?
+  duration  Int?
+  caption   String?
+  sortOrder Int     @default(0)
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
@@ -1564,15 +1568,15 @@ model MessageAttachment {
 // =========================================================
 
 model AssistanceRequest {
-  id        String           @id @default(cuid())
-  userId    String
+  id     String @id @default(cuid())
+  userId String
 
-  subject   String
-  message   String
-  status    AssistanceStatus @default(OPEN)
+  subject String
+  message String
+  status  AssistanceStatus @default(OPEN)
 
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1582,23 +1586,23 @@ model AssistanceRequest {
 }
 
 model SupportTicket {
-  id           String         @id @default(cuid())
-  creatorId    String
-  assigneeId   String?
+  id         String  @id @default(cuid())
+  creatorId  String
+  assigneeId String?
 
-  ticketNumber String         @unique
+  ticketNumber String @unique
   subject      String
   description  String
 
-  status       TicketStatus   @default(OPEN)
-  priority     TicketPriority @default(NORMAL)
+  status   TicketStatus   @default(OPEN)
+  priority TicketPriority @default(NORMAL)
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  resolvedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
 
-  creator  User           @relation("TicketCreator", fields: [creatorId], references: [id])
-  assignee User?          @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  creator  User  @relation("TicketCreator", fields: [creatorId], references: [id])
+  assignee User? @relation("TicketAssignee", fields: [assigneeId], references: [id])
 
   messages TicketMessage[]
 
@@ -1610,11 +1614,11 @@ model SupportTicket {
 }
 
 model TicketMessage {
-  id        String   @id @default(cuid())
-  ticketId  String
-  userId    String
+  id       String @id @default(cuid())
+  ticketId String
+  userId   String
 
-  body      String
+  body String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1634,21 +1638,21 @@ model TicketMessage {
 // =========================================================
 
 model Notification {
-  id         String           @id @default(cuid())
-  userId     String
+  id     String @id @default(cuid())
+  userId String
 
-  type       NotificationType
-  title      String
-  message    String
+  type    NotificationType
+  title   String
+  message String
 
   href       String?
   entityType String?
   entityId   String?
 
-  metadata   Json?
+  metadata Json?
 
-  readAt     DateTime?
-  createdAt  DateTime         @default(now())
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1659,19 +1663,19 @@ model Notification {
 }
 
 model NotificationPreference {
-  id                     String   @id @default(cuid())
-  userId                 String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
-  emailNotifications     Boolean  @default(true)
-  pushNotifications      Boolean  @default(true)
-  messageNotifications   Boolean  @default(true)
-  projectNotifications   Boolean  @default(true)
-  serviceNotifications   Boolean  @default(true)
-  orderNotifications     Boolean  @default(true)
-  marketingNotifications Boolean  @default(false)
+  emailNotifications     Boolean @default(true)
+  pushNotifications      Boolean @default(true)
+  messageNotifications   Boolean @default(true)
+  projectNotifications   Boolean @default(true)
+  serviceNotifications   Boolean @default(true)
+  orderNotifications     Boolean @default(true)
+  marketingNotifications Boolean @default(false)
 
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -1681,15 +1685,15 @@ model NotificationPreference {
 // =========================================================
 
 model AnalyticsSession {
-  id         String   @id @default(cuid())
-  sessionKey String   @unique
+  id         String @id @default(cuid())
+  sessionKey String @unique
 
   startedAt  DateTime @default(now())
   lastSeenAt DateTime @default(now())
 
-  userId     String?
+  userId String?
 
-  user   User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user   User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
   events AnalyticsEvent[]
 
   @@index([userId])
@@ -1698,18 +1702,18 @@ model AnalyticsSession {
 }
 
 model AnalyticsEvent {
-  id          String             @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId      String?
-  sessionId   String?
+  userId    String?
+  sessionId String?
 
-  type        AnalyticsEventType
-  path        String?
-  entityType  String?
-  entityId    String?
-  metadata    Json?
+  type       AnalyticsEventType
+  path       String?
+  entityType String?
+  entityId   String?
+  metadata   Json?
 
-  createdAt   DateTime           @default(now())
+  createdAt DateTime @default(now())
 
   user    User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   session AnalyticsSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
@@ -1726,19 +1730,19 @@ model AnalyticsEvent {
 // =========================================================
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  userId     String?
+  id     String  @id @default(cuid())
+  userId String?
 
   action     String
   entityType String?
   entityId   String?
 
-  metadata   Json?
+  metadata Json?
 
-  ipAddress  String?
-  userAgent  String?
+  ipAddress String?
+  userAgent String?
 
-  createdAt  DateTime @default(now())
+  createdAt DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -1753,25 +1757,25 @@ model AuditLog {
 // =========================================================
 
 model MediaAsset {
-  id         String         @id @default(cuid())
-  ownerType  MediaOwnerType
+  id        String         @id @default(cuid())
+  ownerType MediaOwnerType
 
-  url        String
-  publicId   String?
+  url      String
+  publicId String?
 
-  fileName   String?
-  mimeType   String?
-  size       Int?
+  fileName String?
+  mimeType String?
+  size     Int?
 
-  width      Int?
-  height     Int?
+  width  Int?
+  height Int?
 
-  alt        String?
-  caption    String?
-  sortOrder  Int            @default(0)
+  alt       String?
+  caption   String?
+  sortOrder Int     @default(0)
 
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId             String?
   serviceId          String?
@@ -1813,7 +1817,7 @@ model MediaAsset {
 // =========================================================
 
 model SeoMetadata {
-  id          String    @id @default(cuid())
+  id String @id @default(cuid())
 
   title       String?
   description String?
@@ -1821,14 +1825,14 @@ model SeoMetadata {
 
   canonicalUrl String?
 
-  ogTitle      String?
+  ogTitle       String?
   ogDescription String?
-  ogImage      String?
+  ogImage       String?
 
-  robots       SeoRobots @default(INDEX_FOLLOW)
+  robots SeoRobots @default(INDEX_FOLLOW)
 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   serviceId          String? @unique
   productId          String? @unique
@@ -1846,24 +1850,24 @@ model SeoMetadata {
 // =========================================================
 
 model ProjectAnalytics {
-  id           String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  views        Int      @default(0)
-  uniqueViews  Int      @default(0)
-  likes        Int      @default(0)
-  comments     Int      @default(0)
-  shares       Int      @default(0)
-  downloads    Int      @default(0)
+  views       Int @default(0)
+  uniqueViews Int @default(0)
+  likes       Int @default(0)
+  comments    Int @default(0)
+  shares      Int @default(0)
+  downloads   Int @default(0)
 
   lastViewedAt DateTime?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   clientProjectId    String? @unique
   portfolioProjectId String? @unique
 
-  clientProject    ClientProject?    @relation("ClientProjectAnalytics", fields: [clientProjectId], references: [id], onDelete: Cascade)
+  clientProject ClientProject? @relation("ClientProjectAnalytics", fields: [clientProjectId], references: [id], onDelete: Cascade)
 
   portfolioProject PortfolioProject? @relation("PortfolioProjectAnalytics", fields: [portfolioProjectId], references: [id], onDelete: Cascade)
 
