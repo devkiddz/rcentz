@@ -1,0 +1,1401 @@
+# RCENTZ SYSTEM
+
+# DEVELOPMENT MILESTONES
+
+**Project:** Rcentz System
+**Document:** Development Milestones
+**Version:** 1.0
+**Status:** Living Document
+
+---
+
+## 1. Purpose
+
+This document tracks the implementation progress of the Rcentz System.
+
+The **Master Blueprint** defines what Rcentz is and the architectural direction of the product.
+
+This document defines:
+
+* What we are building
+* The order in which we are building it
+* What each milestone must accomplish
+* What must be tested before moving forward
+* Major architectural decisions made during implementation
+* Completed, active and pending work
+
+This document is intentionally living and should evolve with the project.
+
+---
+
+# 2. Development Philosophy
+
+Rcentz will be developed **module by module and file by file**.
+
+The development process is:
+
+```text
+PLAN
+  ↓
+ARCHITECT
+  ↓
+ONE FILE / MODULE
+  ↓
+AUDIT
+  ↓
+ASK WHY / SUGGEST
+  ↓
+DISCUSS / MODIFY
+  ↓
+IMPLEMENT
+  ↓
+TEST
+  ↓
+DOCUMENT
+  ↓
+NEXT MODULE
+```
+
+The objective is not simply to generate code quickly.
+
+Every important architectural decision should be:
+
+* Understandable
+* Auditable
+* Reusable
+* Testable
+* Consistent with the Master Blueprint
+
+---
+
+# 3. Milestone Status Legend
+
+| Status         | Meaning                                            |
+| -------------- | -------------------------------------------------- |
+| ⬜ Not Started  | Work has not started                               |
+| 🟡 In Progress | Currently being implemented                        |
+| 🟢 Completed   | Implemented and tested                             |
+| 🔴 Blocked     | Cannot proceed because of an unresolved dependency |
+| 🔵 Review      | Implemented but awaiting architectural/code review |
+| ⚪ Deferred     | Intentionally postponed                            |
+
+---
+
+# 4. Overall Roadmap
+
+```text
+M01 Foundation
+ ↓
+M02 Architecture & Conventions
+ ↓
+M03 Design System / UI Canvas
+ ↓
+M04 Database Foundation
+ ↓
+M05 Global Application Shell
+ ↓
+M06 Public Homepage
+ ↓
+M07 Portfolio Engine
+ ↓
+M08 Services Engine
+ ↓
+M09 Commerce Foundation
+ ↓
+M10 Authentication & User System
+ ↓
+M11 Client Project Management
+ ↓
+M12 Admin Control Center
+ ↓
+M13 Content / Blog / Community
+ ↓
+M14 Messaging / Support / Notifications
+ ↓
+M15 Analytics
+ ↓
+M16 SEO / Performance
+ ↓
+M17 Production Hardening
+ ↓
+M18 Mobile / Future Application Readiness
+```
+
+---
+
+# 5. M01 — Project Foundation
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Create the initial Rcentz application and establish the fundamental development environment.
+
+## Scope
+
+* Create Next.js application
+* Configure TypeScript
+* Configure package manager
+* Configure Tailwind CSS
+* Install shadcn/ui foundation
+* Install required UI/icon dependencies
+* Configure environment variables
+* Establish development scripts
+* Confirm local development environment
+
+## Expected Result
+
+The project should:
+
+* Start successfully
+* Compile successfully
+* Support TypeScript
+* Support Tailwind
+* Support shadcn/ui
+* Have a clean initial structure
+
+## Exit Criteria
+
+* [ ] Application starts locally
+* [ ] TypeScript compiles
+* [ ] Tailwind works
+* [ ] shadcn/ui works
+* [ ] Environment configuration is established
+* [ ] Initial Git repository is clean
+
+---
+
+# 6. M02 — Architecture & Folder Conventions
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Establish the structural conventions that will govern the entire Rcentz codebase.
+
+## Architectural Direction
+
+Rcentz should maintain clear separation between:
+
+```text
+app/
+features/
+components/
+server/
+lib/
+data/
+docs/
+```
+
+The exact structure may evolve during implementation, but responsibilities must remain clearly separated.
+
+## Scope
+
+* Establish application routing
+* Establish feature boundaries
+* Establish reusable component conventions
+* Establish server/backend conventions
+* Establish data-access conventions
+* Establish shared utility conventions
+* Establish naming conventions
+* Establish import conventions
+* Establish documentation conventions
+
+## Principle
+
+Do not allow business logic to become scattered throughout UI components.
+
+The architecture should make it possible to reuse business logic across:
+
+* Public Web
+* Client Dashboard
+* Admin System
+* Future mobile/native applications
+
+## Exit Criteria
+
+* [ ] Folder architecture documented
+* [ ] Responsibilities defined
+* [ ] First feature boundary established
+* [ ] Server/data-access conventions established
+* [ ] Architecture reviewed
+
+---
+
+# 7. M03 — Rcentz UI Canvas & Design System
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Build the visual foundation that every Rcentz interface will use.
+
+## Scope
+
+### UI Canvas
+
+* Controlled centered container
+* Responsive desktop canvas
+* Responsive mobile canvas
+* Maximum content width
+* Consistent spacing system
+* Layout constraints
+
+### Theme System
+
+* CSS variables
+* Semantic design tokens
+* Light/dark compatibility where appropriate
+* User-selectable theme colors
+* Black-and-white visual foundation
+
+### Background System
+
+Support:
+
+* Plain
+* Gradient
+* Grid
+* Grid-gradient
+
+### Navigation
+
+Support configurable:
+
+* Sidebar
+* No-sidebar
+* Desktop navigation
+* Mobile navigation
+
+## Responsive Philosophy
+
+Desktop:
+
+* Higher information density
+* Richer navigation
+* Larger content areas
+* More simultaneous information
+
+Mobile:
+
+* Reduced text density
+* Stronger iconography
+* Compact cards
+* Activity-focused interactions
+
+## Exit Criteria
+
+* [ ] Canvas implemented
+* [ ] Responsive behavior tested
+* [ ] Theme tokens established
+* [ ] Background system established
+* [ ] Navigation primitives established
+* [ ] Mobile and desktop layouts tested
+
+---
+
+# 8. M04 — Database Foundation
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Establish PostgreSQL + Prisma as the central source of truth.
+
+## Architecture
+
+```text
+                    DATABASE
+                       │
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+       Website       Admin        Client
+          │            │            │
+      Portfolio     Management    Tracking
+          │
+      Public SEO
+```
+
+## Scope
+
+Establish the foundational models for:
+
+* Users
+* Authentication
+* Clients
+* Staff
+* Services
+* Service requests
+* Quotes
+* Projects
+* Project milestones
+* Project activities
+* Portfolio
+* Products
+* Orders
+* Payments
+* Blog
+* Comments
+* Reactions
+* Messaging
+* Notifications
+* Support
+* Analytics
+* Media
+* SEO
+
+## Database Principle
+
+The database should be the source of truth for information that needs to appear across multiple application surfaces.
+
+Avoid maintaining duplicate hardcoded versions of database-driven content.
+
+## Exit Criteria
+
+* [ ] PostgreSQL configured
+* [ ] Prisma configured
+* [ ] Schema established
+* [ ] Migrations working
+* [ ] Prisma Client generated
+* [ ] Seed strategy established
+* [ ] Initial data successfully seeded
+* [ ] Database architecture reviewed
+
+---
+
+# 9. M05 — Global Application Shell
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Build the shared application structure used throughout Rcentz.
+
+## Scope
+
+* Root layout
+* Global navigation
+* Header
+* Footer
+* Responsive navigation
+* Application container
+* Global loading states
+* Error boundaries
+* Shared UI primitives
+* Notification entry points
+* Authentication-aware navigation
+
+## Exit Criteria
+
+* [ ] Global layout works
+* [ ] Navigation works
+* [ ] Mobile navigation works
+* [ ] Shared UI primitives work
+* [ ] Public/admin/client boundaries are clear
+
+---
+
+# 10. M06 — Database-Driven Public Homepage
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Create the first complete public-facing experience powered by the database.
+
+## Scope
+
+Homepage sections should eventually be capable of displaying:
+
+* Rcentz introduction
+* Services
+* Featured portfolio projects
+* Products
+* Blog/content
+* Featured content
+* Calls to action
+* Engagement signals
+
+## Principle
+
+The homepage should not become a collection of permanently hardcoded business records.
+
+Content that belongs in the database should eventually come from the database.
+
+## Exit Criteria
+
+* [ ] Homepage structure complete
+* [ ] Responsive
+* [ ] Database-driven content integrated
+* [ ] SEO metadata established
+* [ ] Performance reviewed
+
+---
+
+# 11. M07 — Portfolio Engine
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Build the Rcentz portfolio as a real database-driven product engine.
+
+## Scope
+
+### Portfolio
+
+* Projects
+* Project types
+* Technologies
+* Project descriptions
+* Project status
+* Visibility
+* Featured projects
+* Live URLs
+* Repository URLs
+* Project media
+
+### Interactive Portfolio
+
+* Views
+* Reactions
+* Comments
+* Upvotes
+* Trending signals
+* Featured projects
+* Recently updated projects
+* Recently completed projects
+* Most discussed projects
+
+## Initial Portfolio Records
+
+Existing projects such as:
+
+* AJ Logik
+* JobRcentz
+
+should become authentic portfolio records.
+
+Only real project information, screenshots, features, development history, results and metrics should be presented.
+
+## Exit Criteria
+
+* [ ] Portfolio database models working
+* [ ] Portfolio listing page
+* [ ] Portfolio project page
+* [ ] Slug-based routing
+* [ ] Media support
+* [ ] Reactions
+* [ ] Comments
+* [ ] Analytics integration
+* [ ] SEO integration
+
+---
+
+# 12. M08 — Services Engine
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Create a database-driven services marketplace.
+
+## Scope
+
+Services include:
+
+* Web development
+* SaaS development
+* UI/UX
+* Dashboards
+* E-commerce
+* API integration
+* Custom systems
+* Maintenance
+* Related services
+
+## Service Lifecycle
+
+```text
+Visitor
+  ↓
+Explore Service
+  ↓
+Request Service
+  ↓
+Review
+  ↓
+Quote
+  ↓
+Approval
+  ↓
+Project Creation
+```
+
+## Exit Criteria
+
+* [ ] Service categories
+* [ ] Service records
+* [ ] Service detail pages
+* [ ] Service requests
+* [ ] Quote foundation
+* [ ] Request-to-project workflow defined
+
+---
+
+# 13. M09 — Commerce Foundation
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Create a shared commerce foundation supporting both digital and physical products.
+
+## Digital Products
+
+Examples:
+
+* Templates
+* UI kits
+* Code
+* Components
+* Design assets
+* Documents
+* Digital resources
+
+## Physical Products
+
+Examples:
+
+* Mice
+* PCs
+* Batteries
+* Screens
+* Technology accessories
+
+## Scope
+
+* Product catalog
+* Product categories
+* Product media
+* Product variants
+* Inventory
+* Cart
+* Orders
+* Payments
+* Digital delivery
+* Physical fulfillment
+
+## Fulfillment Architecture
+
+```text
+                    PRODUCT
+                       │
+             ┌─────────┴─────────┐
+             ↓                   ↓
+        DIGITAL PRODUCT     PHYSICAL PRODUCT
+             │                   │
+       DOWNLOAD DELIVERY    SHIPPING/FULFILLMENT
+```
+
+## Exit Criteria
+
+* [ ] Product catalog
+* [ ] Categories
+* [ ] Product detail pages
+* [ ] Cart
+* [ ] Orders
+* [ ] Payment foundation
+* [ ] Digital delivery foundation
+* [ ] Physical fulfillment foundation
+
+---
+
+# 14. M10 — Authentication & User System
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Establish identity and role-aware access throughout the platform.
+
+## User Roles
+
+```text
+USER
+CLIENT
+STAFF
+ADMIN
+SUPER_ADMIN
+```
+
+## Scope
+
+* Registration
+* Login
+* Logout
+* Sessions
+* Account management
+* Email verification
+* Role management
+* User status
+* Client profiles
+* Staff profiles
+* Authentication-aware navigation
+
+## Exit Criteria
+
+* [ ] Registration works
+* [ ] Login works
+* [ ] Sessions work
+* [ ] Role-based access established
+* [ ] Client profile established
+* [ ] Staff profile established
+* [ ] Protected areas established
+
+---
+
+# 15. M11 — Client Project Management
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Allow clients to interact with and track their projects.
+
+## Project Information
+
+Projects may contain:
+
+* Project name
+* Client
+* Purpose
+* Vision
+* Description
+* Expected outcome
+* Start date
+* Expected completion date
+* Actual completion date
+* Status
+* Progress
+* Key features
+* Milestones
+* Tasks
+* Project phases
+* Feature dependencies
+* Assignments
+* Activity history
+* Attachments
+* Deliverables
+* Analytics
+
+## Progress System
+
+Progress should be represented through:
+
+* Percentages
+* Progress bars
+* Milestone completion
+* Charts
+* Pie/donut visualizations where useful
+
+## Project Lifecycle
+
+```text
+PLANNING
+   ↓
+DISCOVERY
+   ↓
+DESIGN
+   ↓
+DEVELOPMENT
+   ↓
+TESTING
+   ↓
+REVIEW
+   ↓
+DEPLOYMENT
+   ↓
+MAINTENANCE
+   ↓
+COMPLETED
+```
+
+Projects may also enter:
+
+* ON HOLD
+* CANCELLED
+
+## Exit Criteria
+
+* [ ] Client project dashboard
+* [ ] Project overview
+* [ ] Milestones
+* [ ] Tasks
+* [ ] Project updates
+* [ ] Activity history
+* [ ] Files/deliverables
+* [ ] Project progress visualization
+* [ ] Project analytics
+
+---
+
+# 16. M12 — Admin Control Center
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Build the central management system for Rcentz.
+
+## Admin Structure
+
+```text
+ADMIN
+├── Overview
+├── Projects
+├── Project Updates
+├── Milestones
+├── Tasks
+├── Clients
+├── Services
+├── Portfolio
+├── Products
+├── Orders
+├── Content
+├── Blog
+├── Comments
+├── Messages
+├── Notifications
+├── Analytics
+└── Settings
+```
+
+## Principle
+
+Admin-managed data should drive:
+
+* Public website
+* Client experience
+* Internal management
+
+## Exit Criteria
+
+* [ ] Admin authentication
+* [ ] Admin navigation
+* [ ] Dashboard overview
+* [ ] Project management
+* [ ] Client management
+* [ ] Service management
+* [ ] Portfolio management
+* [ ] Product management
+* [ ] Content management
+* [ ] Order management
+* [ ] Analytics access
+* [ ] Settings foundation
+
+---
+
+# 17. M13 — Blog / Community Content Engine
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Build an interactive content platform around the Rcentz blog.
+
+## Scope
+
+* Articles
+* Categories
+* Tags
+* Authors
+* Comments
+* Threaded replies
+* Reactions
+* Upvotes
+* Saves/bookmarks
+* Trending content
+* Popular content
+* Related content
+
+## Routing Principle
+
+Blog articles should use real SEO-friendly route-based pages.
+
+Example:
+
+```text
+/blog/how-we-built-the-rcentz-system
+```
+
+The canonical article page should be a route-based page rather than a modal.
+
+Preview cards may be used on listing pages.
+
+## Exit Criteria
+
+* [ ] Blog listing
+* [ ] Category pages
+* [ ] Tag support
+* [ ] Canonical article routes
+* [ ] Comments
+* [ ] Threaded replies
+* [ ] Reactions
+* [ ] Related content
+* [ ] SEO metadata
+
+---
+
+# 18. M14 — Messaging, Support & Notifications
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Create communication infrastructure between Rcentz, clients and users.
+
+## Messaging
+
+Support:
+
+* Direct conversations
+* Project conversations
+* Support conversations
+* Service conversations
+* Order conversations
+* Group conversations
+
+## Support
+
+Support:
+
+* Assistance requests
+* Support tickets
+* Ticket priorities
+* Ticket statuses
+* Staff assignment
+* Ticket messages
+* Attachments
+
+## Notifications
+
+Support notifications for:
+
+* Messages
+* Projects
+* Project updates
+* Services
+* Orders
+* Payments
+* Comments
+* Reactions
+* Tickets
+* Assistance
+* Commerce
+* System events
+
+## Exit Criteria
+
+* [ ] Conversations
+* [ ] Participants
+* [ ] Messages
+* [ ] Attachments
+* [ ] Support tickets
+* [ ] Ticket messaging
+* [ ] Notifications
+* [ ] Notification preferences
+
+---
+
+# 19. M15 — Analytics Engine
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Make analytics a first-class system within Rcentz.
+
+## Project Analytics
+
+Track:
+
+* Project views
+* Milestone completion
+* Feature completion
+* Timeline performance
+* Activity
+* Downloads
+* Engagement
+
+## Portfolio Analytics
+
+Track:
+
+* Views
+* Unique views
+* Reactions
+* Comments
+* Shares
+* Downloads
+* Trends
+* Conversions
+
+## Website Analytics
+
+Track:
+
+* Page views
+* Popular pages
+* Search
+* Engagement
+* Conversions
+* Product views
+* Service views
+* Portfolio views
+* Purchases
+
+## Architecture
+
+The system should allow integration with external analytics providers while leaving room for Rcentz-owned project intelligence.
+
+## Exit Criteria
+
+* [ ] Analytics sessions
+* [ ] Analytics events
+* [ ] Event tracking foundation
+* [ ] Project analytics
+* [ ] Portfolio analytics
+* [ ] Dashboard analytics
+* [ ] Conversion tracking foundation
+
+---
+
+# 20. M16 — SEO / Superhero SEO
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Make Rcentz highly discoverable while keeping SEO useful and genuine.
+
+## Scope
+
+* Semantic HTML
+* Accessible structure
+* Dynamic metadata
+* Structured data
+* Sitemap
+* Robots configuration
+* Canonical URLs
+* Open Graph metadata
+* Social metadata
+* Search-friendly routes
+* Slugs
+* Internal linking
+* Related content
+* Performance
+* Indexability
+
+## Indexable Content
+
+Priority pages include:
+
+* Projects
+* Services
+* Products
+* Blog articles
+* Categories
+* Other genuinely useful content
+
+## Principle
+
+Do not create artificial SEO pages simply to increase page count.
+
+Content must provide genuine value.
+
+## Exit Criteria
+
+* [ ] Metadata system
+* [ ] Canonical URLs
+* [ ] Sitemap
+* [ ] Robots configuration
+* [ ] Structured data
+* [ ] Open Graph
+* [ ] Search-friendly routes
+* [ ] Internal linking strategy
+* [ ] Performance review
+
+---
+
+# 21. M17 — Production Hardening
+
+**Status:** ⬜ Not Started
+
+## Objective
+
+Prepare the platform for real-world use.
+
+## Scope
+
+### Security
+
+* Authentication review
+* Authorization review
+* Input validation
+* File upload validation
+* Server-side validation
+* Rate limiting strategy
+* Sensitive data protection
+* Audit logging
+
+### Performance
+
+* Image optimization
+* Database query review
+* Caching strategy
+* Server rendering review
+* Client bundle review
+* Loading states
+* Error handling
+
+### Reliability
+
+* Error boundaries
+* Logging
+* Database backup strategy
+* Recovery strategy
+* Monitoring
+
+## Exit Criteria
+
+* [ ] Security review
+* [ ] Performance review
+* [ ] Error handling review
+* [ ] Database review
+* [ ] Production environment verified
+* [ ] Deployment verified
+
+---
+
+# 22. M18 — Mobile / Future Application Readiness
+
+**Status:** ⬜ Deferred
+
+## Objective
+
+Ensure the architecture can support a future native/mobile application without unnecessary duplication.
+
+## Principle
+
+The initial product is web-first.
+
+However:
+
+```text
+                 Rcentz Business Logic
+                         │
+             ┌───────────┴───────────┐
+             ↓                       ↓
+           WEB                    MOBILE
+             │                       │
+        Web Interface          Native Interface
+```
+
+Business logic and data structures should not unnecessarily depend on a specific UI implementation.
+
+## Future Considerations
+
+* Shared API/data contracts
+* Reusable business logic
+* Authentication compatibility
+* Mobile-friendly interaction patterns
+* Push notifications
+* Installable applications
+* PWA
+* Native application possibilities
+
+## Exit Criteria
+
+This milestone does not need to be fully implemented during the initial web product.
+
+It should primarily be protected through architectural decisions made earlier.
+
+---
+
+# 23. Cross-Cutting Systems
+
+These systems should evolve alongside the major milestones rather than being treated as isolated final features.
+
+## Media System
+
+Used by:
+
+* Users
+* Services
+* Projects
+* Project updates
+* Portfolio
+* Products
+* Blog
+* Tickets
+* Messages
+
+---
+
+## SEO System
+
+Used by:
+
+* Services
+* Products
+* Blog
+* Portfolio
+* Public pages
+
+---
+
+## Analytics System
+
+Used by:
+
+* Website
+* Portfolio
+* Products
+* Services
+* Projects
+* Content
+
+---
+
+## Notification System
+
+Used by:
+
+* Projects
+* Services
+* Orders
+* Payments
+* Messages
+* Support
+* Community
+
+---
+
+## Activity System
+
+Used by:
+
+* Projects
+* Client management
+* Administrative actions
+* Important system events
+
+---
+
+# 24. Project Update Visibility
+
+Project updates should eventually support visibility levels.
+
+```text
+INTERNAL
+CLIENT_VISIBLE
+PUBLIC
+```
+
+This allows the same project activity/update infrastructure to support:
+
+* Internal staff communication
+* Client project tracking
+* Public portfolio/project history
+
+---
+
+# 25. Data Ownership Principle
+
+Rcentz should remain the owner of its business data and presentation.
+
+External services may eventually act as integrations or data sources.
+
+Examples:
+
+```text
+GitHub
+   ↓
+Optional Integration
+   ↓
+Rcentz Portfolio System
+```
+
+```text
+Vercel
+   ↓
+Optional Integration
+   ↓
+Rcentz Portfolio System
+```
+
+Neither external platform should become the canonical portfolio presentation layer.
+
+---
+
+# 26. Definition of Done
+
+A milestone is not considered complete merely because the code exists.
+
+A milestone should normally satisfy:
+
+* [ ] Implementation complete
+* [ ] TypeScript passes
+* [ ] Application builds
+* [ ] Runtime behavior tested
+* [ ] Responsive behavior tested where applicable
+* [ ] Database behavior tested where applicable
+* [ ] Error states considered
+* [ ] Security implications considered
+* [ ] Architecture reviewed
+* [ ] Documentation updated
+* [ ] Git changes reviewed
+* [ ] No known blocking issue
+
+---
+
+# 27. Architectural Decision Log
+
+Important architectural decisions should be recorded here as they are made.
+
+| Date | Decision | Reason | Status |
+| ---- | -------- | ------ | ------ |
+| TBD  | TBD      | TBD    | Active |
+
+---
+
+# 28. Rejected Approaches
+
+Rejected architectural approaches should be recorded rather than forgotten.
+
+This prevents the project from repeatedly reconsidering decisions that have already been evaluated.
+
+| Date | Rejected Approach | Reason | Replacement |
+| ---- | ----------------- | ------ | ----------- |
+| TBD  | TBD               | TBD    | TBD         |
+
+---
+
+# 29. Lessons Learned
+
+Record important implementation lessons here.
+
+Examples:
+
+* Unexpected framework behavior
+* Database lessons
+* Performance discoveries
+* Better architectural patterns
+* Failed approaches
+* Reusable solutions
+* Security discoveries
+
+| Date | Lesson | Impact |
+| ---- | ------ | ------ |
+| TBD  | TBD    | TBD    |
+
+---
+
+# 30. Current Development State
+
+**Current Milestone:** M01 — Project Foundation
+
+**Current Module:** TBD
+
+**Current File:** TBD
+
+**Current Objective:** TBD
+
+**Blocking Issues:** None recorded
+
+**Last Completed Milestone:** None
+
+---
+
+# 31. Immediate Next Steps
+
+The next development cycle should always identify the smallest meaningful implementation unit.
+
+```text
+CURRENT MILESTONE
+        ↓
+CURRENT MODULE
+        ↓
+CURRENT FILE
+        ↓
+IMPLEMENT
+        ↓
+TEST
+        ↓
+REVIEW
+        ↓
+UPDATE THIS DOCUMENT
+```
+
+Do not begin a new major milestone until the current milestone's required foundation is stable enough to support it.
+
+---
+
+# 32. Relationship to the Master Blueprint
+
+The documents have different responsibilities.
+
+```text
+MASTER-BLUEPRINT.md
+        │
+        │ defines
+        ↓
+PRODUCT + ARCHITECTURAL VISION
+        │
+        ↓
+MILESTONES.md
+        │
+        │ defines
+        ↓
+IMPLEMENTATION ROADMAP
+        │
+        ↓
+ACTUAL CODEBASE
+        │
+        ↓
+RUNNING RCENTZ SYSTEM
+```
+
+The Master Blueprint answers:
+
+> **What are we building and why?**
+
+The Milestones document answers:
+
+> **What are we building next and how do we know it is complete?**
+
+The codebase answers:
+
+> **What has actually been implemented?**
+
+---
+
+# 33. Living Document Rule
+
+This document must evolve with the project.
+
+When a significant architectural change occurs:
+
+1. Update the milestone.
+2. Record the decision.
+3. Record rejected approaches where useful.
+4. Record lessons learned.
+5. Update the current development state.
+6. Ensure the Master Blueprint remains consistent with the implementation.
+
+The documentation should describe the **real state of Rcentz**, not an idealized version of what the system was supposed to become.
+
+---
+
+# END OF DOCUMENT

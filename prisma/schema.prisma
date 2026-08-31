@@ -1,0 +1,1871 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =========================================================
+// ENUMS
+// =========================================================
+
+enum UserRole {
+  USER
+  CLIENT
+  STAFF
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum ProjectType {
+  WEBSITE
+  WEB_APP
+  MOBILE_APP
+  DESKTOP_APP
+  SAAS
+  API
+  ECOMMERCE
+  BRANDING
+  GRAPHIC_DESIGN
+  CONSULTING
+  MAINTENANCE
+  OTHER
+}
+
+enum ProjectStatus {
+  PLANNING
+  DISCOVERY
+  DESIGN
+  DEVELOPMENT
+  TESTING
+  REVIEW
+  DEPLOYMENT
+  MAINTENANCE
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum ProjectPhaseStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum ProjectFeatureStatus {
+  PROPOSED
+  NOMINATED
+  APPROVED
+  IN_PROGRESS
+  TESTING
+  COMPLETED
+  REJECTED
+  DEFERRED
+}
+
+enum ProjectFeaturePriority {
+  LOW
+  NORMAL
+  HIGH
+  CRITICAL
+}
+
+enum ProjectTaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectTaskPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ProjectUpdateType {
+  GENERAL
+  MILESTONE
+  PROGRESS
+  DEPLOYMENT
+  MAINTENANCE
+  ISSUE
+  COMPLETION
+  NEW_FEATURE
+  IMPROVEMENT
+  REDESIGN
+  PERFORMANCE
+  SECURITY
+  BUG_FIX
+  ANNOUNCEMENT
+}
+
+enum ProjectUpdateVisibility {
+  INTERNAL
+  CLIENT
+  PUBLIC
+}
+
+enum ServiceStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum ServiceRequestStatus {
+  PENDING
+  REVIEWING
+  QUOTED
+  APPROVED
+  REJECTED
+  CANCELLED
+  CONVERTED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ProductType {
+  DIGITAL
+  PHYSICAL
+  SERVICE
+  BUNDLE
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  OUT_OF_STOCK
+  ARCHIVED
+}
+
+enum InventoryMovementType {
+  PURCHASE
+  SALE
+  RETURN
+  ADJUSTMENT
+  RESTOCK
+  DAMAGE
+  RESERVATION
+  RELEASE
+}
+
+enum CartStatus {
+  ACTIVE
+  CONVERTED
+  ABANDONED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FULFILLED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  PAYSTACK
+  STRIPE
+  MANUAL
+  OTHER
+}
+
+enum FulfillmentStatus {
+  PENDING
+  PROCESSING
+  READY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum DigitalDeliveryStatus {
+  PENDING
+  AVAILABLE
+  DOWNLOADED
+  EXPIRED
+  REVOKED
+}
+
+enum BlogPostStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+  DELETED
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  CLAP
+  FIRE
+  INSIGHTFUL
+  CELEBRATE
+  UPVOTE
+  DOWNVOTE
+}
+
+enum ConversationType {
+  DIRECT
+  PROJECT
+  SUPPORT
+  SERVICE
+  ORDER
+  GROUP
+}
+
+enum ConversationStatus {
+  ACTIVE
+  ARCHIVED
+  BLOCKED
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  DELETED
+}
+
+enum AttachmentType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  FILE
+}
+
+enum NotificationType {
+  SYSTEM
+  MESSAGE
+  PROJECT
+  PROJECT_UPDATE
+  SERVICE
+  ORDER
+  PAYMENT
+  COMMENT
+  REACTION
+  TICKET
+  ASSISTANCE
+  COMMERCE
+}
+
+enum AssistanceStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_FOR_CLIENT
+  WAITING_FOR_STAFF
+  RESOLVED
+  CLOSED
+  CANCELLED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ActivityType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  PROGRESS_UPDATED
+  MILESTONE_COMPLETED
+  COMMENTED
+  ATTACHED
+  PAYMENT_RECEIVED
+  DEPLOYED
+  COMPLETED
+  ASSIGNED
+  UNASSIGNED
+  OTHER
+}
+
+enum AnalyticsEventType {
+  PAGE_VIEW
+  PROJECT_VIEW
+  PRODUCT_VIEW
+  SERVICE_VIEW
+  SEARCH
+  CLICK
+  REACTION
+  COMMENT
+  SHARE
+  DOWNLOAD
+  ADD_TO_CART
+  REMOVE_FROM_CART
+  CHECKOUT_STARTED
+  PURCHASE
+  SERVICE_REQUEST
+  SIGN_UP
+  LOGIN
+  OTHER
+}
+
+enum MediaOwnerType {
+  USER
+  PROJECT
+  PRODUCT
+  BLOG
+  MESSAGE
+  TICKET
+  ORDER
+  SERVICE
+  SYSTEM
+}
+
+enum SeoRobots {
+  INDEX_FOLLOW
+  INDEX_NOFOLLOW
+  NOINDEX_FOLLOW
+  NOINDEX_NOFOLLOW
+}
+
+// =========================================================
+// USERS / AUTHENTICATION
+// =========================================================
+
+model User {
+  id                     String                    @id @default(cuid())
+  name                   String?
+  email                  String                    @unique
+  emailVerified          Boolean                   @default(false)
+  image                  String?
+  role                   UserRole                  @default(USER)
+  status                 UserStatus                @default(ACTIVE)
+  phone                  String?
+  bio                    String?
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+  lastSeenAt             DateTime?
+
+  accounts               Account[]
+  sessions               Session[]
+
+  clientProfile          ClientProfile?
+  staffProfile           StaffProfile?
+
+  portfolioProjects      PortfolioProject[]        @relation("PortfolioOwner")
+  clientProjects         ClientProject[]           @relation("ClientProjects")
+
+  assignedProjects       ProjectAssignment[]
+  createdAttributions    ProjectAttribution[]
+
+  createdPhases           ProjectPhase[]            @relation("PhaseCreator")
+  createdFeatures         ProjectFeature[]          @relation("FeatureCreator")
+  nominatedFeatures       ProjectFeature[]          @relation("FeatureNominator")
+  assignedFeatures        ProjectFeature[]          @relation("FeatureAssignee")
+
+  createdTasks            ProjectTask[]             @relation("TaskCreator")
+  assignedTasks           ProjectTask[]             @relation("TaskAssignee")
+
+  createdProjectUpdates   ProjectUpdate[]           @relation("ProjectUpdateAuthor")
+  projectActivities       ProjectActivity[]
+  uploadedProjectFiles    ProjectFile[]             @relation("ProjectFileUploader")
+
+  serviceRequests        ServiceRequest[]
+  quotes                 Quote[]                   @relation("QuoteClient")
+
+  orders                 Order[]
+  carts                  Cart[]
+
+  comments               Comment[]
+  reactions              Reaction[]
+
+  conversations          ConversationParticipant[]
+  sentMessages           Message[]                 @relation("MessageSender")
+
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+
+  assistanceRequests     AssistanceRequest[]
+
+  createdTickets         SupportTicket[]            @relation("TicketCreator")
+  assignedTickets        SupportTicket[]            @relation("TicketAssignee")
+  ticketMessages         TicketMessage[]
+
+  analyticsEvents        AnalyticsEvent[]
+  analyticsSessions      AnalyticsSession[]
+
+  auditLogs              AuditLog[]
+
+  createdServices        Service[]                 @relation("ServiceCreator")
+  authoredPosts          BlogPost[]                @relation("PostAuthor")
+
+  mediaAssets            MediaAsset[]
+
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  accountId            String
+  providerId           String
+  userId               String
+  accessToken          String?
+  refreshToken         String?
+  idToken              String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                String?
+  password             String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@index([expiresAt])
+}
+
+// =========================================================
+// CLIENT / STAFF
+// =========================================================
+
+model ClientProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  companyName String?
+  companyLogo String?
+  website     String?
+  phone       String?
+  bio         String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StaffProfile {
+  id               String           @id @default(cuid())
+  userId           String           @unique
+  jobTitle         String?
+  department       String?
+  employeeNumber   String?          @unique
+  employmentStatus EmploymentStatus @default(ACTIVE)
+  joinedAt         DateTime?
+  terminatedAt     DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// =========================================================
+// SERVICES
+// =========================================================
+
+model ServiceCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  services Service[]
+}
+
+model Service {
+  id               String        @id @default(cuid())
+  categoryId       String?
+  createdById      String
+  name             String
+  slug             String        @unique
+  shortDescription String?
+  description      String?
+  type             ProjectType
+  status           ServiceStatus @default(DRAFT)
+  priceFrom        Decimal?      @db.Decimal(14, 2)
+  priceTo          Decimal?      @db.Decimal(14, 2)
+  currency         String        @default("NGN")
+  featured         Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  category  ServiceCategory? @relation(fields: [categoryId], references: [id])
+  createdBy User             @relation("ServiceCreator", fields: [createdById], references: [id])
+
+  requests ServiceRequest[]
+  media    MediaAsset[]
+  seo      SeoMetadata?
+
+  @@index([categoryId])
+  @@index([createdById])
+  @@index([status])
+  @@index([featured])
+}
+
+model ServiceRequest {
+  id          String               @id @default(cuid())
+  userId      String
+  serviceId   String
+  title       String
+  description String
+  budget      Decimal?             @db.Decimal(14, 2)
+  currency    String               @default("NGN")
+  status      ServiceRequestStatus @default(PENDING)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id])
+  service Service       @relation(fields: [serviceId], references: [id])
+  quote   Quote?
+  project ClientProject?
+
+  @@index([userId])
+  @@index([serviceId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Quote {
+  id               String      @id @default(cuid())
+  serviceRequestId String      @unique
+  clientId         String
+  quoteNumber      String      @unique
+  subtotal         Decimal     @db.Decimal(14, 2)
+  discount         Decimal     @default(0) @db.Decimal(14, 2)
+  tax              Decimal     @default(0) @db.Decimal(14, 2)
+  total            Decimal     @db.Decimal(14, 2)
+  currency         String      @default("NGN")
+  status            QuoteStatus @default(DRAFT)
+  validUntil       DateTime?
+  acceptedAt       DateTime?
+  rejectedAt       DateTime?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  serviceRequest ServiceRequest @relation(fields: [serviceRequestId], references: [id])
+  client         User           @relation("QuoteClient", fields: [clientId], references: [id])
+  items          QuoteItem[]
+
+  @@index([clientId])
+  @@index([status])
+}
+
+model QuoteItem {
+  id          String  @id @default(cuid())
+  quoteId     String
+  name        String
+  description String?
+  quantity    Decimal @default(1) @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(14, 2)
+  total       Decimal @db.Decimal(14, 2)
+
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+}
+
+// =========================================================
+// CLIENT PROJECT MANAGEMENT
+// =========================================================
+
+model ClientProject {
+  id               String           @id @default(cuid())
+  clientId         String
+  serviceRequestId String?          @unique
+
+  name             String
+  slug             String           @unique
+  description      String?
+  purpose          String?
+  vision           String?
+  expectedOutcome  String?
+
+  type             ProjectType
+  status           ProjectStatus    @default(PLANNING)
+  visibility       ProjectVisibility @default(PRIVATE)
+
+  progress         Int              @default(0)
+  budget           Decimal?         @db.Decimal(14, 2)
+  currency         String           @default("NGN")
+
+  startedAt        DateTime?
+  expectedEndAt    DateTime?
+  completedAt      DateTime?
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  client         User                @relation("ClientProjects", fields: [clientId], references: [id])
+  serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id])
+
+  phases         ProjectPhase[]
+  milestones     ProjectMilestone[]
+  features       ProjectFeature[]
+  tasks          ProjectTask[]
+
+  updates        ProjectUpdate[]
+  activities     ProjectActivity[]
+  assignments    ProjectAssignment[]
+  attributions   ProjectAttribution[]
+  files          ProjectFile[]
+
+  analytics      ProjectAnalytics?   @relation("ClientProjectAnalytics")
+  conversation   Conversation?
+  media          MediaAsset[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([visibility])
+  @@index([type])
+  @@index([createdAt])
+  @@index([expectedEndAt])
+}
+
+model ProjectPhase {
+  id           String             @id @default(cuid())
+  projectId    String
+  createdById  String
+
+  name         String
+  slug         String
+  description  String?
+  status       ProjectPhaseStatus @default(PLANNED)
+  progress     Int                @default(0)
+  sortOrder    Int                @default(0)
+
+  startedAt    DateTime?
+  expectedEndAt DateTime?
+  completedAt  DateTime?
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  project      ClientProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy    User               @relation("PhaseCreator", fields: [createdById], references: [id])
+
+  milestones   ProjectMilestone[]
+  features     ProjectFeature[]
+  tasks        ProjectTask[]
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([createdById])
+  @@index([status])
+  @@index([sortOrder])
+}
+
+model ProjectMilestone {
+  id          String   @id @default(cuid())
+  projectId   String
+  phaseId     String?
+
+  title       String
+  description String?
+  sortOrder   Int      @default(0)
+  progress    Int      @default(0)
+  completed   Boolean  @default(false)
+
+  dueDate     DateTime?
+  completedAt DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase   ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+
+  tasks ProjectTask[]
+
+  @@index([projectId])
+  @@index([phaseId])
+  @@index([dueDate])
+  @@index([completed])
+}
+
+model ProjectFeature {
+  id              String                @id @default(cuid())
+  projectId       String
+  phaseId         String?
+
+  createdById     String
+  nominatedById   String?
+  assignedToId    String?
+
+  name            String
+  slug            String
+  description     String?
+
+  status          ProjectFeatureStatus  @default(PROPOSED)
+  priority        ProjectFeaturePriority @default(NORMAL)
+  progress        Int                   @default(0)
+  sortOrder       Int                   @default(0)
+
+  nominatedAt     DateTime?
+  approvedAt      DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  dueDate         DateTime?
+
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  project       ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase         ProjectPhase? @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+
+  createdBy     User          @relation("FeatureCreator", fields: [createdById], references: [id])
+  nominatedBy   User?         @relation("FeatureNominator", fields: [nominatedById], references: [id])
+  assignedTo    User?         @relation("FeatureAssignee", fields: [assignedToId], references: [id])
+
+  tasks         ProjectTask[]
+
+  dependencies  ProjectFeatureDependency[] @relation("FeatureDependencies")
+  dependents    ProjectFeatureDependency[] @relation("FeatureDependents")
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([phaseId])
+  @@index([createdById])
+  @@index([nominatedById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+}
+
+model ProjectFeatureDependency {
+  featureId        String
+  dependsOnFeatureId String
+
+  feature          ProjectFeature @relation("FeatureDependencies",fields: [featureId],references: [id],onDelete: Cascade)
+
+  dependsOnFeature ProjectFeature @relation("FeatureDependents",fields: [dependsOnFeatureId],references: [id],onDelete: Cascade)
+
+  @@id([featureId, dependsOnFeatureId])
+  @@index([dependsOnFeatureId])
+}
+
+model ProjectTask {
+  id            String             @id @default(cuid())
+  projectId     String
+  phaseId       String?
+  milestoneId   String?
+  featureId     String?
+
+  createdById   String
+  assignedToId  String?
+
+  title         String
+  description   String?
+
+  status        ProjectTaskStatus   @default(TODO)
+  priority      ProjectTaskPriority @default(NORMAL)
+  progress      Int                @default(0)
+  sortOrder     Int                @default(0)
+
+  dueDate       DateTime?
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  project       ClientProject      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase         ProjectPhase?      @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+  milestone     ProjectMilestone?  @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  feature       ProjectFeature?    @relation(fields: [featureId], references: [id], onDelete: SetNull)
+
+  createdBy     User               @relation("TaskCreator", fields: [createdById], references: [id])
+  assignedTo    User?              @relation("TaskAssignee", fields: [assignedToId], references: [id])
+
+  @@index([projectId])
+  @@index([phaseId])
+  @@index([milestoneId])
+  @@index([featureId])
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+}
+
+model ProjectAssignment {
+  id         String        @id @default(cuid())
+  projectId  String
+  userId     String
+  role       String?
+  assignedAt DateTime      @default(now())
+  removedAt  DateTime?
+
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@index([removedAt])
+}
+
+model ProjectUpdate {
+  id          String                   @id @default(cuid())
+  projectId   String
+  authorId    String?
+
+  title       String
+  description String
+  type        ProjectUpdateType        @default(GENERAL)
+  visibility  ProjectUpdateVisibility  @default(CLIENT)
+  progress    Int?
+
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+
+  project     ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author      User?         @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  media       MediaAsset[]
+
+  @@index([projectId])
+  @@index([authorId])
+  @@index([type])
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+model ProjectActivity {
+  id          String                  @id @default(cuid())
+  projectId   String
+  userId      String?
+
+  type        ActivityType
+  title       String
+  description String?
+  visibility  ProjectUpdateVisibility @default(CLIENT)
+  metadata    Json?
+
+  createdAt   DateTime                @default(now())
+
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([type])
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+model ProjectFile {
+  id         String                  @id @default(cuid())
+  projectId  String
+  uploaderId String?
+
+  name       String
+  url        String
+  mimeType   String?
+  size       Int?
+  visibility ProjectUpdateVisibility @default(CLIENT)
+
+  createdAt  DateTime                @default(now())
+
+  project    ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploader   User?         @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([uploaderId])
+  @@index([visibility])
+}
+
+model ProjectAttribution {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String?
+  createdAt DateTime @default(now())
+
+  project ClientProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// =========================================================
+// PORTFOLIO
+// =========================================================
+
+model PortfolioProject {
+  id            String            @id @default(cuid())
+  ownerId       String?
+
+  title         String
+  slug          String            @unique
+  tagline       String?
+  description   String?
+
+  type          ProjectType
+  status        ProjectStatus     @default(COMPLETED)
+  visibility    ProjectVisibility @default(PUBLIC)
+  featured      Boolean           @default(false)
+
+  liveUrl       String?
+  repositoryUrl String?
+
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  owner        User?                    @relation("PortfolioOwner", fields: [ownerId], references: [id])
+  technologies ProjectTechnology[]
+  updates      PortfolioProjectUpdate[]
+  media        MediaAsset[]
+  comments     Comment[]
+  reactions    Reaction[]
+  analytics    ProjectAnalytics?        @relation("PortfolioProjectAnalytics")
+  seo          SeoMetadata?
+
+  @@index([ownerId])
+  @@index([visibility])
+  @@index([status])
+  @@index([featured])
+  @@index([createdAt])
+}
+
+model ProjectTechnology {
+  id        String @id @default(cuid())
+  projectId String
+  name      String
+  slug      String
+  icon      String?
+
+  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+}
+
+model PortfolioProjectUpdate {
+  id        String   @id @default(cuid())
+  projectId String
+
+  title     String
+  content   String
+  progress  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media   MediaAsset[]
+
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+// =========================================================
+// COMMERCE
+// =========================================================
+
+model ProductCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id               String        @id @default(cuid())
+  categoryId       String?
+
+  name             String
+  slug             String        @unique
+  shortDescription String?
+  description      String?
+
+  type             ProductType
+  status           ProductStatus @default(DRAFT)
+
+  price            Decimal       @db.Decimal(14, 2)
+  compareAtPrice   Decimal?      @db.Decimal(14, 2)
+  currency         String        @default("NGN")
+
+  sku              String?       @unique
+  trackInventory   Boolean       @default(true)
+  featured         Boolean       @default(false)
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  category   ProductCategory? @relation(fields: [categoryId], references: [id])
+  variants   ProductVariant[]
+  inventory  InventoryItem[]
+  digital    DigitalProduct?
+  media      MediaAsset[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  seo        SeoMetadata?
+
+  @@index([categoryId])
+  @@index([type])
+  @@index([status])
+  @@index([featured])
+}
+
+model ProductVariant {
+  id         String   @id @default(cuid())
+  productId  String
+
+  name       String
+  sku        String?  @unique
+  price      Decimal? @db.Decimal(14, 2)
+  attributes Json?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventory          InventoryItem?
+  inventoryMovements InventoryMovement[]
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+
+  @@index([productId])
+}
+
+model DigitalProduct {
+  id          String   @id @default(cuid())
+  productId   String   @unique
+
+  description String?
+  version     String?
+  fileName    String?
+  fileSize    Int?
+  fileType    String?
+  downloadUrl String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product    Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  deliveries DigitalDelivery[]
+}
+
+model InventoryItem {
+  id                String   @id @default(cuid())
+  productId         String
+  variantId         String?  @unique
+
+  quantity          Int      @default(0)
+  reserved          Int      @default(0)
+  lowStockThreshold Int      @default(5)
+
+  updatedAt         DateTime @updatedAt
+
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant   ProductVariant?  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  movements InventoryMovement[]
+
+  @@index([productId])
+  @@index([variantId])
+}
+
+model InventoryMovement {
+  id          String                @id @default(cuid())
+  inventoryId String
+  variantId   String?
+
+  type        InventoryMovementType
+  quantity    Int
+  reason      String?
+
+  createdAt   DateTime              @default(now())
+
+  inventory InventoryItem   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([inventoryId])
+  @@index([variantId])
+  @@index([createdAt])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?
+  sessionId String?    @unique
+  status    CartStatus @default(ACTIVE)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  expiresAt DateTime?
+
+  user  User?      @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  variantId String?
+
+  quantity  Int      @default(1)
+  unitPrice Decimal  @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([cartId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String?
+
+  orderNumber     String      @unique
+  status          OrderStatus @default(PENDING)
+
+  subtotal        Decimal     @db.Decimal(14, 2)
+  discount        Decimal     @default(0) @db.Decimal(14, 2)
+  tax             Decimal     @default(0) @db.Decimal(14, 2)
+  shipping        Decimal     @default(0) @db.Decimal(14, 2)
+  total           Decimal     @db.Decimal(14, 2)
+
+  currency        String      @default("NGN")
+
+  customerName    String?
+  customerEmail   String?
+  customerPhone   String?
+  shippingAddress Json?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user        User?              @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+  payments    Payment[]
+  deliveries  DigitalDelivery[]
+  fulfillment OrderFulfillment?
+  media       MediaAsset[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String
+  variantId   String?
+
+  productName String
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(14, 2)
+  total       Decimal  @db.Decimal(14, 2)
+
+  createdAt   DateTime @default(now())
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Payment {
+  id        String          @id @default(cuid())
+  orderId   String
+
+  amount    Decimal         @db.Decimal(14, 2)
+  currency  String          @default("NGN")
+  provider  PaymentProvider
+  status    PaymentStatus   @default(PENDING)
+
+  reference String?         @unique
+  metadata  Json?
+
+  paidAt    DateTime?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@index([provider])
+}
+
+model OrderFulfillment {
+  id              String            @id @default(cuid())
+  orderId         String            @unique
+
+  status          FulfillmentStatus @default(PENDING)
+  trackingNumber  String?
+  carrier         String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  shippingAddress Json?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model DigitalDelivery {
+  id               String                @id @default(cuid())
+  orderId          String
+  productId        String
+
+  token            String                @unique
+  status           DigitalDeliveryStatus @default(PENDING)
+
+  downloadCount    Int                   @default(0)
+  expiresAt        DateTime?
+  lastDownloadedAt DateTime?
+
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  order   Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product DigitalProduct @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([status])
+}
+
+// =========================================================
+// BLOG / CONTENT
+// =========================================================
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts BlogPost[]
+}
+
+model BlogPost {
+  id          String         @id @default(cuid())
+  authorId    String
+  categoryId  String?
+
+  title       String
+  slug        String         @unique
+  excerpt     String?
+  content     String
+
+  status      BlogPostStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  author    User          @relation("PostAuthor", fields: [authorId], references: [id])
+  category  BlogCategory? @relation(fields: [categoryId], references: [id])
+
+  tags      BlogPostTag[]
+  comments  Comment[]
+  reactions Reaction[]
+  media     MediaAsset[]
+  seo       SeoMetadata?
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model BlogTag {
+  id    String        @id @default(cuid())
+  name  String
+  slug  String        @unique
+  posts BlogPostTag[]
+}
+
+model BlogPostTag {
+  postId String
+  tagId  String
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+// =========================================================
+// COMMENTS / REACTIONS
+// =========================================================
+
+model Comment {
+  id        String        @id @default(cuid())
+  userId    String
+  postId    String?
+  projectId String?
+  parentId  String?
+
+  body      String
+  status    CommentStatus @default(PENDING)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user    User             @relation(fields: [userId], references: [id])
+  post    BlogPost?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([userId])
+  @@index([postId])
+  @@index([projectId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  userId    String
+  type      ReactionType
+
+  postId    String?
+  projectId String?
+
+  createdAt DateTime     @default(now())
+
+  user    User             @relation(fields: [userId], references: [id])
+  post    BlogPost?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  project PortfolioProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, type])
+  @@unique([userId, projectId, type])
+
+  @@index([userId])
+  @@index([postId])
+  @@index([projectId])
+  @@index([type])
+}
+
+// =========================================================
+// MESSAGING
+// =========================================================
+
+model Conversation {
+  id           String             @id @default(cuid())
+  type         ConversationType
+  status       ConversationStatus @default(ACTIVE)
+
+  subject      String?
+  projectId    String?            @unique
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+  project      ClientProject?           @relation(fields: [projectId], references: [id])
+
+  @@index([type])
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+
+  joinedAt       DateTime @default(now())
+  lastReadAt     DateTime?
+  mutedAt        DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  senderId       String
+
+  body           String?
+  status         MessageStatus @default(SENT)
+
+  replyToId      String?
+  editedAt       DateTime?
+  deletedAt      DateTime?
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("MessageSender", fields: [senderId], references: [id])
+
+  replyTo     Message?            @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     Message[]           @relation("MessageReplies")
+  attachments MessageAttachment[]
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([replyToId])
+  @@index([createdAt])
+  @@index([status])
+}
+
+model MessageAttachment {
+  id           String         @id @default(cuid())
+  messageId    String
+  type         AttachmentType
+
+  url          String
+  thumbnailUrl String?
+  fileName     String?
+  mimeType     String?
+  size         Int?
+
+  width        Int?
+  height       Int?
+  duration     Int?
+  caption      String?
+  sortOrder    Int            @default(0)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([type])
+}
+
+// =========================================================
+// SUPPORT / ASSISTANCE
+// =========================================================
+
+model AssistanceRequest {
+  id        String           @id @default(cuid())
+  userId    String
+
+  subject   String
+  message   String
+  status    AssistanceStatus @default(OPEN)
+
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SupportTicket {
+  id           String         @id @default(cuid())
+  creatorId    String
+  assigneeId   String?
+
+  ticketNumber String         @unique
+  subject      String
+  description  String
+
+  status       TicketStatus   @default(OPEN)
+  priority     TicketPriority @default(NORMAL)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  resolvedAt   DateTime?
+
+  creator  User           @relation("TicketCreator", fields: [creatorId], references: [id])
+  assignee User?          @relation("TicketAssignee", fields: [assigneeId], references: [id])
+
+  messages TicketMessage[]
+
+  @@index([creatorId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  userId    String
+
+  body      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id])
+
+  media MediaAsset[]
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// =========================================================
+// NOTIFICATIONS
+// =========================================================
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+
+  type       NotificationType
+  title      String
+  message    String
+
+  href       String?
+  entityType String?
+  entityId   String?
+
+  metadata   Json?
+
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+
+  emailNotifications     Boolean  @default(true)
+  pushNotifications      Boolean  @default(true)
+  messageNotifications   Boolean  @default(true)
+  projectNotifications   Boolean  @default(true)
+  serviceNotifications   Boolean  @default(true)
+  orderNotifications     Boolean  @default(true)
+  marketingNotifications Boolean  @default(false)
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// =========================================================
+// ANALYTICS
+// =========================================================
+
+model AnalyticsSession {
+  id         String   @id @default(cuid())
+  sessionKey String   @unique
+
+  startedAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+
+  userId     String?
+
+  user   User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  events AnalyticsEvent[]
+
+  @@index([userId])
+  @@index([startedAt])
+  @@index([lastSeenAt])
+}
+
+model AnalyticsEvent {
+  id          String             @id @default(cuid())
+
+  userId      String?
+  sessionId   String?
+
+  type        AnalyticsEventType
+  path        String?
+  entityType  String?
+  entityId    String?
+  metadata    Json?
+
+  createdAt   DateTime           @default(now())
+
+  user    User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session AnalyticsSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([type])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+// =========================================================
+// AUDIT LOGS
+// =========================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+
+  action     String
+  entityType String?
+  entityId   String?
+
+  metadata   Json?
+
+  ipAddress  String?
+  userAgent  String?
+
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// =========================================================
+// MEDIA
+// =========================================================
+
+model MediaAsset {
+  id         String         @id @default(cuid())
+  ownerType  MediaOwnerType
+
+  url        String
+  publicId   String?
+
+  fileName   String?
+  mimeType   String?
+  size       Int?
+
+  width      Int?
+  height     Int?
+
+  alt        String?
+  caption    String?
+  sortOrder  Int            @default(0)
+
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  userId             String?
+  serviceId          String?
+  clientProjectId    String?
+  projectUpdateId    String?
+  portfolioProjectId String?
+  portfolioUpdateId  String?
+  productId          String?
+  blogPostId         String?
+  ticketMessageId    String?
+  orderId            String?
+
+  user             User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service          Service?                @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  clientProject    ClientProject?          @relation(fields: [clientProjectId], references: [id], onDelete: Cascade)
+  projectUpdate    ProjectUpdate?          @relation(fields: [projectUpdateId], references: [id], onDelete: Cascade)
+  portfolioProject PortfolioProject?       @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
+  portfolioUpdate  PortfolioProjectUpdate? @relation(fields: [portfolioUpdateId], references: [id], onDelete: Cascade)
+  product          Product?                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  blogPost         BlogPost?               @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  ticketMessage    TicketMessage?          @relation(fields: [ticketMessageId], references: [id], onDelete: Cascade)
+  order            Order?                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([ownerType])
+  @@index([userId])
+  @@index([serviceId])
+  @@index([clientProjectId])
+  @@index([projectUpdateId])
+  @@index([portfolioProjectId])
+  @@index([portfolioUpdateId])
+  @@index([productId])
+  @@index([blogPostId])
+  @@index([ticketMessageId])
+  @@index([orderId])
+}
+
+// =========================================================
+// SEO
+// =========================================================
+
+model SeoMetadata {
+  id          String    @id @default(cuid())
+
+  title       String?
+  description String?
+  keywords    String?
+
+  canonicalUrl String?
+
+  ogTitle      String?
+  ogDescription String?
+  ogImage      String?
+
+  robots       SeoRobots @default(INDEX_FOLLOW)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  serviceId          String? @unique
+  productId          String? @unique
+  blogPostId         String? @unique
+  portfolioProjectId String? @unique
+
+  service          Service?          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  product          Product?          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  blogPost         BlogPost?         @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  portfolioProject PortfolioProject? @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
+}
+
+// =========================================================
+// PROJECT ANALYTICS
+// =========================================================
+
+model ProjectAnalytics {
+  id           String   @id @default(cuid())
+
+  views        Int      @default(0)
+  uniqueViews  Int      @default(0)
+  likes        Int      @default(0)
+  comments     Int      @default(0)
+  shares       Int      @default(0)
+  downloads    Int      @default(0)
+
+  lastViewedAt DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  clientProjectId    String? @unique
+  portfolioProjectId String? @unique
+
+  clientProject    ClientProject?    @relation("ClientProjectAnalytics", fields: [clientProjectId], references: [id], onDelete: Cascade)
+
+  portfolioProject PortfolioProject? @relation("PortfolioProjectAnalytics", fields: [portfolioProjectId], references: [id], onDelete: Cascade)
+
+  @@index([lastViewedAt])
+}
