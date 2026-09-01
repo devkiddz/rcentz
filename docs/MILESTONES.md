@@ -534,11 +534,11 @@ APPLICATION CONTENT
 
 # 8. M04 — Database Foundation
 
-**Status:** 🟡 In Progress
+**Status:** 🟢 Completed
 
 ## Objective
 
-Establish PostgreSQL + Prisma as the central source of truth.
+Establish PostgreSQL + Prisma as the central source of truth for the Rcentz System.
 
 ## Architecture
 
@@ -556,25 +556,25 @@ Establish PostgreSQL + Prisma as the central source of truth.
 
 ## Scope
 
-Establish the foundational models for:
+The database foundation now supports the core domains required for the wider Rcentz platform, including:
 
-* Users
-* Authentication
-* Clients
-* Staff
-* Services
+* Users and authentication
+* Roles and account status
+* Services and service categories
+* Multi-currency service pricing
+* Service plans and subscriptions
 * Service requests
 * Quotes
 * Projects
 * Project milestones
-* Project activities
-* Portfolio
-* Products
+* Project features and tasks
+* Portfolio profiles
+* Products and commerce
 * Orders
-* Payments
-* Blog
-* Comments
-* Reactions
+* Invoices
+* Payments and refunds
+* Crypto payment records
+* Blog/content
 * Messaging
 * Notifications
 * Support
@@ -584,24 +584,310 @@ Establish the foundational models for:
 
 ## Database Principle
 
-The database should be the source of truth for information that needs to appear across multiple application surfaces.
+The database is the canonical source of truth for information that must appear across multiple Rcentz application surfaces.
 
-Avoid maintaining duplicate hardcoded versions of database-driven content.
+```text
+DATABASE
+   ↓
+PUBLIC WEBSITE
+   ↓
+CLIENT EXPERIENCE
+   ↓
+ADMIN MANAGEMENT
+```
 
-### Current Implementation Note — 2026-08-31
+Business records that belong in the database should not be duplicated as permanently hardcoded application content.
 
-The repository already contains the foundational Prisma schema and migration history. Authentication persistence is using this database foundation successfully. The schema is a broad system foundation; individual domain models remain subject to refinement when their engines are implemented. Seed strategy and initial business seed data are still pending.
+## Project Structure
+
+The project-management hierarchy is:
+
+```text
+Project
+   ↓
+Milestone
+   ↓
+Feature
+   ↓
+Task
+```
+
+Features may exist in a project backlog before being assigned to a milestone.
+
+Tasks belong to features.
+
+Progress values currently stored for seeded historical projects are provisional aggregates and may later be derived more deeply from live feature and task activity.
+
+## Billing Architecture
+
+Rcentz now has a shared billing foundation supporting one-off services, long-term services and commerce.
+
+```text
+ONE-OFF SERVICES
+Service
+  ↓
+ServiceRequest
+  ↓
+Quote
+  ↓
+Project
+
+LONG-TERM SERVICES
+ServicePlan
+  ↓
+ClientSubscription
+  ↓
+Usage / Entitlements
+  ↓
+Invoice
+
+COMMERCE
+Product
+  ↓
+Order
+  ↓
+Invoice
+
+BILLING
+Invoice
+  ↓
+Payment
+  ↓
+Refund
+
+CRYPTO
+Payment
+  ↓
+CryptoPayment
+  ↓
+CryptoTransaction
+```
+
+## Multi-Currency Service Pricing
+
+Service pricing is normalized through dedicated `ServicePrice` records.
+
+```text
+Service
+  ↓
+ServicePrice
+  ├── NGN
+  └── USD
+```
+
+A service may therefore maintain independent commercial pricing for different currencies without relying on live foreign-exchange conversion.
+
+Initial catalogue pricing supports:
+
+* NGN
+* USD
+
+The presentation layer may later automatically select an appropriate currency while still allowing user override.
+
+Quotes and invoices remain responsible for preserving their final agreed monetary values.
+
+## Authentication Foundation
+
+Better Auth is connected to the Prisma/PostgreSQL persistence layer.
+
+The official Rcentz system administrator is seeded through Better Auth and subsequently promoted to:
+
+```text
+SUPER_ADMIN
+ACTIVE
+EMAIL VERIFIED
+```
+
+Seed credentials are provided through environment variables and are not stored directly in source code.
+
+Authentication persistence is established.
+
+Full application authorization remains the responsibility of later server-side authorization boundaries.
+
+## Official Project History Seed
+
+Real Rcentz project history is now represented in the database.
+
+Seeded projects:
+
+* AJ Logik
+* Shelsea Commerce
+* Waffi Market
+* JobRcentz
+* NovaShad v01
+* NovaPanel v01
+* Rcentz Systems
+
+The seed includes:
+
+* Project records
+* Portfolio profiles
+* Technologies
+* Historical milestones
+* Project status
+* Visibility
+* Featured state
+* Development evidence where available
+
+Verified database counts:
+
+```text
+Projects         7
+Portfolio        7
+Technologies    61
+Milestones      26
+```
+
+## Official Service Catalogue Seed
+
+The initial canonical Rcentz service catalogue is now stored in the database.
+
+Categories:
+
+```text
+Web Development
+WordPress
+Mobile & Adaptive Experiences
+Business Systems
+E-commerce
+Maintenance & Modernization
+Technical Consulting
+```
+
+Verified database counts:
+
+```text
+Service Categories     7
+Services              35
+Service Prices        70
+```
+
+Each seeded service currently carries intentional:
+
+```text
+NGN pricing
+USD pricing
+```
+
+The seed strategy is non-destructive toward existing service records and pricing so that future Admin-managed records can remain authoritative.
+
+## Seed Strategy
+
+Seed data establishes canonical initial Rcentz system records.
+
+It is not intended to become the permanent management interface.
+
+```text
+INITIAL FOUNDATION
+      ↓
+SEED DATA
+      ↓
+DATABASE
+      ↓
+ADMIN CONTROL CENTER
+      ↓
+LONG-TERM MANAGEMENT
+```
+
+The future Admin system will manage services, projects and other business records directly through the database.
+
+Seed execution has been tested repeatedly to confirm safe/idempotent behaviour for the current canonical records.
+
+## Migration History
+
+The database foundation is represented by committed Prisma migration history covering:
+
+* Initial Rcentz schema
+* Subscriptions, billing and crypto architecture
+* Multi-currency service pricing
+
+The development database reports the migration history as fully synchronized.
+
+## Verification
+
+M04 passed the following quality checks:
+
+```text
+pnpm db:format
+pnpm db:validate
+pnpm db:generate
+pnpm typecheck
+pnpm lint
+pnpm db:seed
+pnpm build
+```
+
+Verified:
+
+```text
+Prisma schema validation     PASS
+Prisma Client generation     PASS
+TypeScript                   PASS
+ESLint                       PASS
+Database migrations          PASS
+Database synchronization     PASS
+Admin seed                   PASS
+Project seed                 PASS
+Service seed                 PASS
+Repeated seed execution      PASS
+Next.js production build     PASS
+```
+
+Production build routes:
+
+```text
+○ /
+○ /_not-found
+ƒ /api/auth/[...all]
+```
 
 ## Exit Criteria
 
-* [x] PostgreSQL/Neon configured for current development
+* [x] PostgreSQL/Neon configured
 * [x] Prisma configured
 * [x] Foundational schema established
-* [x] Migrations working
-* [x] Prisma Client generated and consumed by application infrastructure
-* [ ] Seed strategy established
-* [ ] Initial business data successfully seeded
+* [x] Migration history established
+* [x] Database synchronized
+* [x] Prisma Client generated and consumed
+* [x] Better Auth persistence established
+* [x] Official administrator seed established
+* [x] Seed strategy established
+* [x] Real project history seeded
+* [x] Portfolio foundation seeded
+* [x] Service categories seeded
+* [x] Canonical service catalogue seeded
+* [x] Multi-currency service pricing established
+* [x] Seed execution verified
+* [x] Idempotent seed behaviour verified
+* [x] TypeScript verified
+* [x] ESLint verified
+* [x] Production build verified
 * [x] Database architecture reviewed at foundation level
+
+---
+
+## Milestone Result
+
+Rcentz now has a persistent system foundation capable of supporting its public, client and administrative application surfaces from one canonical data source.
+
+```text
+RCENTZ SYSTEM
+      │
+      ↓
+POSTGRESQL / PRISMA
+      │
+ ┌────┼────────────┬─────────────┐
+ ↓    ↓            ↓             ↓
+AUTH PROJECTS    SERVICES      BILLING
+      │            │             │
+      └────────────┼─────────────┘
+                   ↓
+          APPLICATION ENGINES
+```
+
+**M04 is complete.**
+
+**Next Primary Milestone:** M05 — Global Application Shell
 
 ---
 
