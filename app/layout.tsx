@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toast';
 import { RcentzShell } from '@/ui-shell/RcentzShell';
 
 const geistSans = Geist({
@@ -39,6 +40,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           storageKey="rcentz-theme"
           disableTransitionOnChange>
           <RcentzShell>{children}</RcentzShell>
+
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

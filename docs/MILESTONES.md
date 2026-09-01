@@ -893,35 +893,36 @@ AUTH PROJECTS    SERVICES      BILLING
 
 # 9. M05 — Global Application Shell
 
-**Status:** ⬜ Not Started
+**Status:** 🟢 Completed
 
 ## Objective
 
 Build the shared application structure used throughout Rcentz.
 
-## Scope
+M05 establishes the persistent application shell that future public, client and administrative surfaces will inhabit.
 
-* Root layout
-* Global navigation
-* Header
-* Footer
-* Responsive navigation
-* Application container
-* Global loading states
-* Error boundaries
-* Shared UI primitives
-* Notification entry points
-* Authentication-aware navigation
+## Implemented Architecture
 
-## Exit Criteria
-
-* [ ] Global layout works
-* [ ] Navigation works
-* [ ] Mobile navigation works
-* [ ] Shared UI primitives work
-* [ ] Public/admin/client boundaries are clear
-
----
+```text
+RootLayout
+    │
+    ├── ThemeProvider
+    │
+    └── RcentzShell
+            │
+            ├── RcentzDataField
+            ├── RcentzAce
+            │
+            ├── RcentzHeader
+            │     ├── Navigation
+            │     ├── Authentication Actions
+            │     ├── Theme Control
+            │     └── Mobile Navigation
+            │
+            ├── RcentzContentFrame
+            │     └── Application Content
+            │
+            └── RcentzFooter
 
 # 10. M06 — Database-Driven Public Homepage
 
