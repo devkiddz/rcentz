@@ -3,9 +3,9 @@
 # SYSTEM ARCHITECTURE
 
 **Document:** System Architecture & Engineering Conventions  
-**Version:** 1.1  
+**Version:** 1.2  
 **Status:** Active / Living Document  
-**Last Updated:** 2026-08-31
+**Last Updated:** 2026-09-01
 
 ---
 
@@ -745,23 +745,114 @@ The system should support light/dark compatibility, a black-and-white default di
 
 ---
 
-# 31. Responsive Architecture
+# 31. Responsive & Adaptive Experience Architecture
 
-Desktop and mobile are the same product expressed with different interaction density.
+Desktop and mobile are the same Rcentz system, but they are not required to use the same page composition.
+
+The architectural principle is:
 
 ```text
-                    SAME SYSTEM
+                     SAME SYSTEM
+                         │
+                 SAME CANONICAL DATA
+                         │
+                 SAME BUSINESS LOGIC
+                         │
+                   SAME ROUTE / URL
                          │
               ┌──────────┴──────────┐
               ↓                     ↓
-           DESKTOP                MOBILE
+      DESKTOP EXPERIENCE      MOBILE EXPERIENCE
               │                     │
-        Higher density        Focused density
-        Rich navigation       Compact navigation
-        Larger workspace      Activity-oriented UI
+      Higher information      Focused information
+      density                 density
+
+      Large workspace         App-like interaction
+
+      Rich navigation         Compact navigation
+
+      Editorial layouts       Activity-driven layouts
+
+      Hover/contextual        Touch-first actions
+      interactions
+
+      Wide visual systems     Cards, rails, sheets,
+                              quick actions
 ```
 
-The Rcentz UI should use a controlled centered canvas/container approach so very wide screens remain intentional rather than stretched.
+Rcentz therefore supports **adaptive presentation composition**, not merely responsive shrinking.
+
+A page may expose dedicated desktop and mobile presentation components when the experience materially benefits from doing so.
+
+For example:
+
+```text
+Home
+ │
+ ├── HomeDesktop
+ │
+ └── HomeMobile
+```
+
+Both presentations must consume the same canonical application data and business capabilities.
+
+```text
+                  HOME DATA / ENGINE
+                         │
+              ┌──────────┴──────────┐
+              ↓                     ↓
+         HomeDesktop            HomeMobile
+```
+
+This must not become:
+
+```text
+desktop database      ❌
+mobile database       ❌
+desktop business logic ❌
+mobile business logic  ❌
+duplicated routes      ❌
+```
+
+The preferred model is:
+
+```text
+ONE SYSTEM
+ONE DATA SOURCE
+ONE BUSINESS ENGINE
+ONE CANONICAL URL
+MULTIPLE PURPOSE-BUILT EXPERIENCES
+```
+
+The shared Rcentz UI Shell remains responsible for the persistent visual environment and structural identity across these experiences.
+
+The shell may provide:
+
+* Controlled centered canvas/container behavior
+* Structural grid
+* Ambient data points and visual signals
+* Shared spacing and layout boundaries
+* Application-wide visual identity
+* Responsive environmental behavior
+
+Individual application surfaces may then compose their content differently for desktop, tablet and mobile without duplicating domain logic.
+
+The mobile experience should be designed intentionally as a professional application surface rather than treated as a compressed desktop page.
+
+This principle applies across:
+
+* Public website
+* Project portfolio
+* Services
+* Commerce
+* Client workspace
+* Authentication
+* Admin interfaces
+* Future Rcentz applications
+
+The same architecture may also support Rcentz client work where an existing website requires a substantially improved mobile-specific experience.
+
+Very wide desktop screens should remain controlled through the bounded Rcentz canvas rather than stretching content indefinitely.
 
 ---
 
