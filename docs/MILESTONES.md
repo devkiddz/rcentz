@@ -234,7 +234,7 @@ The architecture should make it possible to reuse business logic across:
 
 Establish the reusable visual foundation and persistent presentation environment that Rcentz application surfaces can build upon.
 
-The milestone establishes the initial Rcentz visual identity without coupling business-domain features to the presentation shell.
+M03 establishes the initial Rcentz visual identity without coupling business-domain features to the presentation shell.
 
 ---
 
@@ -245,87 +245,290 @@ The milestone establishes the initial Rcentz visual identity without coupling bu
 Implemented:
 
 * Controlled centered canvas foundation
-* Responsive desktop canvas
-* Responsive mobile canvas
+* Responsive desktop and mobile canvas
 * Maximum canvas width
 * Maximum content width
 * Consistent horizontal spacing
-* Layout constraints suitable for large desktop displays
+* Layout constraints for wide displays
 * Responsive behavior for smaller screens
-clear
-Current global sizing foundation:
+
+Current sizing foundation:
 
 ```text
 Canvas Maximum: 1440px
 Content Maximum: 1200px
+```
 
-**Status:** ⬜ Not Started
+The application should remain intentionally bounded rather than stretching indefinitely across very large displays.
 
-## Objective
+### Theme Foundation
 
-Build the visual foundation that every Rcentz interface will use.
+Implemented semantic design tokens for:
 
-## Scope
+* Background and foreground
+* Surfaces
+* Muted states
+* Borders
+* Primary
+* Secondary
+* Accent
+* Destructive states
+* Grid lines
+* Radius values
 
-### UI Canvas
+The default visual direction remains:
 
-* Controlled centered container
-* Responsive desktop canvas
-* Responsive mobile canvas
-* Maximum content width
-* Consistent spacing system
-* Layout constraints
+```text
+BLACK
+  +
+WHITE
+  +
+STRUCTURAL GRID
+  +
+CONTROLLED LIGHT
+```
 
-### Theme System
+Light and dark system preferences are supported at the token level.
 
-* CSS variables
-* Semantic design tokens
-* Light/dark compatibility where appropriate
-* User-selectable theme colors
-* Black-and-white visual foundation
+Components should consume semantic tokens rather than scatter theme-specific values throughout the application.
 
-### Background System
+### Rcentz UI Shell
 
-Support:
+A dedicated shell boundary has been established:
 
-* Plain
-* Gradient
-* Grid
-* Grid-gradient
+```text
+ui-shell/
+├── RcentzShell.tsx
+└── layers/
+    ├── RcentzDataField.tsx
+    └── RcentzAce.tsx
+```
 
-### Navigation
+Current composition:
 
-Support configurable:
+```text
+RcentzShell
+│
+├── RcentzDataField
+├── RcentzAce
+│
+└── Application Content
+```
 
-* Sidebar
-* No-sidebar
-* Desktop navigation
-* Mobile navigation
+The shell owns persistent visual presentation.
+
+Pages and future features remain responsible for their own content and business composition.
+
+### Rcentz Data Field
+
+The background system has evolved beyond a static grid into a living Rcentz data environment.
+
+Implemented:
+
+* Structural grid
+* Randomized star/data lights
+* Twinkling data points
+* Subtle travelling data signals
+* Ambient illumination
+* Central breathing light
+* Readability masking
+* Mobile density reduction
+* Reduced-motion handling
+
+Decorative randomness is handled without React render-state updates.
+
+The data field should remain atmospheric and should not compete with application content.
+
+### Rcentz C Formation
+
+`RcentzAce` establishes the centered Rcentz C visual formation.
+
+Implemented:
+
+* Centered C-style formation
+* Distributed light nodes
+* Inner supporting nodes
+* Circular arc structure
+* Breathing halo
+* Travelling light
+* Appearance lifecycle
+* Extended live period
+* Dissolve
+* Reappearance
+* Mobile adaptation
+* Reduced-motion handling
+
+The C formation is part of the persistent Rcentz visual identity.
+
+### Animation Identity
+
+M03 establishes the initial Rcentz animation language:
+
+```text
+STRUCTURE
+   +
+DATA
+   +
+LIGHT
+   +
+SUBTLE MOTION
+   +
+BREATHING SPACE
+```
+
+Animation should remain restrained enough that application content remains the primary interface layer.
+
+---
 
 ## Responsive Philosophy
 
-Desktop:
+Desktop provides the full visual environment, higher decorative density and the complete Rcentz C formation.
 
-* Higher information density
-* Richer navigation
-* Larger content areas
-* More simultaneous information
+Mobile uses reduced decorative density, a smaller formation, fewer visible data lights and simplified secondary animation.
 
-Mobile:
+Desktop and mobile remain the same visual system expressed at different densities.
 
-* Reduced text density
-* Stronger iconography
-* Compact cards
-* Activity-focused interactions
+---
+
+## Deferred Experiment
+
+Pointer-reactive lighting for the Rcentz C was explored during M03.
+
+The intended interaction remains:
+
+```text
+POINTER
+   ↓
+LIGHT RESPONSE
+
+NOT
+
+POINTER
+   ↓
+MOVE THE C
+```
+
+The experiment did not yet produce the intended result and is deferred.
+
+It does not block M03 completion and may be revisited later without changing the shell architecture.
+
+---
+
+## Navigation Boundary
+
+Navigation is intentionally not an M03 completion requirement.
+
+Global navigation, header, footer, responsive navigation and authentication-aware navigation belong primarily to:
+
+```text
+M05 — Global Application Shell
+```
+
+M03 establishes the visual environment those systems will inhabit.
+
+---
+
+## Verification
+
+M03 passed the following quality gate:
+
+```text
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+Verified:
+
+```text
+TypeScript                  PASS
+ESLint                      PASS
+Next.js production build    PASS
+```
+
+Verified build routes:
+
+```text
+○ /
+○ /_not-found
+ƒ /api/auth/[...all]
+```
+
+The Rcentz shell and visual layers compile successfully within the production build.
+
+---
+
+## Git Evidence
+
+### Implementation Commit
+
+```text
+f880aa93f9423b7e572f6a424148332cfbc09252
+```
+
+### Commit Message
+
+```text
+feat: establish Rcentz UI shell and milestone workflow
+```
+
+### Milestone Tag
+
+```text
+m03-ui-canvas-v1
+```
+
+This tag represents the repository-backed M03 implementation checkpoint.
+
+---
 
 ## Exit Criteria
 
-* [ ] Canvas implemented
-* [ ] Responsive behavior tested
-* [ ] Theme tokens established
-* [ ] Background system established
-* [ ] Navigation primitives established
-* [ ] Mobile and desktop layouts tested
+* [x] Controlled canvas implemented
+* [x] Responsive canvas foundation implemented
+* [x] Canvas/content width boundaries established
+* [x] Semantic design tokens established
+* [x] Black-and-white visual foundation established
+* [x] Persistent Rcentz UI shell established
+* [x] Rcentz Data Field implemented
+* [x] Structural grid implemented
+* [x] Star/data-light system implemented
+* [x] Ambient motion system implemented
+* [x] Rcentz C formation implemented
+* [x] Mobile-specific visual behavior implemented
+* [x] Reduced-motion behavior implemented
+* [x] TypeScript verified
+* [x] ESLint verified
+* [x] Production build verified
+* [x] Runtime visual behavior reviewed
+* [x] Implementation committed
+* [x] Implementation pushed to GitHub
+* [x] Milestone tag created
+
+---
+
+## Milestone Result
+
+Rcentz now has a reusable visual environment and identifiable presentation language.
+
+```text
+RCENTZ APPLICATION
+        │
+        ↓
+   RcentzShell
+        │
+   ┌────┴─────┐
+   ↓          ↓
+Data Field   C Identity
+   │          │
+   └────┬─────┘
+        ↓
+APPLICATION CONTENT
+```
+
+**M03 is complete.**
+
+**Next Primary Milestone:** M04 — Database Foundation
 
 ---
 
