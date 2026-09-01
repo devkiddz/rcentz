@@ -41,9 +41,12 @@ export function RcentzAce() {
     const stage: HTMLElement = stageNode;
 
     const pointerQuery = window.matchMedia('(pointer: fine)');
+
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    if (!pointerQuery.matches || reducedMotionQuery.matches) return;
+    if (!pointerQuery.matches || reducedMotionQuery.matches) {
+      return;
+    }
 
     const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-ace-dot]'));
 
@@ -63,10 +66,13 @@ export function RcentzAce() {
 
     const renderLights = () => {
       currentLightX += (targetLightX - currentLightX) * 0.09;
+
       currentLightY += (targetLightY - currentLightY) * 0.09;
+
       currentIntensity += (targetIntensity - currentIntensity) * 0.08;
 
       root.style.setProperty('--ace-light-x', `${currentLightX}px`);
+
       root.style.setProperty('--ace-light-y', `${currentLightY}px`);
 
       root.style.setProperty('--ace-light-intensity', `${currentIntensity}`);
@@ -124,10 +130,8 @@ export function RcentzAce() {
       const relativeY = (event.clientY - centerY) / (stageRect.height / 2);
 
       /*
-       * Mouse controls the LIGHT only.
-       *
-       * The light is deliberately clamped
-       * so it never leaves the C environment.
+       * Pointer controls the light only.
+       * The C formation itself remains fixed.
        */
       targetLightX = clamp(relativeX, -1, 1) * 120;
 
@@ -154,7 +158,9 @@ export function RcentzAce() {
       requestLightFrame();
     };
 
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, {
+      passive: true
+    });
 
     document.documentElement.addEventListener('pointerleave', handlePointerLeave);
 
@@ -192,7 +198,7 @@ export function RcentzAce() {
                 top: `${dot.y}%`
               }}>
               <span
-                className={`rcentz-ace__dot ${dot.small ? 'rcentz-ace__dot--small' : ''}`}
+                className={['rcentz-ace__dot', dot.small ? 'rcentz-ace__dot--small' : ''].join(' ')}
                 style={{
                   animationDelay: `${dot.delay}s`
                 }}
@@ -205,101 +211,123 @@ export function RcentzAce() {
       </div>
 
       <style>{`
+        /* ==================================================
+           RCENTZ ACE
+
+           Theme colors are controlled entirely by
+           globals.css.
+
+           No OS color-scheme detection lives here.
+        ================================================== */
+
         .rcentz-ace-layer {
           --ace-light-x: 0px;
           --ace-light-y: 0px;
           --ace-light-intensity: 0;
         }
 
-        /* --------------------------------
+        /* ==================================================
            FIXED CENTER STAGE
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-ace {
           position: absolute;
+
           width: 460px;
           height: 460px;
+
           left: 50%;
           top: 50%;
-          transform: translate(-50%, -50%);
-          filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.04));
+
+          transform:
+            translate(-50%, -50%);
+
+          filter:
+            drop-shadow(
+              0 0 30px
+              var(--ace-ink-faint)
+            );
         }
 
         /*
-         * Important:
-         * no pointer translation here.
-         * The C itself never follows the mouse.
+         * The C itself never follows
+         * the pointer.
          */
         .rcentz-ace__formation {
           position: absolute;
           inset: 0;
+
           opacity: 0;
-          animation: rcentz-ace-appear 28s ease-in-out infinite;
-          will-change: opacity, scale;
+
+          animation:
+            rcentz-ace-appear
+            28s
+            ease-in-out
+            infinite;
+
+          will-change:
+            opacity,
+            scale;
         }
 
-        /* --------------------------------
+        /* ==================================================
            BASE HALO
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-ace__halo {
           position: absolute;
+
           inset: 10%;
+
           border-radius: 999px;
 
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.065),
-              rgba(255, 255, 255, 0.018) 38%,
+              var(--ace-ink-soft),
+              var(--ace-ink-faint) 38%,
               transparent 70%
             );
 
           filter: blur(34px);
-          animation: rcentz-ace-breathe 9s ease-in-out infinite;
+
+          animation:
+            rcentz-ace-breathe
+            9s
+            ease-in-out
+            infinite;
         }
 
-        /* --------------------------------
+        /* ==================================================
            POINTER LIGHT
-
-           This follows the mouse.
-           NOT the C.
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-ace__pointer-light {
           position: absolute;
+
           width: 190px;
           height: 190px;
+
           left: 50%;
           top: 50%;
 
           translate:
-            calc(-50% + var(--ace-light-x))
-            calc(-50% + var(--ace-light-y));
+            calc(
+              -50% +
+              var(--ace-light-x)
+            )
+            calc(
+              -50% +
+              var(--ace-light-y)
+            );
 
           border-radius: 999px;
 
           background:
             radial-gradient(
               circle,
-              rgba(
-                255,
-                255,
-                255,
-                calc(
-                  0.22 +
-                  var(--ace-light-intensity) * 0.28
-                )
-              ),
-              rgba(
-                255,
-                255,
-                255,
-                calc(
-                  0.05 +
-                  var(--ace-light-intensity) * 0.08
-                )
-              ) 28%,
+              var(--ace-ink-medium),
+              var(--ace-ink-faint) 30%,
               transparent 72%
             );
 
@@ -307,69 +335,93 @@ export function RcentzAce() {
 
           opacity:
             calc(
-              0.2 +
-              var(--ace-light-intensity) * 0.8
+              0.22 +
+              var(--ace-light-intensity) *
+              0.78
             );
 
-          will-change: translate, opacity;
+          will-change:
+            translate,
+            opacity;
         }
 
-        /* --------------------------------
+        /* ==================================================
            C ARC
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-ace__arc {
           position: absolute;
+
           inset: 9%;
+
           border-radius: 999px;
 
           background:
             conic-gradient(
               from 42deg,
+
               transparent 0deg,
               transparent 58deg,
-              rgba(255, 255, 255, 0.06) 74deg,
-              rgba(255, 255, 255, 0.19) 108deg,
-              rgba(255, 255, 255, 0.08) 155deg,
-              rgba(255, 255, 255, 0.22) 205deg,
-              rgba(255, 255, 255, 0.08) 255deg,
-              rgba(255, 255, 255, 0.15) 292deg,
+
+              var(--ace-ink-faint) 74deg,
+              var(--ace-ink-medium) 108deg,
+              var(--ace-ink-soft) 155deg,
+
+              var(--ace-ink-medium) 205deg,
+              var(--ace-ink-soft) 255deg,
+
+              var(--ace-ink-strong) 292deg,
+
               transparent 318deg,
               transparent 360deg
             );
 
+          /*
+           * #000 here is mask mathematics,
+           * not an application/theme color.
+           */
           mask:
             radial-gradient(
               farthest-side,
-              transparent calc(100% - 2px),
-              #000 calc(100% - 1px)
+              transparent
+                calc(100% - 2px),
+              #000
+                calc(100% - 1px)
             );
 
           opacity: 0.55;
-          animation: rcentz-ace-rotate 34s linear infinite;
+
+          animation:
+            rcentz-ace-rotate
+            34s
+            linear
+            infinite;
         }
 
-        /* --------------------------------
-           FIXED DOT POSITIONS
-        -------------------------------- */
+        /* ==================================================
+           DOT POSITIONS
+        ================================================== */
 
         .rcentz-ace__dot-anchor {
           position: absolute;
+
           width: 0;
           height: 0;
         }
 
         .rcentz-ace__dot {
           position: absolute;
+
           width: 10px;
           height: 10px;
+
           left: 0;
           top: 0;
 
           border-radius: 999px;
 
           background:
-            rgba(255, 255, 255, 0.96);
+            var(--ace-ink);
 
           opacity: 0;
 
@@ -381,7 +433,8 @@ export function RcentzAce() {
             brightness(
               calc(
                 1 +
-                var(--dot-near, 0) * 1.1
+                var(--dot-near, 0) *
+                1.1
               )
             );
 
@@ -389,28 +442,36 @@ export function RcentzAce() {
             0 0
               calc(
                 8px +
-                var(--dot-near, 0) * 7px
+                var(--dot-near, 0) *
+                7px
               )
-              rgba(255, 255, 255, 0.62),
+              var(--ace-ink-strong),
 
             0 0
               calc(
                 24px +
-                var(--dot-near, 0) * 22px
+                var(--dot-near, 0) *
+                22px
               )
-              rgba(255, 255, 255, 0.22),
+              var(--ace-ink-medium),
 
             0 0
               calc(
                 50px +
-                var(--dot-near, 0) * 35px
+                var(--dot-near, 0) *
+                35px
               )
-              rgba(255, 255, 255, 0.08);
+              var(--ace-ink-soft);
 
           animation:
             rcentz-ace-dot
             28s
-            cubic-bezier(0.4, 0, 0.2, 1)
+            cubic-bezier(
+              0.4,
+              0,
+              0.2,
+              1
+            )
             infinite;
 
           will-change:
@@ -419,12 +480,12 @@ export function RcentzAce() {
             filter;
         }
 
-        /*
-         * Extra glow only when cursor
-         * approaches the individual light.
-         */
+        /* ==================================================
+           PROXIMITY GLOW
+        ================================================== */
+
         .rcentz-ace__dot::after {
-          content: "";
+          content: '';
 
           position: absolute;
 
@@ -442,8 +503,8 @@ export function RcentzAce() {
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.38),
-              rgba(255, 255, 255, 0.08) 28%,
+              var(--ace-ink-medium),
+              var(--ace-ink-soft) 28%,
               transparent 72%
             );
 
@@ -451,7 +512,8 @@ export function RcentzAce() {
 
           opacity:
             calc(
-              var(--dot-near, 0) * 0.95
+              var(--dot-near, 0) *
+              0.95
             );
         }
 
@@ -465,9 +527,9 @@ export function RcentzAce() {
           height: 25px;
         }
 
-        /* --------------------------------
+        /* ==================================================
            AUTONOMOUS TRAVELLING LIGHT
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-ace__traveller {
           position: absolute;
@@ -478,15 +540,16 @@ export function RcentzAce() {
           left: 50%;
           top: 50%;
 
-          margin: -35px 0 0 -35px;
+          margin:
+            -35px 0 0 -35px;
 
           border-radius: 999px;
 
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.5),
-              rgba(255, 255, 255, 0.09) 18%,
+              var(--ace-ink-strong),
+              var(--ace-ink-soft) 18%,
               transparent 65%
             );
 
@@ -495,13 +558,15 @@ export function RcentzAce() {
             brightness(
               calc(
                 1 +
-                var(--ace-light-intensity) * 0.35
+                var(--ace-light-intensity) *
+                0.35
               )
             );
 
           opacity: 0;
 
-          transform-origin: 35px 35px;
+          transform-origin:
+            35px 35px;
 
           animation:
             rcentz-ace-travel
@@ -510,12 +575,13 @@ export function RcentzAce() {
             infinite;
         }
 
-        /* --------------------------------
+        /* ==================================================
            C LIFECYCLE
-        -------------------------------- */
+        ================================================== */
 
         @keyframes rcentz-ace-appear {
-          0%, 8% {
+          0%,
+          8% {
             opacity: 0;
             scale: 0.86;
           }
@@ -524,7 +590,8 @@ export function RcentzAce() {
             opacity: 0.4;
           }
 
-          24%, 76% {
+          24%,
+          76% {
             opacity: 1;
             scale: 1;
           }
@@ -534,14 +601,16 @@ export function RcentzAce() {
             scale: 1.025;
           }
 
-          93%, 100% {
+          93%,
+          100% {
             opacity: 0;
             scale: 1.06;
           }
         }
 
         @keyframes rcentz-ace-dot {
-          0%, 8% {
+          0%,
+          8% {
             opacity: 0;
 
             transform:
@@ -561,7 +630,8 @@ export function RcentzAce() {
               scale(1.32);
           }
 
-          30%, 76% {
+          30%,
+          76% {
             opacity: 0.9;
 
             transform:
@@ -577,7 +647,8 @@ export function RcentzAce() {
               scale(0.8);
           }
 
-          93%, 100% {
+          93%,
+          100% {
             opacity: 0;
 
             transform:
@@ -587,7 +658,8 @@ export function RcentzAce() {
         }
 
         @keyframes rcentz-ace-breathe {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.26;
             transform: scale(0.9);
           }
@@ -642,128 +714,15 @@ export function RcentzAce() {
           }
         }
 
-        /* --------------------------------
-           LIGHT MODE
-        -------------------------------- */
-
-        @media (prefers-color-scheme: light) {
-          .rcentz-ace {
-            filter:
-              drop-shadow(
-                0 0 28px
-                rgba(10, 10, 10, 0.035)
-              );
-          }
-
-          .rcentz-ace__halo {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.055),
-                rgba(10, 10, 10, 0.012) 38%,
-                transparent 70%
-              );
-          }
-
-          .rcentz-ace__pointer-light {
-            background:
-              radial-gradient(
-                circle,
-                rgba(
-                  10,
-                  10,
-                  10,
-                  calc(
-                    0.12 +
-                    var(--ace-light-intensity) * 0.18
-                  )
-                ),
-                rgba(
-                  10,
-                  10,
-                  10,
-                  calc(
-                    0.025 +
-                    var(--ace-light-intensity) * 0.05
-                  )
-                ) 28%,
-                transparent 72%
-              );
-          }
-
-          .rcentz-ace__arc {
-            background:
-              conic-gradient(
-                from 42deg,
-                transparent 0deg,
-                transparent 58deg,
-                rgba(10, 10, 10, 0.05) 74deg,
-                rgba(10, 10, 10, 0.16) 108deg,
-                rgba(10, 10, 10, 0.07) 155deg,
-                rgba(10, 10, 10, 0.18) 205deg,
-                rgba(10, 10, 10, 0.07) 255deg,
-                rgba(10, 10, 10, 0.13) 292deg,
-                transparent 318deg,
-                transparent 360deg
-              );
-          }
-
-          .rcentz-ace__dot {
-            background:
-              rgba(10, 10, 10, 0.9);
-
-            box-shadow:
-              0 0
-                calc(
-                  8px +
-                  var(--dot-near, 0) * 7px
-                )
-                rgba(10, 10, 10, 0.32),
-
-              0 0
-                calc(
-                  24px +
-                  var(--dot-near, 0) * 22px
-                )
-                rgba(10, 10, 10, 0.12),
-
-              0 0
-                calc(
-                  50px +
-                  var(--dot-near, 0) * 35px
-                )
-                rgba(10, 10, 10, 0.04);
-          }
-
-          .rcentz-ace__dot::after {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.22),
-                rgba(10, 10, 10, 0.05) 28%,
-                transparent 72%
-              );
-          }
-
-          .rcentz-ace__traveller {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.35),
-                rgba(10, 10, 10, 0.07) 18%,
-                transparent 65%
-              );
-          }
-        }
-
-        /* --------------------------------
+        /* ==================================================
            MOBILE
-        -------------------------------- */
+        ================================================== */
 
         @media (max-width: 767px) {
           .rcentz-ace {
             width: 280px;
             height: 280px;
+
             left: 50%;
             top: 42%;
           }
@@ -787,9 +746,9 @@ export function RcentzAce() {
           }
         }
 
-        /* --------------------------------
+        /* ==================================================
            REDUCED MOTION
-        -------------------------------- */
+        ================================================== */
 
         @media (prefers-reduced-motion: reduce) {
           .rcentz-ace__formation,

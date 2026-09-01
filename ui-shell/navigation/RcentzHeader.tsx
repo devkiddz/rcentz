@@ -5,9 +5,9 @@ import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { RcentzLogo } from '../brand/RcentzLogo';
+import { RcentzThemeControl } from '../theme/RcentzThemeControl';
 import { RcentzAuthActions } from './RcentzAuthActions';
 import { RcentzNavLink } from './RcentzNavLink';
-import { RcentzThemeControl } from '../theme/RcentzThemeControl';
 
 const navigation = [
   {
@@ -58,14 +58,14 @@ export function RcentzHeader() {
     <>
       <div aria-hidden="true" className="h-[72px]" />
 
-      {/* Top fold / continuation surface */}
+      {/* Solid continuation surface */}
       <div
         aria-hidden="true"
         className={[
           'fixed inset-x-0 top-0 z-40',
           'h-[24px]',
-          'origin-top bg-background/92 backdrop-blur-xl',
-          'transition-[transform,opacity,height] duration-500 ease-out',
+          'origin-top bg-background',
+          'transition-[transform,opacity,height,background-color] duration-500 ease-out',
 
           revealed ? 'translate-y-0 scale-y-100 opacity-100' : '-translate-y-3 scale-y-50 opacity-0',
 
@@ -76,11 +76,15 @@ export function RcentzHeader() {
       <header
         className={[
           'fixed left-1/2 z-50 -translate-x-1/2',
-          'border border-foreground/[0.07]',
-          'bg-background/88 shadow-sm backdrop-blur-xl',
+
+          'border border-border/70',
+          'bg-background/35 backdrop-blur-2xl',
+          'shadow-[0_8px_30px_rgb(0_0_0/0.06)]',
+          'dark:shadow-[0_8px_30px_rgb(0_0_0/0.22)]',
+
           'origin-top',
 
-          'transition-[width,max-width,top,height,border-radius,background-color,box-shadow,transform,opacity] duration-500 ease-out',
+          'transition-[width,max-width,top,height,border-radius,background-color,border-color,box-shadow,transform,opacity] duration-500 ease-out',
 
           revealed ? 'translate-y-0 scale-y-100 opacity-100' : '-translate-y-4 scale-y-[0.92] opacity-0',
 
@@ -112,7 +116,7 @@ export function RcentzHeader() {
 
               <span
                 className={[
-                  'truncate font-semibold tracking-[-0.025em]',
+                  'truncate font-semibold tracking-[-0.025em] text-foreground',
                   'transition-[font-size] duration-300 ease-out',
                   scrolled ? 'text-[13px]' : 'text-sm'
                 ].join(' ')}>
@@ -136,10 +140,13 @@ export function RcentzHeader() {
               <Link
                 href="/services"
                 className={[
-                  'rounded-full border border-foreground',
-                  'bg-foreground font-medium text-background',
-                  'transition-[padding,font-size,opacity] duration-300 ease-out',
+                  'rounded-full border border-primary',
+                  'bg-primary font-medium text-primary-foreground',
+
+                  'transition-[padding,font-size,opacity,background-color,color,border-color] duration-300 ease-out',
+
                   'hover:opacity-85',
+
                   scrolled ? 'px-3.5 py-1.5 text-xs' : 'px-4 py-1.5 text-[13px]'
                 ].join(' ')}>
                 Start a project
@@ -152,17 +159,19 @@ export function RcentzHeader() {
               aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
               aria-controls="rcentz-mobile-navigation"
-              onClick={() => setMobileOpen(current => !current)}
+              onClick={() => {
+                setMobileOpen(current => !current);
+              }}
               className={[
                 'flex items-center justify-center rounded-full',
 
-                'border border-foreground/[0.07]',
-                'bg-foreground/[0.03] backdrop-blur-md',
+                'border border-border',
+                'bg-surface-muted text-foreground',
 
-                'transition-[width,height,background-color,border-color] duration-300',
+                'transition-[width,height,background-color,border-color,color] duration-300',
 
-                'hover:border-foreground/[0.12]',
-                'hover:bg-foreground/[0.065]',
+                'hover:border-border-strong',
+                'hover:bg-secondary',
 
                 'md:hidden',
 
@@ -178,7 +187,7 @@ export function RcentzHeader() {
 
           {/* Mobile navigation */}
           {mobileOpen ? (
-            <div id="rcentz-mobile-navigation" className="border-t border-border/70 pb-3">
+            <div id="rcentz-mobile-navigation" className="border-t border-border pb-3">
               <nav aria-label="Mobile navigation" className="flex flex-col gap-1.5 py-3">
                 {navigation.map(item => (
                   <RcentzNavLink
@@ -191,7 +200,7 @@ export function RcentzHeader() {
                 ))}
               </nav>
 
-              <div className="grid grid-cols-[auto_1fr_1fr] gap-2 border-t border-border/70 pt-3">
+              <div className="grid grid-cols-[auto_1fr_1fr] gap-2 border-t border-border pt-3">
                 <RcentzThemeControl mobile />
 
                 <RcentzAuthActions mobile onNavigate={closeMobileNavigation} />
@@ -199,7 +208,13 @@ export function RcentzHeader() {
                 <Link
                   href="/services"
                   onClick={closeMobileNavigation}
-                  className="flex h-9 items-center justify-center rounded-full border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-85">
+                  className={[
+                    'flex h-9 items-center justify-center rounded-full',
+                    'border border-primary',
+                    'bg-primary px-3',
+                    'text-xs font-medium text-primary-foreground',
+                    'transition-opacity hover:opacity-85'
+                  ].join(' ')}>
                   Start project
                 </Link>
               </div>

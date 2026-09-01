@@ -30,12 +30,16 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
         onClick={onNavigate}
         className={[
           'inline-flex items-center gap-2 rounded-full',
-          'border border-foreground/[0.08]',
-          'bg-foreground/[0.03]',
+
+          'border border-border',
+          'bg-surface-muted',
+
           'font-medium text-foreground',
-          'transition-[background-color,border-color] duration-200',
-          'hover:border-foreground/[0.14]',
-          'hover:bg-foreground/[0.07]',
+
+          'transition-[background-color,border-color,color] duration-200',
+
+          'hover:border-border-strong',
+          'hover:bg-secondary',
 
           mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]'
         ].join(' ')}>
@@ -51,9 +55,16 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
       href="/login"
       onClick={onNavigate}
       className={[
-        'inline-flex items-center rounded-full',
+        'inline-flex items-center justify-center rounded-full',
+
+        'border border-transparent',
+
         'font-medium text-muted',
-        'transition-colors duration-200',
+
+        'transition-[color,background-color,border-color] duration-200',
+
+        'hover:border-border',
+        'hover:bg-surface-muted',
         'hover:text-foreground',
 
         mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]'

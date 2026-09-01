@@ -6,6 +6,7 @@ const STAR_COUNT = 42;
 const PATH_COUNT = 7;
 
 const STAR_SLOTS = Array.from({ length: STAR_COUNT }, (_, index) => index);
+
 const PATH_SLOTS = Array.from({ length: PATH_COUNT }, (_, index) => index);
 
 function randomBetween(min: number, max: number) {
@@ -33,11 +34,17 @@ export function RcentzDataField() {
       const intensity = randomBetween(0.35, 0.95);
 
       star.style.setProperty('--star-x', `${randomBetween(2, 98)}%`);
+
       star.style.setProperty('--star-y', `${randomBetween(3, 97)}%`);
+
       star.style.setProperty('--star-size', `${size}px`);
+
       star.style.setProperty('--star-opacity', `${intensity}`);
+
       star.style.setProperty('--star-delay', `${randomBetween(0, 7)}s`);
+
       star.style.setProperty('--star-duration', `${randomBetween(4.5, 10)}s`);
+
       star.style.setProperty('--star-glow', `${randomBetween(5, 18)}px`);
     }
 
@@ -47,9 +54,13 @@ export function RcentzDataField() {
       path.dataset.direction = horizontal ? 'horizontal' : 'vertical';
 
       path.style.setProperty('--path-x', `${randomBetween(4, 92)}%`);
+
       path.style.setProperty('--path-y', `${randomBetween(5, 92)}%`);
+
       path.style.setProperty('--path-delay', `${randomBetween(0, 6)}s`);
+
       path.style.setProperty('--path-duration', `${randomBetween(5, 10)}s`);
+
       path.style.setProperty('--path-length', `${randomBetween(5, 13)}vw`);
     }
 
@@ -62,14 +73,18 @@ export function RcentzDataField() {
       for (let index = 0; index < updates; index += 1) {
         const star = randomItem(stars);
 
-        if (star) randomizeStar(star);
+        if (star) {
+          randomizeStar(star);
+        }
       }
     }, 3600);
 
     const pathTimer = window.setInterval(() => {
       const path = randomItem(paths);
 
-      if (path) randomizePath(path);
+      if (path) {
+        randomizePath(path);
+      }
     }, 6400);
 
     return () => {
@@ -86,15 +101,17 @@ export function RcentzDataField() {
       <div className="rcentz-data-field__grid absolute inset-0" />
 
       <div className="rcentz-data-field__glow rcentz-data-field__glow--top" />
+
       <div className="rcentz-data-field__glow rcentz-data-field__glow--bottom" />
 
       {STAR_SLOTS.map(slot => (
         <span
           key={slot}
           data-rcentz-star
-          className={`rcentz-data-field__star ${
+          className={[
+            'rcentz-data-field__star',
             slot % 2 === 0 ? 'rcentz-data-field__star--mobile-hidden' : ''
-          }`}
+          ].join(' ')}
         />
       ))}
 
@@ -103,27 +120,47 @@ export function RcentzDataField() {
       ))}
 
       <div className="rcentz-data-field__pulse" />
+
       <div className="rcentz-data-field__mask absolute inset-0" />
 
       <style>{`
+        /* ==================================================
+           RCENTZ DATA FIELD
+
+           All visual colors come from globals.css.
+
+           There is intentionally NO prefers-color-scheme
+           logic inside this component.
+        ================================================== */
+
         .rcentz-data-field {
           --field-grid-size: 32px;
-          --field-grid-line: rgba(255, 255, 255, 0.055);
+
           isolation: isolate;
         }
 
-        /* --------------------------------
+        /* ==================================================
            GRID
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-data-field__grid {
           background-image:
-            linear-gradient(to right, var(--field-grid-line) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--field-grid-line) 1px, transparent 1px);
+            linear-gradient(
+              to right,
+              var(--grid-line) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              to bottom,
+              var(--grid-line) 1px,
+              transparent 1px
+            );
 
           background-size:
-            var(--field-grid-size) var(--field-grid-size),
-            var(--field-grid-size) var(--field-grid-size);
+            var(--field-grid-size)
+            var(--field-grid-size),
+            var(--field-grid-size)
+            var(--field-grid-size);
 
           mask-image:
             linear-gradient(
@@ -135,9 +172,9 @@ export function RcentzDataField() {
             );
         }
 
-        /* --------------------------------
+        /* ==================================================
            STARS
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-data-field__star {
           position: absolute;
@@ -150,14 +187,24 @@ export function RcentzDataField() {
 
           border-radius: 999px;
 
-          background: rgba(255, 255, 255, 0.98);
+          background:
+            var(--environment-star);
 
           opacity: 0;
 
           box-shadow:
-            0 0 3px rgba(255, 255, 255, 0.9),
-            0 0 var(--star-glow, 10px) rgba(255, 255, 255, 0.42),
-            0 0 calc(var(--star-glow, 10px) * 2) rgba(255, 255, 255, 0.08);
+            0 0 3px
+              var(--environment-star-glow-strong),
+
+            0 0
+              var(--star-glow, 10px)
+              var(--environment-star-glow),
+
+            0 0
+              calc(
+                var(--star-glow, 10px) * 2
+              )
+              var(--environment-star-glow-soft);
 
           animation:
             rcentz-star-twinkle
@@ -166,11 +213,13 @@ export function RcentzDataField() {
             var(--star-delay, 0s)
             infinite;
 
-          will-change: opacity, transform;
+          will-change:
+            opacity,
+            transform;
         }
 
         .rcentz-data-field__star::after {
-          content: "";
+          content: '';
 
           position: absolute;
 
@@ -180,19 +229,28 @@ export function RcentzDataField() {
           width: 1px;
           height: 1px;
 
-          transform: translate(-50%, -50%);
+          transform:
+            translate(-50%, -50%);
 
           border-radius: 999px;
 
-          background: white;
+          background:
+            var(--environment-star);
 
           opacity: 0;
 
           box-shadow:
-            -5px 0 5px rgba(255, 255, 255, 0.25),
-            5px 0 5px rgba(255, 255, 255, 0.25),
-            0 -5px 5px rgba(255, 255, 255, 0.2),
-            0 5px 5px rgba(255, 255, 255, 0.2);
+            -5px 0 5px
+              var(--environment-star-glow),
+
+            5px 0 5px
+              var(--environment-star-glow),
+
+            0 -5px 5px
+              var(--environment-star-glow-soft),
+
+            0 5px 5px
+              var(--environment-star-glow-soft);
 
           animation:
             rcentz-star-flare
@@ -203,7 +261,8 @@ export function RcentzDataField() {
         }
 
         @keyframes rcentz-star-twinkle {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0;
             transform: scale(0.35);
           }
@@ -213,22 +272,35 @@ export function RcentzDataField() {
           }
 
           20% {
-            opacity: calc(var(--star-opacity, 0.6) * 0.35);
+            opacity:
+              calc(
+                var(--star-opacity, 0.6) * 0.35
+              );
+
             transform: scale(0.75);
           }
 
           27% {
-            opacity: var(--star-opacity, 0.6);
+            opacity:
+              var(--star-opacity, 0.6);
+
             transform: scale(1.35);
           }
 
           34% {
-            opacity: calc(var(--star-opacity, 0.6) * 0.58);
+            opacity:
+              calc(
+                var(--star-opacity, 0.6) * 0.58
+              );
+
             transform: scale(0.9);
           }
 
           43% {
-            opacity: calc(var(--star-opacity, 0.6) * 0.18);
+            opacity:
+              calc(
+                var(--star-opacity, 0.6) * 0.18
+              );
           }
 
           52% {
@@ -238,25 +310,36 @@ export function RcentzDataField() {
         }
 
         @keyframes rcentz-star-flare {
-          0%, 22%, 100% {
+          0%,
+          22%,
+          100% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.4);
+
+            transform:
+              translate(-50%, -50%)
+              scale(0.4);
           }
 
           27% {
             opacity: 0.7;
-            transform: translate(-50%, -50%) scale(1);
+
+            transform:
+              translate(-50%, -50%)
+              scale(1);
           }
 
           32% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(1.4);
+
+            transform:
+              translate(-50%, -50%)
+              scale(1.4);
           }
         }
 
-        /* --------------------------------
-           SMALL DATA SIGNALS
-        -------------------------------- */
+        /* ==================================================
+           DATA SIGNALS
+        ================================================== */
 
         .rcentz-data-field__path {
           position: absolute;
@@ -266,13 +349,23 @@ export function RcentzDataField() {
 
           opacity: 0;
 
-          filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.15));
+          filter:
+            drop-shadow(
+              0 0 3px
+              var(--environment-signal-soft)
+            );
 
-          will-change: opacity, transform;
+          will-change:
+            opacity,
+            transform;
         }
 
-        .rcentz-data-field__path[data-direction="horizontal"] {
-          width: var(--path-length, 8vw);
+        .rcentz-data-field__path[
+          data-direction='horizontal'
+        ] {
+          width:
+            var(--path-length, 8vw);
+
           height: 1px;
 
           transform-origin: left;
@@ -281,9 +374,9 @@ export function RcentzDataField() {
             linear-gradient(
               90deg,
               transparent,
-              rgba(255, 255, 255, 0.05),
-              rgba(255, 255, 255, 0.38),
-              rgba(255, 255, 255, 0.05),
+              var(--environment-signal-soft),
+              var(--environment-signal),
+              var(--environment-signal-soft),
               transparent
             );
 
@@ -295,9 +388,13 @@ export function RcentzDataField() {
             infinite;
         }
 
-        .rcentz-data-field__path[data-direction="vertical"] {
+        .rcentz-data-field__path[
+          data-direction='vertical'
+        ] {
           width: 1px;
-          height: var(--path-length, 8vw);
+
+          height:
+            var(--path-length, 8vw);
 
           transform-origin: top;
 
@@ -305,9 +402,9 @@ export function RcentzDataField() {
             linear-gradient(
               180deg,
               transparent,
-              rgba(255, 255, 255, 0.05),
-              rgba(255, 255, 255, 0.38),
-              rgba(255, 255, 255, 0.05),
+              var(--environment-signal-soft),
+              var(--environment-signal),
+              var(--environment-signal-soft),
               transparent
             );
 
@@ -320,7 +417,8 @@ export function RcentzDataField() {
         }
 
         @keyframes rcentz-path-horizontal {
-          0%, 14% {
+          0%,
+          14% {
             opacity: 0;
             transform: scaleX(0);
           }
@@ -334,14 +432,16 @@ export function RcentzDataField() {
             transform: scaleX(1);
           }
 
-          64%, 100% {
+          64%,
+          100% {
             opacity: 0;
             transform: scaleX(1);
           }
         }
 
         @keyframes rcentz-path-vertical {
-          0%, 14% {
+          0%,
+          14% {
             opacity: 0;
             transform: scaleY(0);
           }
@@ -355,15 +455,16 @@ export function RcentzDataField() {
             transform: scaleY(1);
           }
 
-          64%, 100% {
+          64%,
+          100% {
             opacity: 0;
             transform: scaleY(1);
           }
         }
 
-        /* --------------------------------
+        /* ==================================================
            AMBIENT LIGHT
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-data-field__glow {
           position: absolute;
@@ -387,11 +488,16 @@ export function RcentzDataField() {
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.36),
+              var(--environment-glow-top),
               transparent 66%
             );
 
-          animation: rcentz-glow-top 25s ease-in-out infinite alternate;
+          animation:
+            rcentz-glow-top
+            25s
+            ease-in-out
+            infinite
+            alternate;
         }
 
         .rcentz-data-field__glow--bottom {
@@ -401,36 +507,49 @@ export function RcentzDataField() {
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.24),
+              var(--environment-glow-bottom),
               transparent 68%
             );
 
-          animation: rcentz-glow-bottom 31s ease-in-out infinite alternate;
+          animation:
+            rcentz-glow-bottom
+            31s
+            ease-in-out
+            infinite
+            alternate;
         }
 
         @keyframes rcentz-glow-top {
           from {
-            transform: translate3d(-8%, 0, 0) scale(0.9);
+            transform:
+              translate3d(-8%, 0, 0)
+              scale(0.9);
           }
 
           to {
-            transform: translate3d(18%, 12%, 0) scale(1.14);
+            transform:
+              translate3d(18%, 12%, 0)
+              scale(1.14);
           }
         }
 
         @keyframes rcentz-glow-bottom {
           from {
-            transform: translate3d(0, 0, 0) scale(0.95);
+            transform:
+              translate3d(0, 0, 0)
+              scale(0.95);
           }
 
           to {
-            transform: translate3d(-20%, -16%, 0) scale(1.12);
+            transform:
+              translate3d(-20%, -16%, 0)
+              scale(1.12);
           }
         }
 
-        /* --------------------------------
+        /* ==================================================
            CENTER BREATH
-        -------------------------------- */
+        ================================================== */
 
         .rcentz-data-field__pulse {
           position: absolute;
@@ -441,145 +560,72 @@ export function RcentzDataField() {
           width: 34rem;
           height: 34rem;
 
-          transform: translate(-50%, -50%);
+          transform:
+            translate(-50%, -50%);
 
           border-radius: 999px;
 
           background:
             radial-gradient(
               circle,
-              rgba(255, 255, 255, 0.035),
+              var(--environment-pulse),
               transparent 68%
             );
 
           filter: blur(34px);
 
-          animation: rcentz-field-pulse 12s ease-in-out infinite;
+          animation:
+            rcentz-field-pulse
+            12s
+            ease-in-out
+            infinite;
         }
 
         @keyframes rcentz-field-pulse {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.16;
-            transform: translate(-50%, -50%) scale(0.82);
+
+            transform:
+              translate(-50%, -50%)
+              scale(0.82);
           }
 
           50% {
             opacity: 0.48;
-            transform: translate(-50%, -50%) scale(1.18);
+
+            transform:
+              translate(-50%, -50%)
+              scale(1.18);
           }
         }
 
-        /* --------------------------------
-           MASK
-        -------------------------------- */
+        /* ==================================================
+           ENVIRONMENT MASK
+        ================================================== */
 
         .rcentz-data-field__mask {
           background:
             radial-gradient(
               circle at 50% 45%,
+
               transparent 0%,
               transparent 25%,
-              rgba(8, 8, 8, 0.025) 52%,
-              rgba(8, 8, 8, 0.17) 82%,
-              rgba(8, 8, 8, 0.4) 100%
+
+              var(--environment-mask-soft)
+                52%,
+
+              var(--environment-mask)
+                82%,
+
+              var(--environment-mask-strong)
+                100%
             );
         }
 
-        /* --------------------------------
-           LIGHT MODE
-        -------------------------------- */
-
-        @media (prefers-color-scheme: light) {
-          .rcentz-data-field {
-            --field-grid-line: rgba(10, 10, 10, 0.055);
-          }
-
-          .rcentz-data-field__star {
-            background: rgba(10, 10, 10, 0.88);
-
-            box-shadow:
-              0 0 3px rgba(10, 10, 10, 0.55),
-              0 0 var(--star-glow, 10px) rgba(10, 10, 10, 0.18),
-              0 0 calc(var(--star-glow, 10px) * 2) rgba(10, 10, 10, 0.05);
-          }
-
-          .rcentz-data-field__star::after {
-            background: rgba(10, 10, 10, 0.8);
-
-            box-shadow:
-              -5px 0 5px rgba(10, 10, 10, 0.14),
-              5px 0 5px rgba(10, 10, 10, 0.14),
-              0 -5px 5px rgba(10, 10, 10, 0.12),
-              0 5px 5px rgba(10, 10, 10, 0.12);
-          }
-
-          .rcentz-data-field__path[data-direction="horizontal"] {
-            background:
-              linear-gradient(
-                90deg,
-                transparent,
-                rgba(10, 10, 10, 0.04),
-                rgba(10, 10, 10, 0.28),
-                rgba(10, 10, 10, 0.04),
-                transparent
-              );
-          }
-
-          .rcentz-data-field__path[data-direction="vertical"] {
-            background:
-              linear-gradient(
-                180deg,
-                transparent,
-                rgba(10, 10, 10, 0.04),
-                rgba(10, 10, 10, 0.28),
-                rgba(10, 10, 10, 0.04),
-                transparent
-              );
-          }
-
-          .rcentz-data-field__glow--top {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.08),
-                transparent 66%
-              );
-          }
-
-          .rcentz-data-field__glow--bottom {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.055),
-                transparent 68%
-              );
-          }
-
-          .rcentz-data-field__pulse {
-            background:
-              radial-gradient(
-                circle,
-                rgba(10, 10, 10, 0.03),
-                transparent 68%
-              );
-          }
-
-          .rcentz-data-field__mask {
-            background:
-              radial-gradient(
-                circle at 50% 45%,
-                transparent 0%,
-                transparent 25%,
-                rgba(255, 255, 255, 0.025) 52%,
-                rgba(255, 255, 255, 0.16) 82%,
-                rgba(255, 255, 255, 0.42) 100%
-              );
-          }
-        }
-
-        /* --------------------------------
+        /* ==================================================
            MOBILE
-        -------------------------------- */
+        ================================================== */
 
         @media (max-width: 767px) {
           .rcentz-data-field {
@@ -605,9 +651,9 @@ export function RcentzDataField() {
           }
         }
 
-        /* --------------------------------
+        /* ==================================================
            REDUCED MOTION
-        -------------------------------- */
+        ================================================== */
 
         @media (prefers-reduced-motion: reduce) {
           .rcentz-data-field__star,

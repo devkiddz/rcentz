@@ -24,7 +24,7 @@ const footerNavigation = [
 
 export function RcentzFooter() {
   return (
-    <footer className="relative z-20 border-t border-border/70 bg-background">
+    <footer className="relative z-20 border-t border-border bg-shell-footer">
       <div className="rcentz-section py-10 md:py-12">
         <div className="grid gap-10 md:grid-cols-[1fr_auto] md:gap-16">
           <div className="max-w-md">

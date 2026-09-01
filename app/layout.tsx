@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
 
+import { ThemeProvider } from '@/components/theme-provider';
 import { RcentzShell } from '@/ui-shell/RcentzShell';
-import { RcentzThemeProvider } from '@/ui-shell/theme/RcentzThemeProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -15,33 +15,6 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin']
 });
-
-const themeScript = `
-(function () {
-  try {
-    var stored = localStorage.getItem('rcentz-theme');
-
-    var preference =
-      stored === 'light' || stored === 'dark'
-        ? stored
-        : 'system';
-
-    var resolved =
-      preference === 'system'
-        ? (
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light'
-          )
-        : preference;
-
-    var root = document.documentElement;
-
-    root.dataset.theme = resolved;
-    root.style.colorScheme = resolved;
-  } catch {}
-})();
-`;
 
 export const metadata: Metadata = {
   title: {
@@ -57,18 +30,16 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       lang="en"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: themeScript
-          }}
-        />
-      </head>
-
       <body className="min-h-full bg-background text-foreground">
-        <RcentzThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          themes={['light', 'dark']}
+          storageKey="rcentz-theme"
+          disableTransitionOnChange>
           <RcentzShell>{children}</RcentzShell>
-        </RcentzThemeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

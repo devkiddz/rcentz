@@ -22,18 +22,20 @@ export function RcentzNavLink({ label, href, mobile = false, onNavigate }: Rcent
       onClick={onNavigate}
       className={[
         'inline-flex items-center rounded-full border',
+
         'transition-[color,background-color,border-color] duration-200',
 
         mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]',
 
         active
-          ? ['border-foreground/[0.12]', 'bg-foreground/[0.075]', 'font-medium text-foreground'].join(' ')
+          ? ['border-border-strong', 'bg-secondary', 'font-medium text-secondary-foreground'].join(' ')
           : [
-              'border-foreground/[0.045]',
-              'bg-foreground/[0.02]',
+              'border-border',
+              'bg-surface-muted',
               'text-muted',
-              'hover:border-foreground/[0.1]',
-              'hover:bg-foreground/[0.055]',
+
+              'hover:border-border-strong',
+              'hover:bg-secondary',
               'hover:text-foreground'
             ].join(' ')
       ].join(' ')}>
