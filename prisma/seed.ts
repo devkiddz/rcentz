@@ -26,10 +26,10 @@ function getMilestoneProgress(status: SeedProjectMilestone["status"]) {
       return 100;
 
     case "REVIEW":
-      return 90;
+      return 75;
 
     case "IN_PROGRESS":
-      return 50;
+      return 40;
 
     case "PLANNED":
     default:
