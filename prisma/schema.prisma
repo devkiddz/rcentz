@@ -168,6 +168,105 @@ enum QuoteStatus {
   CANCELLED
 }
 
+enum ServicePlanStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum ServicePlanVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum BillingIntervalUnit {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+enum ClientSubscriptionStatus {
+  PENDING
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELLED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  VOID
+  CANCELLED
+  REFUNDED
+}
+
+enum InvoiceSourceType {
+  ORDER
+  QUOTE
+  SUBSCRIPTION
+  PROJECT
+  SERVICE_REQUEST
+  MANUAL
+}
+
+enum InvoiceItemType {
+  PRODUCT
+  SERVICE
+  PLAN
+  PROJECT
+  CUSTOM
+  CREDIT
+  DISCOUNT
+}
+
+enum PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  USSD
+  MOBILE_MONEY
+  QR
+  CRYPTO
+  CASH
+  WALLET
+  MANUAL
+  OTHER
+}
+
+enum CryptoPaymentStatus {
+  PENDING
+  WAITING
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CONFIRMING
+  CONFIRMED
+  EXPIRED
+  FAILED
+  CANCELLED
+}
+
+enum CryptoTransactionStatus {
+  DETECTED
+  CONFIRMING
+  CONFIRMED
+  FAILED
+}
+
+enum RefundStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
 enum ProductType {
   DIGITAL
   PHYSICAL
@@ -210,16 +309,20 @@ enum OrderStatus {
 enum PaymentStatus {
   PENDING
   PROCESSING
+  REQUIRES_ACTION
   SUCCESS
   FAILED
-  REFUNDED
-  PARTIALLY_REFUNDED
+  EXPIRED
   CANCELLED
+  PARTIALLY_REFUNDED
+  REFUNDED
 }
 
 enum PaymentProvider {
   PAYSTACK
   STRIPE
+  CRYPTO_GATEWAY
+  BANK_TRANSFER
   MANUAL
   OTHER
 }
@@ -270,6 +373,7 @@ enum ConversationType {
   DIRECT
   PROJECT
   SERVICE
+  SUBSCRIPTION
   ORDER
   SUPPORT
   GROUP
@@ -295,6 +399,8 @@ enum NotificationType {
   PROJECT
   PROJECT_UPDATE
   SERVICE
+  SUBSCRIPTION
+  INVOICE
   ORDER
   PAYMENT
   COMMENT
@@ -419,6 +525,15 @@ model User {
 
   serviceRequests ServiceRequest[]
   quotes          Quote[]          @relation("QuoteClient")
+
+  createdServicePlans  ServicePlan[]        @relation("ServicePlanCreator")
+  customServicePlans   ServicePlan[]        @relation("ServicePlanClient")
+  subscriptions        ClientSubscription[] @relation("SubscriptionClient")
+  createdSubscriptions ClientSubscription[] @relation("SubscriptionCreator")
+
+  invoices        Invoice[] @relation("InvoiceClient")
+  createdInvoices Invoice[] @relation("InvoiceCreator")
+  payments        Payment[] @relation("PaymentPayer")
 
   orders Order[]
   carts  Cart[]
@@ -580,9 +695,13 @@ model Service {
   category  ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdBy User             @relation("ServiceCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
-  requests ServiceRequest[]
-  media    MediaAsset[]
-  seo      SeoMetadata?
+  requests     ServiceRequest[]
+  planLinks    ServicePlanService[]
+  entitlements ServicePlanEntitlement[]
+  invoiceItems InvoiceItem[]
+  quoteItems   QuoteItem[]
+  media        MediaAsset[]
+  seo          SeoMetadata?
 
   @@index([categoryId])
   @@index([createdById])
@@ -591,26 +710,34 @@ model Service {
 }
 
 model ServiceRequest {
-  id          String               @id @default(cuid())
-  userId      String
-  serviceId   String
+  id             String  @id @default(cuid())
+  userId         String
+  serviceId      String
+  subscriptionId String?
+
   title       String
   description String
   budget      Decimal?             @db.Decimal(14, 2)
   currency    String               @default("NGN")
   status      ServiceRequestStatus @default(PENDING)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Restrict)
-  service Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  quote   Quote?
-  project Project?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  service      Service             @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  subscription ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  quote        Quote?
+  project      Project?
+  invoices     Invoice[]
+  usageRecords SubscriptionUsageRecord[]
 
   conversations Conversation[]
 
   @@index([userId])
   @@index([serviceId])
+  @@index([subscriptionId])
   @@index([status])
   @@index([createdAt])
 }
@@ -634,9 +761,11 @@ model Quote {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
-  serviceRequest ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
-  client         User           @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
+  serviceRequest ServiceRequest      @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
+  client         User                @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
   items          QuoteItem[]
+  invoices       Invoice[]
+  subscription   ClientSubscription?
 
   @@index([clientId])
   @@index([status])
@@ -644,17 +773,242 @@ model Quote {
 }
 
 model QuoteItem {
-  id          String  @id @default(cuid())
-  quoteId     String
+  id            String  @id @default(cuid())
+  quoteId       String
+  serviceId     String?
+  servicePlanId String?
+
   name        String
   description String?
   quantity    Decimal @default(1) @db.Decimal(10, 2)
   unitPrice   Decimal @db.Decimal(14, 2)
   total       Decimal @db.Decimal(14, 2)
 
-  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  quote       Quote        @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  service     Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  servicePlan ServicePlan? @relation(fields: [servicePlanId], references: [id], onDelete: SetNull)
 
   @@index([quoteId])
+  @@index([serviceId])
+  @@index([servicePlanId])
+}
+
+// =========================================================
+// LONG-TERM SERVICE PLANS / RETAINERS
+// Standard plans are reusable. Private/custom plans may be tied to one client.
+// Subscription entitlements are snapshots so later plan edits do not rewrite contracts.
+// =========================================================
+
+model ServicePlan {
+  id          String  @id @default(cuid())
+  createdById String
+  clientId    String?
+
+  name             String
+  slug             String  @unique
+  shortDescription String?
+  description      String?
+
+  status     ServicePlanStatus     @default(DRAFT)
+  visibility ServicePlanVisibility @default(PUBLIC)
+  isCustom   Boolean               @default(false)
+  featured   Boolean               @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy User  @relation("ServicePlanCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  client    User? @relation("ServicePlanClient", fields: [clientId], references: [id], onDelete: SetNull)
+
+  services      ServicePlanService[]
+  prices        ServicePlanPrice[]
+  entitlements  ServicePlanEntitlement[]
+  subscriptions ClientSubscription[]
+  invoiceItems  InvoiceItem[]
+  quoteItems    QuoteItem[]
+
+  @@index([createdById])
+  @@index([clientId])
+  @@index([status])
+  @@index([visibility])
+  @@index([isCustom])
+  @@index([featured])
+}
+
+model ServicePlanService {
+  planId    String
+  serviceId String
+  sortOrder Int     @default(0)
+  notes     String?
+
+  plan    ServicePlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  service Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@id([planId, serviceId])
+  @@index([serviceId])
+  @@index([sortOrder])
+}
+
+model ServicePlanPrice {
+  id     String @id @default(cuid())
+  planId String
+
+  label         String?
+  amount        Decimal             @db.Decimal(14, 2)
+  currency      String              @default("NGN")
+  intervalUnit  BillingIntervalUnit
+  intervalCount Int                 @default(1)
+  setupFee      Decimal             @default(0) @db.Decimal(14, 2)
+  trialDays     Int                 @default(0)
+  active        Boolean             @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan          ServicePlan          @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscriptions ClientSubscription[]
+
+  @@index([planId])
+  @@index([currency])
+  @@index([active])
+  @@index([intervalUnit, intervalCount])
+}
+
+model ServicePlanEntitlement {
+  id        String  @id @default(cuid())
+  planId    String
+  serviceId String?
+
+  key         String
+  name        String
+  description String?
+  limitValue  Decimal? @db.Decimal(14, 2)
+  unit        String?
+  unlimited   Boolean  @default(false)
+  metadata    Json?
+  sortOrder   Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan    ServicePlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  service Service?    @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  subscriptionEntitlements SubscriptionEntitlement[]
+
+  @@unique([planId, key])
+  @@index([planId])
+  @@index([serviceId])
+  @@index([sortOrder])
+}
+
+model ClientSubscription {
+  id          String  @id @default(cuid())
+  clientId    String
+  planId      String
+  priceId     String?
+  quoteId     String? @unique
+  createdById String?
+
+  subscriptionNumber String                   @unique
+  status             ClientSubscriptionStatus @default(PENDING)
+
+  // Contract snapshot. These remain stable even if the reusable plan price changes.
+  priceAmount   Decimal             @db.Decimal(14, 2)
+  currency      String              @default("NGN")
+  intervalUnit  BillingIntervalUnit
+  intervalCount Int                 @default(1)
+  setupFee      Decimal             @default(0) @db.Decimal(14, 2)
+
+  autoRenew         Boolean @default(true)
+  cancelAtPeriodEnd Boolean @default(false)
+
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  nextBillingAt      DateTime?
+  trialEndsAt        DateTime?
+  startedAt          DateTime?
+  pausedAt           DateTime?
+  cancelledAt        DateTime?
+  endedAt            DateTime?
+
+  notes       String?
+  customTerms Json?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client    User              @relation("SubscriptionClient", fields: [clientId], references: [id], onDelete: Restrict)
+  plan      ServicePlan       @relation(fields: [planId], references: [id], onDelete: Restrict)
+  price     ServicePlanPrice? @relation(fields: [priceId], references: [id], onDelete: SetNull)
+  quote     Quote?            @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  createdBy User?             @relation("SubscriptionCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  entitlements    SubscriptionEntitlement[]
+  usageRecords    SubscriptionUsageRecord[]
+  invoices        Invoice[]
+  projects        Project[]
+  serviceRequests ServiceRequest[]
+  conversations   Conversation[]
+
+  @@index([clientId])
+  @@index([planId])
+  @@index([priceId])
+  @@index([createdById])
+  @@index([status])
+  @@index([nextBillingAt])
+  @@index([currentPeriodEnd])
+}
+
+model SubscriptionEntitlement {
+  id                String  @id @default(cuid())
+  subscriptionId    String
+  planEntitlementId String?
+
+  key          String
+  name         String
+  description  String?
+  limitValue   Decimal?  @db.Decimal(14, 2)
+  usedValue    Decimal   @default(0) @db.Decimal(14, 2)
+  unit         String?
+  unlimited    Boolean   @default(false)
+  metadata     Json?
+  usageResetAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription    ClientSubscription        @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planEntitlement ServicePlanEntitlement?   @relation(fields: [planEntitlementId], references: [id], onDelete: SetNull)
+  usageRecords    SubscriptionUsageRecord[]
+
+  @@unique([subscriptionId, key])
+  @@index([subscriptionId])
+  @@index([planEntitlementId])
+  @@index([usageResetAt])
+}
+
+model SubscriptionUsageRecord {
+  id               String  @id @default(cuid())
+  subscriptionId   String
+  entitlementId    String
+  serviceRequestId String?
+
+  quantity    Decimal  @default(1) @db.Decimal(14, 2)
+  description String?
+  metadata    Json?
+  occurredAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  subscription   ClientSubscription      @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  entitlement    SubscriptionEntitlement @relation(fields: [entitlementId], references: [id], onDelete: Cascade)
+  serviceRequest ServiceRequest?         @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+
+  @@index([subscriptionId])
+  @@index([entitlementId])
+  @@index([serviceRequestId])
+  @@index([occurredAt])
 }
 
 // =========================================================
@@ -668,6 +1022,7 @@ model Project {
   id               String  @id @default(cuid())
   clientId         String?
   serviceRequestId String? @unique
+  subscriptionId   String?
 
   name            String
   slug            String  @unique
@@ -692,8 +1047,9 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  client         User?           @relation("ProjectClient", fields: [clientId], references: [id], onDelete: SetNull)
-  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+  client         User?               @relation("ProjectClient", fields: [clientId], references: [id], onDelete: SetNull)
+  serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+  subscription   ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   portfolio    PortfolioProfile?
   technologies ProjectTechnology[]
@@ -711,6 +1067,7 @@ model Project {
   files        ProjectFile[]
 
   analytics     ProjectAnalytics?
+  invoices      Invoice[]
   conversations Conversation[]
   media         MediaAsset[]
   comments      Comment[]
@@ -718,6 +1075,7 @@ model Project {
   seo           SeoMetadata?
 
   @@index([clientId])
+  @@index([subscriptionId])
   @@index([status])
   @@index([visibility])
   @@index([type])
@@ -1132,10 +1490,11 @@ model ProductVariant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  inventory  InventoryItem?
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventory    InventoryItem?
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  invoiceItems InvoiceItem[]
 
   @@index([productId])
   @@index([isDefault])
@@ -1254,7 +1613,7 @@ model Order {
 
   user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
-  payments      Payment[]
+  invoices      Invoice[]
   fulfillment   OrderFulfillment?
   media         MediaAsset[]
   conversations Conversation[]
@@ -1284,29 +1643,6 @@ model OrderItem {
 
   @@index([orderId])
   @@index([variantId])
-}
-
-model Payment {
-  id      String @id @default(cuid())
-  orderId String
-
-  amount   Decimal         @db.Decimal(14, 2)
-  currency String          @default("NGN")
-  provider PaymentProvider
-  status   PaymentStatus   @default(PENDING)
-
-  reference String? @unique
-  metadata  Json?
-
-  paidAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@index([orderId])
-  @@index([status])
-  @@index([provider])
 }
 
 model OrderFulfillment {
@@ -1346,6 +1682,229 @@ model DigitalDelivery {
 
   @@index([digitalProductId])
   @@index([status])
+}
+
+// =========================================================
+// BILLING / INVOICES / PAYMENTS
+// All payable business flows converge on Invoice -> Payment.
+// sourceType identifies the primary invoice source; server validation must ensure
+// the matching source relation is present and financial totals remain consistent.
+// =========================================================
+
+model Invoice {
+  id          String  @id @default(cuid())
+  clientId    String?
+  createdById String?
+
+  invoiceNumber String            @unique
+  sourceType    InvoiceSourceType
+  status        InvoiceStatus     @default(DRAFT)
+
+  currency   String  @default("NGN")
+  subtotal   Decimal @db.Decimal(14, 2)
+  discount   Decimal @default(0) @db.Decimal(14, 2)
+  tax        Decimal @default(0) @db.Decimal(14, 2)
+  total      Decimal @db.Decimal(14, 2)
+  amountPaid Decimal @default(0) @db.Decimal(14, 2)
+  balanceDue Decimal @db.Decimal(14, 2)
+
+  orderId          String?
+  quoteId          String?
+  subscriptionId   String?
+  projectId        String?
+  serviceRequestId String?
+
+  customerName   String?
+  customerEmail  String?
+  customerPhone  String?
+  billingAddress Json?
+  notes          String?
+  pdfUrl         String?
+  metadata       Json?
+
+  issuedAt DateTime?
+  dueAt    DateTime?
+  paidAt   DateTime?
+  voidedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client    User? @relation("InvoiceClient", fields: [clientId], references: [id], onDelete: SetNull)
+  createdBy User? @relation("InvoiceCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  order          Order?              @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  quote          Quote?              @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  subscription   ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  project        Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@index([clientId])
+  @@index([createdById])
+  @@index([sourceType])
+  @@index([status])
+  @@index([orderId])
+  @@index([quoteId])
+  @@index([subscriptionId])
+  @@index([projectId])
+  @@index([serviceRequestId])
+  @@index([issuedAt])
+  @@index([dueAt])
+  @@index([createdAt])
+}
+
+model InvoiceItem {
+  id        String @id @default(cuid())
+  invoiceId String
+
+  type        InvoiceItemType @default(CUSTOM)
+  name        String
+  description String?
+  quantity    Decimal         @default(1) @db.Decimal(10, 2)
+  unitPrice   Decimal         @db.Decimal(14, 2)
+  total       Decimal         @db.Decimal(14, 2)
+
+  productVariantId String?
+  serviceId        String?
+  servicePlanId    String?
+  metadata         Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoice        Invoice         @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  service        Service?        @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  servicePlan    ServicePlan?    @relation(fields: [servicePlanId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@index([type])
+  @@index([productVariantId])
+  @@index([serviceId])
+  @@index([servicePlanId])
+}
+
+model Payment {
+  id        String  @id @default(cuid())
+  invoiceId String
+  payerId   String?
+
+  amount   Decimal         @db.Decimal(14, 2)
+  currency String          @default("NGN")
+  method   PaymentMethod
+  provider PaymentProvider
+  status   PaymentStatus   @default(PENDING)
+
+  providerName      String?
+  reference         String?  @unique
+  providerReference String?  @unique
+  fee               Decimal? @db.Decimal(14, 2)
+  netAmount         Decimal? @db.Decimal(14, 2)
+  metadata          Json?
+
+  initiatedAt DateTime  @default(now())
+  paidAt      DateTime?
+  failedAt    DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  payer   User?   @relation("PaymentPayer", fields: [payerId], references: [id], onDelete: SetNull)
+
+  crypto  CryptoPayment?
+  refunds PaymentRefund[]
+
+  @@index([invoiceId])
+  @@index([payerId])
+  @@index([method])
+  @@index([provider])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model PaymentRefund {
+  id        String @id @default(cuid())
+  paymentId String
+
+  amount   Decimal      @db.Decimal(14, 2)
+  currency String       @default("NGN")
+  status   RefundStatus @default(PENDING)
+
+  reference         String?   @unique
+  providerReference String?   @unique
+  reason            String?
+  metadata          Json?
+  processedAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([paymentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CryptoPayment {
+  id        String @id @default(cuid())
+  paymentId String @unique
+
+  providerReference String? @unique
+  assetSymbol       String
+  network           String
+  walletAddress     String?
+  destinationTag    String?
+
+  expectedAmount Decimal  @db.Decimal(36, 18)
+  receivedAmount Decimal  @default(0) @db.Decimal(36, 18)
+  exchangeRate   Decimal? @db.Decimal(36, 18)
+
+  status                CryptoPaymentStatus @default(PENDING)
+  requiredConfirmations Int                 @default(1)
+
+  expiresAt   DateTime?
+  detectedAt  DateTime?
+  confirmedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment      Payment             @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  transactions CryptoTransaction[]
+
+  @@index([assetSymbol])
+  @@index([network])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model CryptoTransaction {
+  id              String @id @default(cuid())
+  cryptoPaymentId String
+
+  txHash        String
+  network       String
+  amount        Decimal                 @db.Decimal(36, 18)
+  confirmations Int                     @default(0)
+  status        CryptoTransactionStatus @default(DETECTED)
+  rawData       Json?
+
+  detectedAt  DateTime  @default(now())
+  confirmedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cryptoPayment CryptoPayment @relation(fields: [cryptoPaymentId], references: [id], onDelete: Cascade)
+
+  @@unique([network, txHash])
+  @@index([cryptoPaymentId])
+  @@index([status])
+  @@index([detectedAt])
 }
 
 // =========================================================
@@ -1474,7 +2033,7 @@ model Reaction {
 
 // =========================================================
 // MESSAGING
-// Runtime validation must enforce contextual ownership based on type.
+// Runtime validation must enforce contextual ownership based on type, including subscriptions.
 // =========================================================
 
 model Conversation {
@@ -1485,6 +2044,7 @@ model Conversation {
   subject          String?
   projectId        String?
   serviceRequestId String?
+  subscriptionId   String?
   orderId          String?
   supportTicketId  String?
 
@@ -1494,13 +2054,15 @@ model Conversation {
   participants ConversationParticipant[]
   messages     Message[]
 
-  project        Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  serviceRequest ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
-  order          Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  supportTicket  SupportTicket?  @relation(fields: [supportTicketId], references: [id], onDelete: Cascade)
+  project        Project?            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  subscription   ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  order          Order?              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  supportTicket  SupportTicket?      @relation(fields: [supportTicketId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([serviceRequestId])
+  @@index([subscriptionId])
   @@index([orderId])
   @@index([supportTicketId])
   @@index([type])
