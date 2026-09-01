@@ -1,6 +1,11 @@
 import { auth } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 
+import {
+  projectSeedManifest,
+  type SeedProjectMilestone,
+} from "./seed-data/projects";
+
 function getRequiredEnv(name: string) {
   const value = process.env[name]?.trim();
 
@@ -9,6 +14,40 @@ function getRequiredEnv(name: string) {
   }
 
   return value;
+}
+
+function toDate(value?: string) {
+  return value ? new Date(value) : null;
+}
+
+function getMilestoneProgress(status: SeedProjectMilestone["status"]) {
+  switch (status) {
+    case "COMPLETED":
+      return 100;
+
+    case "REVIEW":
+      return 90;
+
+    case "IN_PROGRESS":
+      return 50;
+
+    case "PLANNED":
+    default:
+      return 0;
+  }
+}
+
+function getProjectProgress(milestones: SeedProjectMilestone[]) {
+  if (milestones.length === 0) {
+    return 0;
+  }
+
+  const total = milestones.reduce(
+    (sum, milestone) => sum + getMilestoneProgress(milestone.status),
+    0,
+  );
+
+  return Math.round(total / milestones.length);
 }
 
 async function seedOfficialAdmin() {
@@ -96,9 +135,6 @@ async function seedOfficialAdmin() {
     },
   });
 
-  // Better Auth may create a session during initial email/password signup.
-  // Remove only that initial seed-created session.
-  // Existing administrator sessions are preserved on future seed runs.
   if (createdNow) {
     await prisma.session.deleteMany({
       where: {
@@ -116,12 +152,166 @@ async function seedOfficialAdmin() {
     status: admin.status,
     emailVerified: admin.emailVerified,
   });
+
+  return admin;
+}
+
+async function seedOfficialProjects(adminId: string) {
+  console.log("Seeding official Rcentz project history...");
+
+  for (const projectData of projectSeedManifest) {
+    const project = await prisma.project.upsert({
+      where: {
+        slug: projectData.slug,
+      },
+
+      update: {
+        name: projectData.name,
+        description: projectData.description,
+        purpose: projectData.purpose,
+        vision: projectData.vision,
+        expectedOutcome: projectData.expectedOutcome,
+        type: projectData.type,
+        status: projectData.status,
+        visibility: projectData.visibility,
+        progress: getProjectProgress(projectData.milestones),
+        startedAt: toDate(projectData.startedAt),
+        completedAt: toDate(projectData.completedAt),
+      },
+
+      create: {
+        name: projectData.name,
+        slug: projectData.slug,
+        description: projectData.description,
+        purpose: projectData.purpose,
+        vision: projectData.vision,
+        expectedOutcome: projectData.expectedOutcome,
+        type: projectData.type,
+        status: projectData.status,
+        visibility: projectData.visibility,
+        progress: getProjectProgress(projectData.milestones),
+        startedAt: toDate(projectData.startedAt),
+        completedAt: toDate(projectData.completedAt),
+      },
+    });
+
+    await prisma.portfolioProfile.upsert({
+      where: {
+        projectId: project.id,
+      },
+
+      update: {
+        tagline: projectData.portfolio.tagline,
+        summary: projectData.portfolio.summary,
+        challenge: projectData.portfolio.challenge,
+        solution: projectData.portfolio.solution,
+        outcome: projectData.portfolio.outcome,
+        liveUrl: projectData.portfolio.liveUrl ?? null,
+        repositoryUrl: projectData.portfolio.repositoryUrl,
+        featured: projectData.portfolio.featured,
+        publishedAt: toDate(projectData.portfolio.publishedAt),
+      },
+
+      create: {
+        projectId: project.id,
+        tagline: projectData.portfolio.tagline,
+        summary: projectData.portfolio.summary,
+        challenge: projectData.portfolio.challenge,
+        solution: projectData.portfolio.solution,
+        outcome: projectData.portfolio.outcome,
+        liveUrl: projectData.portfolio.liveUrl ?? null,
+        repositoryUrl: projectData.portfolio.repositoryUrl,
+        featured: projectData.portfolio.featured,
+        publishedAt: toDate(projectData.portfolio.publishedAt),
+      },
+    });
+
+    for (const technology of projectData.technologies) {
+      await prisma.projectTechnology.upsert({
+        where: {
+          projectId_slug: {
+            projectId: project.id,
+            slug: technology.slug,
+          },
+        },
+
+        update: {
+          name: technology.name,
+        },
+
+        create: {
+          projectId: project.id,
+          name: technology.name,
+          slug: technology.slug,
+        },
+      });
+    }
+
+    for (const milestoneData of projectData.milestones) {
+      await prisma.projectMilestone.upsert({
+        where: {
+          projectId_slug: {
+            projectId: project.id,
+            slug: milestoneData.slug,
+          },
+        },
+
+        update: {
+          createdById: adminId,
+          title: milestoneData.title,
+          description: milestoneData.description,
+          purpose: milestoneData.purpose,
+          expectedOutcome: milestoneData.expectedOutcome,
+          status: milestoneData.status,
+          priority: milestoneData.priority,
+          visibility: milestoneData.visibility,
+          sortOrder: milestoneData.sortOrder,
+          progress: getMilestoneProgress(milestoneData.status),
+          startedAt: toDate(milestoneData.startedAt),
+          completedAt: toDate(milestoneData.completedAt),
+          gitCommitSha: milestoneData.gitCommitSha ?? null,
+          gitTag: milestoneData.gitTag ?? null,
+          completionNotes: milestoneData.completionNotes ?? null,
+        },
+
+        create: {
+          projectId: project.id,
+          createdById: adminId,
+          title: milestoneData.title,
+          slug: milestoneData.slug,
+          description: milestoneData.description,
+          purpose: milestoneData.purpose,
+          expectedOutcome: milestoneData.expectedOutcome,
+          status: milestoneData.status,
+          priority: milestoneData.priority,
+          visibility: milestoneData.visibility,
+          sortOrder: milestoneData.sortOrder,
+          progress: getMilestoneProgress(milestoneData.status),
+          startedAt: toDate(milestoneData.startedAt),
+          completedAt: toDate(milestoneData.completedAt),
+          gitCommitSha: milestoneData.gitCommitSha ?? null,
+          gitTag: milestoneData.gitTag ?? null,
+          completionNotes: milestoneData.completionNotes ?? null,
+        },
+      });
+    }
+
+    console.log(
+      `Project ready: ${projectData.name} — ${projectData.milestones.length} milestones, ${projectData.technologies.length} technologies`,
+    );
+  }
+
+  console.log(
+    `${projectSeedManifest.length} official Rcentz projects ready.`,
+  );
 }
 
 async function main() {
   console.log("Starting Rcentz database seed...");
 
-  await seedOfficialAdmin();
+  const admin = await seedOfficialAdmin();
+
+  await seedOfficialProjects(admin.id);
 
   console.log("Rcentz database seed completed.");
 }
