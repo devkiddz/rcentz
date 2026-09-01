@@ -6,6 +6,8 @@ import {
   type SeedProjectMilestone,
 } from "./seed-data/projects";
 
+import { serviceSeedManifest } from "./seed-data/services";
+
 function getRequiredEnv(name: string) {
   const value = process.env[name]?.trim();
 
@@ -306,12 +308,99 @@ async function seedOfficialProjects(adminId: string) {
   );
 }
 
+async function seedOfficialServices(adminId: string) {
+  console.log("Seeding official Rcentz service catalogue...");
+
+  let categoryCount = 0;
+  let serviceCount = 0;
+  let priceCount = 0;
+
+  for (const categoryData of serviceSeedManifest) {
+    let category = await prisma.serviceCategory.findUnique({
+      where: {
+        slug: categoryData.slug,
+      },
+    });
+
+    if (!category) {
+      category = await prisma.serviceCategory.create({
+        data: {
+          name: categoryData.name,
+          slug: categoryData.slug,
+          description: categoryData.description,
+        },
+      });
+    }
+
+    categoryCount += 1;
+
+    for (const serviceData of categoryData.services) {
+      let service = await prisma.service.findUnique({
+        where: {
+          slug: serviceData.slug,
+        },
+      });
+
+      if (!service) {
+        service = await prisma.service.create({
+          data: {
+            categoryId: category.id,
+            createdById: adminId,
+            name: serviceData.name,
+            slug: serviceData.slug,
+            shortDescription: serviceData.shortDescription,
+            description: serviceData.description,
+            type: serviceData.type,
+            status: serviceData.status,
+            featured: serviceData.featured,
+          },
+        });
+      }
+
+      serviceCount += 1;
+
+      for (const priceData of serviceData.prices) {
+        const existingPrice = await prisma.servicePrice.findUnique({
+          where: {
+            serviceId_currency: {
+              serviceId: service.id,
+              currency: priceData.currency,
+            },
+          },
+        });
+
+        if (!existingPrice) {
+          await prisma.servicePrice.create({
+            data: {
+              serviceId: service.id,
+              currency: priceData.currency,
+              priceFrom: priceData.priceFrom,
+              priceTo: priceData.priceTo,
+            },
+          });
+        }
+
+        priceCount += 1;
+      }
+    }
+
+    console.log(
+      `Service category ready: ${categoryData.name} — ${categoryData.services.length} services`,
+    );
+  }
+
+  console.log(
+    `Service catalogue ready: ${categoryCount} categories, ${serviceCount} services, ${priceCount} price entries.`,
+  );
+}
+
 async function main() {
   console.log("Starting Rcentz database seed...");
 
   const admin = await seedOfficialAdmin();
 
   await seedOfficialProjects(admin.id);
+  await seedOfficialServices(admin.id);
 
   console.log("Rcentz database seed completed.");
 }
