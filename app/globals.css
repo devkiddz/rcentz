@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
@@ -6,6 +8,7 @@
 
   --surface: #ffffff;
   --surface-muted: #f7f7f7;
+
   --muted: #737373;
   --muted-foreground: #525252;
 
@@ -24,6 +27,16 @@
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
+  /*
+    Rcentz Brand Mark
+
+    Light theme:
+    black logo surface
+    white mark
+  */
+  --brand-logo-background: #0a0a0a;
+  --brand-logo-foreground: #ffffff;
+
   --grid-line: rgba(10, 10, 10, 0.06);
   --grid-line-strong: rgba(10, 10, 10, 0.1);
 
@@ -31,35 +44,57 @@
   --radius-md: 0.625rem;
   --radius-lg: 0.875rem;
 
+  /*
+    Rcentz width hierarchy
+
+    1440px → environmental canvas
+    1200px → broad shell allowance
+    1080px → primary application/content axis
+  */
   --canvas-max: 1440px;
   --content-max: 1200px;
+  --section-max: 1080px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #080808;
-    --foreground: #f5f5f5;
+/*
+  Dark Theme
 
-    --surface: #0d0d0d;
-    --surface-muted: #141414;
-    --muted: #a3a3a3;
-    --muted-foreground: #d4d4d4;
+  next-themes adds the .dark class to <html>.
+*/
+.dark {
+  --background: #080808;
+  --foreground: #f5f5f5;
 
-    --border: #262626;
-    --border-strong: #404040;
+  --surface: #0d0d0d;
+  --surface-muted: #141414;
 
-    --primary: #f5f5f5;
-    --primary-foreground: #0a0a0a;
+  --muted: #a3a3a3;
+  --muted-foreground: #d4d4d4;
 
-    --secondary: #171717;
-    --secondary-foreground: #f5f5f5;
+  --border: #262626;
+  --border-strong: #404040;
 
-    --accent: #f5f5f5;
-    --accent-foreground: #0a0a0a;
+  --primary: #f5f5f5;
+  --primary-foreground: #0a0a0a;
 
-    --grid-line: rgba(255, 255, 255, 0.055);
-    --grid-line-strong: rgba(255, 255, 255, 0.09);
-  }
+  --secondary: #171717;
+  --secondary-foreground: #f5f5f5;
+
+  --accent: #f5f5f5;
+  --accent-foreground: #0a0a0a;
+
+  /*
+    Rcentz Brand Mark
+
+    Dark theme:
+    white logo surface
+    black mark
+  */
+  --brand-logo-background: #ffffff;
+  --brand-logo-foreground: #0a0a0a;
+
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --grid-line-strong: rgba(255, 255, 255, 0.09);
 }
 
 @theme inline {
@@ -68,6 +103,7 @@
 
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
@@ -85,6 +121,9 @@
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-brand-logo-background: var(--brand-logo-background);
+  --color-brand-logo-foreground: var(--brand-logo-foreground);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -110,20 +149,38 @@ body {
   color: var(--background);
 }
 
+/*
+  Environmental canvas.
+*/
 .rcentz-canvas {
   width: min(100%, var(--canvas-max));
   margin-inline: auto;
 }
 
+/*
+  Broad shell allowance.
+*/
 .rcentz-content {
   width: min(calc(100% - 2rem), var(--content-max));
   margin-inline: auto;
 }
 
+/*
+  Canonical Rcentz application/content axis.
+*/
+.rcentz-section {
+  width: min(calc(100% - 2rem), var(--section-max));
+  margin-inline: auto;
+}
+
+/*
+  Environmental grid.
+*/
 .rcentz-grid {
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+
   background-size: 32px 32px;
 }
 
@@ -132,12 +189,57 @@ body {
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
     radial-gradient(circle at center, transparent 20%, var(--background) 78%);
-  background-size: 32px 32px, 32px 32px, 100% 100%;
+
+  background-size:
+    32px 32px,
+    32px 32px,
+    100% 100%;
 }
 
 /*
-  Animation policy:
-  No global motion is enabled here yet.
-  Rcentz can introduce motion deliberately per component/system after the
-  animation direction is approved, with prefers-reduced-motion respected.
+  Rcentz Brand Motion.
 */
+@keyframes rcentz-logo-halo-breathe {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(1.16);
+    opacity: 0.78;
+  }
+}
+
+@keyframes rcentz-logo-mark-breathe {
+  0%,
+  100% {
+    transform: scale(0.96);
+  }
+
+  50% {
+    transform: scale(1.045);
+  }
+}
+
+.rcentz-logo-halo {
+  transform-origin: center;
+  animation: rcentz-logo-halo-breathe 4.8s ease-in-out infinite;
+}
+
+.rcentz-logo-mark {
+  transform-origin: center;
+  animation: rcentz-logo-mark-breathe 4.8s ease-in-out infinite;
+}
+
+/*
+  Motion accessibility.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .rcentz-logo-halo,
+  .rcentz-logo-mark {
+    animation: none;
+    transform: none;
+  }
+}
