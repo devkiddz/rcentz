@@ -17,10 +17,13 @@ CREATE TYPE "ProjectStatus" AS ENUM ('PLANNING', 'DISCOVERY', 'DESIGN', 'DEVELOP
 CREATE TYPE "ProjectVisibility" AS ENUM ('PUBLIC', 'PRIVATE', 'UNLISTED');
 
 -- CreateEnum
-CREATE TYPE "ProjectPhaseStatus" AS ENUM ('PLANNED', 'ACTIVE', 'COMPLETED', 'ON_HOLD', 'CANCELLED');
+CREATE TYPE "ProjectMilestoneStatus" AS ENUM ('PLANNED', 'IN_PROGRESS', 'BLOCKED', 'REVIEW', 'COMPLETED', 'CANCELLED');
 
 -- CreateEnum
-CREATE TYPE "ProjectFeatureStatus" AS ENUM ('PROPOSED', 'NOMINATED', 'APPROVED', 'IN_PROGRESS', 'TESTING', 'COMPLETED', 'REJECTED', 'DEFERRED');
+CREATE TYPE "ProjectMilestonePriority" AS ENUM ('LOW', 'NORMAL', 'HIGH', 'CRITICAL');
+
+-- CreateEnum
+CREATE TYPE "ProjectFeatureStatus" AS ENUM ('BACKLOG', 'PROPOSED', 'NOMINATED', 'APPROVED', 'IN_PROGRESS', 'TESTING', 'REVIEW', 'COMPLETED', 'REJECTED', 'DEFERRED');
 
 -- CreateEnum
 CREATE TYPE "ProjectFeaturePriority" AS ENUM ('LOW', 'NORMAL', 'HIGH', 'CRITICAL');
@@ -47,7 +50,7 @@ CREATE TYPE "ServiceRequestStatus" AS ENUM ('PENDING', 'REVIEWING', 'QUOTED', 'A
 CREATE TYPE "QuoteStatus" AS ENUM ('DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'EXPIRED', 'CANCELLED');
 
 -- CreateEnum
-CREATE TYPE "ProductType" AS ENUM ('DIGITAL', 'PHYSICAL', 'SERVICE', 'BUNDLE');
+CREATE TYPE "ProductType" AS ENUM ('DIGITAL', 'PHYSICAL', 'BUNDLE');
 
 -- CreateEnum
 CREATE TYPE "ProductStatus" AS ENUM ('DRAFT', 'ACTIVE', 'OUT_OF_STOCK', 'ARCHIVED');
@@ -59,7 +62,7 @@ CREATE TYPE "InventoryMovementType" AS ENUM ('PURCHASE', 'SALE', 'RETURN', 'ADJU
 CREATE TYPE "CartStatus" AS ENUM ('ACTIVE', 'CONVERTED', 'ABANDONED', 'EXPIRED');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PROCESSING', 'PAID', 'FULFILLED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED');
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'PROCESSING', 'COMPLETED', 'CANCELLED');
 
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PROCESSING', 'SUCCESS', 'FAILED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'CANCELLED');
@@ -83,13 +86,10 @@ CREATE TYPE "CommentStatus" AS ENUM ('PENDING', 'APPROVED', 'HIDDEN', 'DELETED')
 CREATE TYPE "ReactionType" AS ENUM ('LIKE', 'LOVE', 'CLAP', 'FIRE', 'INSIGHTFUL', 'CELEBRATE', 'UPVOTE', 'DOWNVOTE');
 
 -- CreateEnum
-CREATE TYPE "ConversationType" AS ENUM ('DIRECT', 'PROJECT', 'SUPPORT', 'SERVICE', 'ORDER', 'GROUP');
+CREATE TYPE "ConversationType" AS ENUM ('DIRECT', 'PROJECT', 'SERVICE', 'ORDER', 'SUPPORT', 'GROUP');
 
 -- CreateEnum
 CREATE TYPE "ConversationStatus" AS ENUM ('ACTIVE', 'ARCHIVED', 'BLOCKED');
-
--- CreateEnum
-CREATE TYPE "MessageStatus" AS ENUM ('SENT', 'DELIVERED', 'READ', 'DELETED');
 
 -- CreateEnum
 CREATE TYPE "AttachmentType" AS ENUM ('IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT', 'FILE');
@@ -113,15 +113,12 @@ CREATE TYPE "ActivityType" AS ENUM ('CREATED', 'UPDATED', 'STATUS_CHANGED', 'PRO
 CREATE TYPE "AnalyticsEventType" AS ENUM ('PAGE_VIEW', 'PROJECT_VIEW', 'PRODUCT_VIEW', 'SERVICE_VIEW', 'SEARCH', 'CLICK', 'REACTION', 'COMMENT', 'SHARE', 'DOWNLOAD', 'ADD_TO_CART', 'REMOVE_FROM_CART', 'CHECKOUT_STARTED', 'PURCHASE', 'SERVICE_REQUEST', 'SIGN_UP', 'LOGIN', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "MediaOwnerType" AS ENUM ('USER', 'PROJECT', 'PRODUCT', 'BLOG', 'MESSAGE', 'TICKET', 'ORDER', 'SERVICE', 'SYSTEM');
-
--- CreateEnum
 CREATE TYPE "SeoRobots" AS ENUM ('INDEX_FOLLOW', 'INDEX_NOFOLLOW', 'NOINDEX_FOLLOW', 'NOINDEX_NOFOLLOW');
 
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
@@ -141,6 +138,7 @@ CREATE TABLE "account" (
     "id" TEXT NOT NULL,
     "accountId" TEXT NOT NULL,
     "providerId" TEXT NOT NULL,
+    "issuer" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "accessToken" TEXT,
     "refreshToken" TEXT,
@@ -279,6 +277,7 @@ CREATE TABLE "Quote" (
     "currency" TEXT NOT NULL DEFAULT 'NGN',
     "status" "QuoteStatus" NOT NULL DEFAULT 'DRAFT',
     "validUntil" TIMESTAMP(3),
+    "sentAt" TIMESTAMP(3),
     "acceptedAt" TIMESTAMP(3),
     "rejectedAt" TIMESTAMP(3),
     "notes" TEXT,
@@ -302,9 +301,9 @@ CREATE TABLE "QuoteItem" (
 );
 
 -- CreateTable
-CREATE TABLE "ClientProject" (
+CREATE TABLE "Project" (
     "id" TEXT NOT NULL,
-    "clientId" TEXT NOT NULL,
+    "clientId" TEXT,
     "serviceRequestId" TEXT,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -324,41 +323,60 @@ CREATE TABLE "ClientProject" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ClientProject_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "ProjectPhase" (
+CREATE TABLE "PortfolioProfile" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "createdById" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "description" TEXT,
-    "status" "ProjectPhaseStatus" NOT NULL DEFAULT 'PLANNED',
-    "progress" INTEGER NOT NULL DEFAULT 0,
-    "sortOrder" INTEGER NOT NULL DEFAULT 0,
-    "startedAt" TIMESTAMP(3),
-    "expectedEndAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
+    "tagline" TEXT,
+    "summary" TEXT,
+    "challenge" TEXT,
+    "solution" TEXT,
+    "outcome" TEXT,
+    "liveUrl" TEXT,
+    "repositoryUrl" TEXT,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "publishedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ProjectPhase_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PortfolioProfile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ProjectTechnology" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "icon" TEXT,
+
+    CONSTRAINT "ProjectTechnology_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "ProjectMilestone" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "phaseId" TEXT,
+    "createdById" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "description" TEXT,
+    "purpose" TEXT,
+    "expectedOutcome" TEXT,
+    "status" "ProjectMilestoneStatus" NOT NULL DEFAULT 'PLANNED',
+    "priority" "ProjectMilestonePriority" NOT NULL DEFAULT 'NORMAL',
+    "visibility" "ProjectUpdateVisibility" NOT NULL DEFAULT 'CLIENT',
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "progress" INTEGER NOT NULL DEFAULT 0,
-    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "startedAt" TIMESTAMP(3),
     "dueDate" TIMESTAMP(3),
     "completedAt" TIMESTAMP(3),
+    "gitCommitSha" TEXT,
+    "gitTag" TEXT,
+    "completionNotes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -366,17 +384,39 @@ CREATE TABLE "ProjectMilestone" (
 );
 
 -- CreateTable
+CREATE TABLE "ProjectMilestoneAssignment" (
+    "milestoneId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "role" TEXT,
+    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "removedAt" TIMESTAMP(3),
+
+    CONSTRAINT "ProjectMilestoneAssignment_pkey" PRIMARY KEY ("milestoneId","userId")
+);
+
+-- CreateTable
+CREATE TABLE "ProjectMilestoneDependency" (
+    "projectId" TEXT NOT NULL,
+    "milestoneId" TEXT NOT NULL,
+    "dependsOnMilestoneId" TEXT NOT NULL,
+
+    CONSTRAINT "ProjectMilestoneDependency_pkey" PRIMARY KEY ("milestoneId","dependsOnMilestoneId")
+);
+
+-- CreateTable
 CREATE TABLE "ProjectFeature" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "phaseId" TEXT,
+    "milestoneId" TEXT,
     "createdById" TEXT NOT NULL,
     "nominatedById" TEXT,
     "assignedToId" TEXT,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "description" TEXT,
-    "status" "ProjectFeatureStatus" NOT NULL DEFAULT 'PROPOSED',
+    "expectedOutcome" TEXT,
+    "acceptanceCriteria" JSONB,
+    "status" "ProjectFeatureStatus" NOT NULL DEFAULT 'BACKLOG',
     "priority" "ProjectFeaturePriority" NOT NULL DEFAULT 'NORMAL',
     "progress" INTEGER NOT NULL DEFAULT 0,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
@@ -393,6 +433,7 @@ CREATE TABLE "ProjectFeature" (
 
 -- CreateTable
 CREATE TABLE "ProjectFeatureDependency" (
+    "projectId" TEXT NOT NULL,
     "featureId" TEXT NOT NULL,
     "dependsOnFeatureId" TEXT NOT NULL,
 
@@ -403,9 +444,7 @@ CREATE TABLE "ProjectFeatureDependency" (
 CREATE TABLE "ProjectTask" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "phaseId" TEXT,
-    "milestoneId" TEXT,
-    "featureId" TEXT,
+    "featureId" TEXT NOT NULL,
     "createdById" TEXT NOT NULL,
     "assignedToId" TEXT,
     "title" TEXT NOT NULL,
@@ -439,6 +478,8 @@ CREATE TABLE "ProjectAssignment" (
 CREATE TABLE "ProjectUpdate" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
+    "milestoneId" TEXT,
+    "featureId" TEXT,
     "authorId" TEXT,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -470,6 +511,8 @@ CREATE TABLE "ProjectActivity" (
 CREATE TABLE "ProjectFile" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
+    "milestoneId" TEXT,
+    "featureId" TEXT,
     "uploaderId" TEXT,
     "name" TEXT NOT NULL,
     "url" TEXT NOT NULL,
@@ -477,6 +520,7 @@ CREATE TABLE "ProjectFile" (
     "size" INTEGER,
     "visibility" "ProjectUpdateVisibility" NOT NULL DEFAULT 'CLIENT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "ProjectFile_pkey" PRIMARY KEY ("id")
 );
@@ -485,57 +529,13 @@ CREATE TABLE "ProjectFile" (
 CREATE TABLE "ProjectAttribution" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
+    "name" TEXT,
     "role" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "ProjectAttribution_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PortfolioProject" (
-    "id" TEXT NOT NULL,
-    "ownerId" TEXT,
-    "title" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "tagline" TEXT,
-    "description" TEXT,
-    "type" "ProjectType" NOT NULL,
-    "status" "ProjectStatus" NOT NULL DEFAULT 'COMPLETED',
-    "visibility" "ProjectVisibility" NOT NULL DEFAULT 'PUBLIC',
-    "featured" BOOLEAN NOT NULL DEFAULT false,
-    "liveUrl" TEXT,
-    "repositoryUrl" TEXT,
-    "startedAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "PortfolioProject_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ProjectTechnology" (
-    "id" TEXT NOT NULL,
-    "projectId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "icon" TEXT,
-
-    CONSTRAINT "ProjectTechnology_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PortfolioProjectUpdate" (
-    "id" TEXT NOT NULL,
-    "projectId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
-    "progress" INTEGER,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "PortfolioProjectUpdate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -581,6 +581,7 @@ CREATE TABLE "ProductVariant" (
     "sku" TEXT,
     "price" DECIMAL(14,2),
     "attributes" JSONB,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -606,11 +607,11 @@ CREATE TABLE "DigitalProduct" (
 -- CreateTable
 CREATE TABLE "InventoryItem" (
     "id" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
-    "variantId" TEXT,
+    "variantId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 0,
     "reserved" INTEGER NOT NULL DEFAULT 0,
     "lowStockThreshold" INTEGER NOT NULL DEFAULT 5,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "InventoryItem_pkey" PRIMARY KEY ("id")
@@ -620,10 +621,10 @@ CREATE TABLE "InventoryItem" (
 CREATE TABLE "InventoryMovement" (
     "id" TEXT NOT NULL,
     "inventoryId" TEXT NOT NULL,
-    "variantId" TEXT,
     "type" "InventoryMovementType" NOT NULL,
     "quantity" INTEGER NOT NULL,
     "reason" TEXT,
+    "metadata" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "InventoryMovement_pkey" PRIMARY KEY ("id")
@@ -646,8 +647,7 @@ CREATE TABLE "Cart" (
 CREATE TABLE "CartItem" (
     "id" TEXT NOT NULL,
     "cartId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
-    "variantId" TEXT,
+    "variantId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 1,
     "unitPrice" DECIMAL(14,2) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -672,6 +672,8 @@ CREATE TABLE "Order" (
     "customerEmail" TEXT,
     "customerPhone" TEXT,
     "shippingAddress" JSONB,
+    "completedAt" TIMESTAMP(3),
+    "cancelledAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -682,9 +684,9 @@ CREATE TABLE "Order" (
 CREATE TABLE "OrderItem" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
-    "variantId" TEXT,
+    "variantId" TEXT NOT NULL,
     "productName" TEXT NOT NULL,
+    "variantName" TEXT,
     "quantity" INTEGER NOT NULL,
     "unitPrice" DECIMAL(14,2) NOT NULL,
     "total" DECIMAL(14,2) NOT NULL,
@@ -729,8 +731,8 @@ CREATE TABLE "OrderFulfillment" (
 -- CreateTable
 CREATE TABLE "DigitalDelivery" (
     "id" TEXT NOT NULL,
-    "orderId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
+    "orderItemId" TEXT NOT NULL,
+    "digitalProductId" TEXT NOT NULL,
     "token" TEXT NOT NULL,
     "status" "DigitalDeliveryStatus" NOT NULL DEFAULT 'PENDING',
     "downloadCount" INTEGER NOT NULL DEFAULT 0,
@@ -776,6 +778,8 @@ CREATE TABLE "BlogTag" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "BlogTag_pkey" PRIMARY KEY ("id")
 );
@@ -822,6 +826,9 @@ CREATE TABLE "Conversation" (
     "status" "ConversationStatus" NOT NULL DEFAULT 'ACTIVE',
     "subject" TEXT,
     "projectId" TEXT,
+    "serviceRequestId" TEXT,
+    "orderId" TEXT,
+    "supportTicketId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -834,6 +841,7 @@ CREATE TABLE "ConversationParticipant" (
     "conversationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "leftAt" TIMESTAMP(3),
     "lastReadAt" TIMESTAMP(3),
     "mutedAt" TIMESTAMP(3),
 
@@ -846,7 +854,6 @@ CREATE TABLE "Message" (
     "conversationId" TEXT NOT NULL,
     "senderId" TEXT NOT NULL,
     "body" TEXT,
-    "status" "MessageStatus" NOT NULL DEFAULT 'SENT',
     "replyToId" TEXT,
     "editedAt" TIMESTAMP(3),
     "deletedAt" TIMESTAMP(3),
@@ -903,20 +910,9 @@ CREATE TABLE "SupportTicket" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "resolvedAt" TIMESTAMP(3),
+    "closedAt" TIMESTAMP(3),
 
     CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TicketMessage" (
-    "id" TEXT NOT NULL,
-    "ticketId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "body" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "TicketMessage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -980,6 +976,23 @@ CREATE TABLE "AnalyticsEvent" (
 );
 
 -- CreateTable
+CREATE TABLE "ProjectAnalytics" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "views" INTEGER NOT NULL DEFAULT 0,
+    "uniqueViews" INTEGER NOT NULL DEFAULT 0,
+    "reactions" INTEGER NOT NULL DEFAULT 0,
+    "comments" INTEGER NOT NULL DEFAULT 0,
+    "shares" INTEGER NOT NULL DEFAULT 0,
+    "downloads" INTEGER NOT NULL DEFAULT 0,
+    "lastViewedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ProjectAnalytics_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "AuditLog" (
     "id" TEXT NOT NULL,
     "userId" TEXT,
@@ -997,7 +1010,6 @@ CREATE TABLE "AuditLog" (
 -- CreateTable
 CREATE TABLE "MediaAsset" (
     "id" TEXT NOT NULL,
-    "ownerType" "MediaOwnerType" NOT NULL,
     "url" TEXT NOT NULL,
     "publicId" TEXT,
     "fileName" TEXT,
@@ -1012,13 +1024,10 @@ CREATE TABLE "MediaAsset" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT,
     "serviceId" TEXT,
-    "clientProjectId" TEXT,
+    "projectId" TEXT,
     "projectUpdateId" TEXT,
-    "portfolioProjectId" TEXT,
-    "portfolioUpdateId" TEXT,
     "productId" TEXT,
     "blogPostId" TEXT,
-    "ticketMessageId" TEXT,
     "orderId" TEXT,
 
     CONSTRAINT "MediaAsset_pkey" PRIMARY KEY ("id")
@@ -1040,27 +1049,9 @@ CREATE TABLE "SeoMetadata" (
     "serviceId" TEXT,
     "productId" TEXT,
     "blogPostId" TEXT,
-    "portfolioProjectId" TEXT,
+    "projectId" TEXT,
 
     CONSTRAINT "SeoMetadata_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ProjectAnalytics" (
-    "id" TEXT NOT NULL,
-    "views" INTEGER NOT NULL DEFAULT 0,
-    "uniqueViews" INTEGER NOT NULL DEFAULT 0,
-    "likes" INTEGER NOT NULL DEFAULT 0,
-    "comments" INTEGER NOT NULL DEFAULT 0,
-    "shares" INTEGER NOT NULL DEFAULT 0,
-    "downloads" INTEGER NOT NULL DEFAULT 0,
-    "lastViewedAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "clientProjectId" TEXT,
-    "portfolioProjectId" TEXT,
-
-    CONSTRAINT "ProjectAnalytics_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -1076,10 +1067,13 @@ CREATE INDEX "user_status_idx" ON "user"("status");
 CREATE INDEX "user_createdAt_idx" ON "user"("createdAt");
 
 -- CreateIndex
+CREATE INDEX "account_providerId_idx" ON "account"("providerId");
+
+-- CreateIndex
 CREATE INDEX "account_userId_idx" ON "account"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "account_providerId_accountId_key" ON "account"("providerId", "accountId");
+CREATE UNIQUE INDEX "account_issuer_accountId_key" ON "account"("issuer", "accountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
@@ -1148,64 +1142,94 @@ CREATE INDEX "Quote_clientId_idx" ON "Quote"("clientId");
 CREATE INDEX "Quote_status_idx" ON "Quote"("status");
 
 -- CreateIndex
+CREATE INDEX "Quote_createdAt_idx" ON "Quote"("createdAt");
+
+-- CreateIndex
 CREATE INDEX "QuoteItem_quoteId_idx" ON "QuoteItem"("quoteId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ClientProject_serviceRequestId_key" ON "ClientProject"("serviceRequestId");
+CREATE UNIQUE INDEX "Project_serviceRequestId_key" ON "Project"("serviceRequestId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ClientProject_slug_key" ON "ClientProject"("slug");
+CREATE UNIQUE INDEX "Project_slug_key" ON "Project"("slug");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_clientId_idx" ON "ClientProject"("clientId");
+CREATE INDEX "Project_clientId_idx" ON "Project"("clientId");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_status_idx" ON "ClientProject"("status");
+CREATE INDEX "Project_status_idx" ON "Project"("status");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_visibility_idx" ON "ClientProject"("visibility");
+CREATE INDEX "Project_visibility_idx" ON "Project"("visibility");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_type_idx" ON "ClientProject"("type");
+CREATE INDEX "Project_type_idx" ON "Project"("type");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_createdAt_idx" ON "ClientProject"("createdAt");
+CREATE INDEX "Project_createdAt_idx" ON "Project"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "ClientProject_expectedEndAt_idx" ON "ClientProject"("expectedEndAt");
+CREATE INDEX "Project_updatedAt_idx" ON "Project"("updatedAt");
 
 -- CreateIndex
-CREATE INDEX "ProjectPhase_projectId_idx" ON "ProjectPhase"("projectId");
+CREATE INDEX "Project_expectedEndAt_idx" ON "Project"("expectedEndAt");
 
 -- CreateIndex
-CREATE INDEX "ProjectPhase_createdById_idx" ON "ProjectPhase"("createdById");
+CREATE UNIQUE INDEX "PortfolioProfile_projectId_key" ON "PortfolioProfile"("projectId");
 
 -- CreateIndex
-CREATE INDEX "ProjectPhase_status_idx" ON "ProjectPhase"("status");
+CREATE INDEX "PortfolioProfile_featured_idx" ON "PortfolioProfile"("featured");
 
 -- CreateIndex
-CREATE INDEX "ProjectPhase_sortOrder_idx" ON "ProjectPhase"("sortOrder");
+CREATE INDEX "PortfolioProfile_publishedAt_idx" ON "PortfolioProfile"("publishedAt");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ProjectPhase_projectId_slug_key" ON "ProjectPhase"("projectId", "slug");
+CREATE INDEX "ProjectTechnology_projectId_idx" ON "ProjectTechnology"("projectId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ProjectTechnology_projectId_slug_key" ON "ProjectTechnology"("projectId", "slug");
 
 -- CreateIndex
 CREATE INDEX "ProjectMilestone_projectId_idx" ON "ProjectMilestone"("projectId");
 
 -- CreateIndex
-CREATE INDEX "ProjectMilestone_phaseId_idx" ON "ProjectMilestone"("phaseId");
+CREATE INDEX "ProjectMilestone_createdById_idx" ON "ProjectMilestone"("createdById");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestone_status_idx" ON "ProjectMilestone"("status");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestone_priority_idx" ON "ProjectMilestone"("priority");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestone_visibility_idx" ON "ProjectMilestone"("visibility");
 
 -- CreateIndex
 CREATE INDEX "ProjectMilestone_dueDate_idx" ON "ProjectMilestone"("dueDate");
 
 -- CreateIndex
-CREATE INDEX "ProjectMilestone_completed_idx" ON "ProjectMilestone"("completed");
+CREATE INDEX "ProjectMilestone_sortOrder_idx" ON "ProjectMilestone"("sortOrder");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ProjectMilestone_projectId_slug_key" ON "ProjectMilestone"("projectId", "slug");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestoneAssignment_userId_idx" ON "ProjectMilestoneAssignment"("userId");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestoneAssignment_removedAt_idx" ON "ProjectMilestoneAssignment"("removedAt");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestoneDependency_projectId_idx" ON "ProjectMilestoneDependency"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ProjectMilestoneDependency_dependsOnMilestoneId_idx" ON "ProjectMilestoneDependency"("dependsOnMilestoneId");
 
 -- CreateIndex
 CREATE INDEX "ProjectFeature_projectId_idx" ON "ProjectFeature"("projectId");
 
 -- CreateIndex
-CREATE INDEX "ProjectFeature_phaseId_idx" ON "ProjectFeature"("phaseId");
+CREATE INDEX "ProjectFeature_milestoneId_idx" ON "ProjectFeature"("milestoneId");
 
 -- CreateIndex
 CREATE INDEX "ProjectFeature_createdById_idx" ON "ProjectFeature"("createdById");
@@ -1226,19 +1250,19 @@ CREATE INDEX "ProjectFeature_priority_idx" ON "ProjectFeature"("priority");
 CREATE INDEX "ProjectFeature_dueDate_idx" ON "ProjectFeature"("dueDate");
 
 -- CreateIndex
+CREATE INDEX "ProjectFeature_sortOrder_idx" ON "ProjectFeature"("sortOrder");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ProjectFeature_projectId_slug_key" ON "ProjectFeature"("projectId", "slug");
+
+-- CreateIndex
+CREATE INDEX "ProjectFeatureDependency_projectId_idx" ON "ProjectFeatureDependency"("projectId");
 
 -- CreateIndex
 CREATE INDEX "ProjectFeatureDependency_dependsOnFeatureId_idx" ON "ProjectFeatureDependency"("dependsOnFeatureId");
 
 -- CreateIndex
 CREATE INDEX "ProjectTask_projectId_idx" ON "ProjectTask"("projectId");
-
--- CreateIndex
-CREATE INDEX "ProjectTask_phaseId_idx" ON "ProjectTask"("phaseId");
-
--- CreateIndex
-CREATE INDEX "ProjectTask_milestoneId_idx" ON "ProjectTask"("milestoneId");
 
 -- CreateIndex
 CREATE INDEX "ProjectTask_featureId_idx" ON "ProjectTask"("featureId");
@@ -1259,6 +1283,9 @@ CREATE INDEX "ProjectTask_priority_idx" ON "ProjectTask"("priority");
 CREATE INDEX "ProjectTask_dueDate_idx" ON "ProjectTask"("dueDate");
 
 -- CreateIndex
+CREATE INDEX "ProjectTask_sortOrder_idx" ON "ProjectTask"("sortOrder");
+
+-- CreateIndex
 CREATE INDEX "ProjectAssignment_userId_idx" ON "ProjectAssignment"("userId");
 
 -- CreateIndex
@@ -1269,6 +1296,12 @@ CREATE UNIQUE INDEX "ProjectAssignment_projectId_userId_key" ON "ProjectAssignme
 
 -- CreateIndex
 CREATE INDEX "ProjectUpdate_projectId_idx" ON "ProjectUpdate"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ProjectUpdate_milestoneId_idx" ON "ProjectUpdate"("milestoneId");
+
+-- CreateIndex
+CREATE INDEX "ProjectUpdate_featureId_idx" ON "ProjectUpdate"("featureId");
 
 -- CreateIndex
 CREATE INDEX "ProjectUpdate_authorId_idx" ON "ProjectUpdate"("authorId");
@@ -1301,6 +1334,12 @@ CREATE INDEX "ProjectActivity_createdAt_idx" ON "ProjectActivity"("createdAt");
 CREATE INDEX "ProjectFile_projectId_idx" ON "ProjectFile"("projectId");
 
 -- CreateIndex
+CREATE INDEX "ProjectFile_milestoneId_idx" ON "ProjectFile"("milestoneId");
+
+-- CreateIndex
+CREATE INDEX "ProjectFile_featureId_idx" ON "ProjectFile"("featureId");
+
+-- CreateIndex
 CREATE INDEX "ProjectFile_uploaderId_idx" ON "ProjectFile"("uploaderId");
 
 -- CreateIndex
@@ -1314,36 +1353,6 @@ CREATE INDEX "ProjectAttribution_userId_idx" ON "ProjectAttribution"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ProjectAttribution_projectId_userId_key" ON "ProjectAttribution"("projectId", "userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PortfolioProject_slug_key" ON "PortfolioProject"("slug");
-
--- CreateIndex
-CREATE INDEX "PortfolioProject_ownerId_idx" ON "PortfolioProject"("ownerId");
-
--- CreateIndex
-CREATE INDEX "PortfolioProject_visibility_idx" ON "PortfolioProject"("visibility");
-
--- CreateIndex
-CREATE INDEX "PortfolioProject_status_idx" ON "PortfolioProject"("status");
-
--- CreateIndex
-CREATE INDEX "PortfolioProject_featured_idx" ON "PortfolioProject"("featured");
-
--- CreateIndex
-CREATE INDEX "PortfolioProject_createdAt_idx" ON "PortfolioProject"("createdAt");
-
--- CreateIndex
-CREATE INDEX "ProjectTechnology_projectId_idx" ON "ProjectTechnology"("projectId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ProjectTechnology_projectId_slug_key" ON "ProjectTechnology"("projectId", "slug");
-
--- CreateIndex
-CREATE INDEX "PortfolioProjectUpdate_projectId_idx" ON "PortfolioProjectUpdate"("projectId");
-
--- CreateIndex
-CREATE INDEX "PortfolioProjectUpdate_createdAt_idx" ON "PortfolioProjectUpdate"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ProductCategory_slug_key" ON "ProductCategory"("slug");
@@ -1373,22 +1382,16 @@ CREATE UNIQUE INDEX "ProductVariant_sku_key" ON "ProductVariant"("sku");
 CREATE INDEX "ProductVariant_productId_idx" ON "ProductVariant"("productId");
 
 -- CreateIndex
+CREATE INDEX "ProductVariant_isDefault_idx" ON "ProductVariant"("isDefault");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "DigitalProduct_productId_key" ON "DigitalProduct"("productId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "InventoryItem_variantId_key" ON "InventoryItem"("variantId");
 
 -- CreateIndex
-CREATE INDEX "InventoryItem_productId_idx" ON "InventoryItem"("productId");
-
--- CreateIndex
-CREATE INDEX "InventoryItem_variantId_idx" ON "InventoryItem"("variantId");
-
--- CreateIndex
 CREATE INDEX "InventoryMovement_inventoryId_idx" ON "InventoryMovement"("inventoryId");
-
--- CreateIndex
-CREATE INDEX "InventoryMovement_variantId_idx" ON "InventoryMovement"("variantId");
 
 -- CreateIndex
 CREATE INDEX "InventoryMovement_createdAt_idx" ON "InventoryMovement"("createdAt");
@@ -1406,10 +1409,10 @@ CREATE INDEX "Cart_status_idx" ON "Cart"("status");
 CREATE INDEX "CartItem_cartId_idx" ON "CartItem"("cartId");
 
 -- CreateIndex
-CREATE INDEX "CartItem_productId_idx" ON "CartItem"("productId");
+CREATE INDEX "CartItem_variantId_idx" ON "CartItem"("variantId");
 
 -- CreateIndex
-CREATE INDEX "CartItem_variantId_idx" ON "CartItem"("variantId");
+CREATE UNIQUE INDEX "CartItem_cartId_variantId_key" ON "CartItem"("cartId", "variantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
@@ -1425,9 +1428,6 @@ CREATE INDEX "Order_createdAt_idx" ON "Order"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");
-
--- CreateIndex
-CREATE INDEX "OrderItem_productId_idx" ON "OrderItem"("productId");
 
 -- CreateIndex
 CREATE INDEX "OrderItem_variantId_idx" ON "OrderItem"("variantId");
@@ -1448,13 +1448,13 @@ CREATE INDEX "Payment_provider_idx" ON "Payment"("provider");
 CREATE UNIQUE INDEX "OrderFulfillment_orderId_key" ON "OrderFulfillment"("orderId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "DigitalDelivery_orderItemId_key" ON "DigitalDelivery"("orderItemId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "DigitalDelivery_token_key" ON "DigitalDelivery"("token");
 
 -- CreateIndex
-CREATE INDEX "DigitalDelivery_orderId_idx" ON "DigitalDelivery"("orderId");
-
--- CreateIndex
-CREATE INDEX "DigitalDelivery_productId_idx" ON "DigitalDelivery"("productId");
+CREATE INDEX "DigitalDelivery_digitalProductId_idx" ON "DigitalDelivery"("digitalProductId");
 
 -- CreateIndex
 CREATE INDEX "DigitalDelivery_status_idx" ON "DigitalDelivery"("status");
@@ -1496,6 +1496,9 @@ CREATE INDEX "Comment_projectId_idx" ON "Comment"("projectId");
 CREATE INDEX "Comment_parentId_idx" ON "Comment"("parentId");
 
 -- CreateIndex
+CREATE INDEX "Comment_status_idx" ON "Comment"("status");
+
+-- CreateIndex
 CREATE INDEX "Comment_createdAt_idx" ON "Comment"("createdAt");
 
 -- CreateIndex
@@ -1517,7 +1520,16 @@ CREATE UNIQUE INDEX "Reaction_userId_postId_type_key" ON "Reaction"("userId", "p
 CREATE UNIQUE INDEX "Reaction_userId_projectId_type_key" ON "Reaction"("userId", "projectId", "type");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Conversation_projectId_key" ON "Conversation"("projectId");
+CREATE INDEX "Conversation_projectId_idx" ON "Conversation"("projectId");
+
+-- CreateIndex
+CREATE INDEX "Conversation_serviceRequestId_idx" ON "Conversation"("serviceRequestId");
+
+-- CreateIndex
+CREATE INDEX "Conversation_orderId_idx" ON "Conversation"("orderId");
+
+-- CreateIndex
+CREATE INDEX "Conversation_supportTicketId_idx" ON "Conversation"("supportTicketId");
 
 -- CreateIndex
 CREATE INDEX "Conversation_type_idx" ON "Conversation"("type");
@@ -1547,7 +1559,7 @@ CREATE INDEX "Message_replyToId_idx" ON "Message"("replyToId");
 CREATE INDEX "Message_createdAt_idx" ON "Message"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "Message_status_idx" ON "Message"("status");
+CREATE INDEX "Message_deletedAt_idx" ON "Message"("deletedAt");
 
 -- CreateIndex
 CREATE INDEX "MessageAttachment_messageId_idx" ON "MessageAttachment"("messageId");
@@ -1581,15 +1593,6 @@ CREATE INDEX "SupportTicket_priority_idx" ON "SupportTicket"("priority");
 
 -- CreateIndex
 CREATE INDEX "SupportTicket_createdAt_idx" ON "SupportTicket"("createdAt");
-
--- CreateIndex
-CREATE INDEX "TicketMessage_ticketId_idx" ON "TicketMessage"("ticketId");
-
--- CreateIndex
-CREATE INDEX "TicketMessage_userId_idx" ON "TicketMessage"("userId");
-
--- CreateIndex
-CREATE INDEX "TicketMessage_createdAt_idx" ON "TicketMessage"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
@@ -1634,6 +1637,12 @@ CREATE INDEX "AnalyticsEvent_entityType_entityId_idx" ON "AnalyticsEvent"("entit
 CREATE INDEX "AnalyticsEvent_createdAt_idx" ON "AnalyticsEvent"("createdAt");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "ProjectAnalytics_projectId_key" ON "ProjectAnalytics"("projectId");
+
+-- CreateIndex
+CREATE INDEX "ProjectAnalytics_lastViewedAt_idx" ON "ProjectAnalytics"("lastViewedAt");
+
+-- CreateIndex
 CREATE INDEX "AuditLog_userId_idx" ON "AuditLog"("userId");
 
 -- CreateIndex
@@ -1646,34 +1655,22 @@ CREATE INDEX "AuditLog_action_idx" ON "AuditLog"("action");
 CREATE INDEX "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "MediaAsset_ownerType_idx" ON "MediaAsset"("ownerType");
-
--- CreateIndex
 CREATE INDEX "MediaAsset_userId_idx" ON "MediaAsset"("userId");
 
 -- CreateIndex
 CREATE INDEX "MediaAsset_serviceId_idx" ON "MediaAsset"("serviceId");
 
 -- CreateIndex
-CREATE INDEX "MediaAsset_clientProjectId_idx" ON "MediaAsset"("clientProjectId");
+CREATE INDEX "MediaAsset_projectId_idx" ON "MediaAsset"("projectId");
 
 -- CreateIndex
 CREATE INDEX "MediaAsset_projectUpdateId_idx" ON "MediaAsset"("projectUpdateId");
-
--- CreateIndex
-CREATE INDEX "MediaAsset_portfolioProjectId_idx" ON "MediaAsset"("portfolioProjectId");
-
--- CreateIndex
-CREATE INDEX "MediaAsset_portfolioUpdateId_idx" ON "MediaAsset"("portfolioUpdateId");
 
 -- CreateIndex
 CREATE INDEX "MediaAsset_productId_idx" ON "MediaAsset"("productId");
 
 -- CreateIndex
 CREATE INDEX "MediaAsset_blogPostId_idx" ON "MediaAsset"("blogPostId");
-
--- CreateIndex
-CREATE INDEX "MediaAsset_ticketMessageId_idx" ON "MediaAsset"("ticketMessageId");
 
 -- CreateIndex
 CREATE INDEX "MediaAsset_orderId_idx" ON "MediaAsset"("orderId");
@@ -1688,16 +1685,7 @@ CREATE UNIQUE INDEX "SeoMetadata_productId_key" ON "SeoMetadata"("productId");
 CREATE UNIQUE INDEX "SeoMetadata_blogPostId_key" ON "SeoMetadata"("blogPostId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SeoMetadata_portfolioProjectId_key" ON "SeoMetadata"("portfolioProjectId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ProjectAnalytics_clientProjectId_key" ON "ProjectAnalytics"("clientProjectId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ProjectAnalytics_portfolioProjectId_key" ON "ProjectAnalytics"("portfolioProjectId");
-
--- CreateIndex
-CREATE INDEX "ProjectAnalytics_lastViewedAt_idx" ON "ProjectAnalytics"("lastViewedAt");
+CREATE UNIQUE INDEX "SeoMetadata_projectId_key" ON "SeoMetadata"("projectId");
 
 -- AddForeignKey
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1733,28 +1721,43 @@ ALTER TABLE "Quote" ADD CONSTRAINT "Quote_clientId_fkey" FOREIGN KEY ("clientId"
 ALTER TABLE "QuoteItem" ADD CONSTRAINT "QuoteItem_quoteId_fkey" FOREIGN KEY ("quoteId") REFERENCES "Quote"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ClientProject" ADD CONSTRAINT "ClientProject_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Project" ADD CONSTRAINT "Project_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ClientProject" ADD CONSTRAINT "ClientProject_serviceRequestId_fkey" FOREIGN KEY ("serviceRequestId") REFERENCES "ServiceRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Project" ADD CONSTRAINT "Project_serviceRequestId_fkey" FOREIGN KEY ("serviceRequestId") REFERENCES "ServiceRequest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectPhase" ADD CONSTRAINT "ProjectPhase_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PortfolioProfile" ADD CONSTRAINT "PortfolioProfile_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectPhase" ADD CONSTRAINT "ProjectPhase_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProjectTechnology" ADD CONSTRAINT "ProjectTechnology_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectMilestone" ADD CONSTRAINT "ProjectMilestone_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectMilestone" ADD CONSTRAINT "ProjectMilestone_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectMilestone" ADD CONSTRAINT "ProjectMilestone_phaseId_fkey" FOREIGN KEY ("phaseId") REFERENCES "ProjectPhase"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ProjectMilestone" ADD CONSTRAINT "ProjectMilestone_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectMilestoneAssignment" ADD CONSTRAINT "ProjectMilestoneAssignment_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_phaseId_fkey" FOREIGN KEY ("phaseId") REFERENCES "ProjectPhase"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ProjectMilestoneAssignment" ADD CONSTRAINT "ProjectMilestoneAssignment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectMilestoneDependency" ADD CONSTRAINT "ProjectMilestoneDependency_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectMilestoneDependency" ADD CONSTRAINT "ProjectMilestoneDependency_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectMilestoneDependency" ADD CONSTRAINT "ProjectMilestoneDependency_dependsOnMilestoneId_fkey" FOREIGN KEY ("dependsOnMilestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1766,22 +1769,19 @@ ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_nominatedById_fkey" 
 ALTER TABLE "ProjectFeature" ADD CONSTRAINT "ProjectFeature_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ProjectFeatureDependency" ADD CONSTRAINT "ProjectFeatureDependency_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "ProjectFeatureDependency" ADD CONSTRAINT "ProjectFeatureDependency_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "ProjectFeature"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectFeatureDependency" ADD CONSTRAINT "ProjectFeatureDependency_dependsOnFeatureId_fkey" FOREIGN KEY ("dependsOnFeatureId") REFERENCES "ProjectFeature"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_phaseId_fkey" FOREIGN KEY ("phaseId") REFERENCES "ProjectPhase"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "ProjectFeature"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "ProjectFeature"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1790,43 +1790,46 @@ ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_createdById_fkey" FOREIGN 
 ALTER TABLE "ProjectTask" ADD CONSTRAINT "ProjectTask_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectAssignment" ADD CONSTRAINT "ProjectAssignment_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectAssignment" ADD CONSTRAINT "ProjectAssignment_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectAssignment" ADD CONSTRAINT "ProjectAssignment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectUpdate" ADD CONSTRAINT "ProjectUpdate_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectUpdate" ADD CONSTRAINT "ProjectUpdate_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectUpdate" ADD CONSTRAINT "ProjectUpdate_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectUpdate" ADD CONSTRAINT "ProjectUpdate_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "ProjectFeature"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectUpdate" ADD CONSTRAINT "ProjectUpdate_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectActivity" ADD CONSTRAINT "ProjectActivity_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectActivity" ADD CONSTRAINT "ProjectActivity_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectActivity" ADD CONSTRAINT "ProjectActivity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectFile" ADD CONSTRAINT "ProjectFile_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectFile" ADD CONSTRAINT "ProjectFile_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectFile" ADD CONSTRAINT "ProjectFile_milestoneId_fkey" FOREIGN KEY ("milestoneId") REFERENCES "ProjectMilestone"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectFile" ADD CONSTRAINT "ProjectFile_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "ProjectFeature"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectFile" ADD CONSTRAINT "ProjectFile_uploaderId_fkey" FOREIGN KEY ("uploaderId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectAttribution" ADD CONSTRAINT "ProjectAttribution_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectAttribution" ADD CONSTRAINT "ProjectAttribution_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectAttribution" ADD CONSTRAINT "ProjectAttribution_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PortfolioProject" ADD CONSTRAINT "PortfolioProject_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProjectTechnology" ADD CONSTRAINT "ProjectTechnology_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PortfolioProjectUpdate" ADD CONSTRAINT "PortfolioProjectUpdate_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProjectAttribution" ADD CONSTRAINT "ProjectAttribution_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ProductCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1838,16 +1841,10 @@ ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_productId_fkey" FORE
 ALTER TABLE "DigitalProduct" ADD CONSTRAINT "DigitalProduct_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "InventoryItem" ADD CONSTRAINT "InventoryItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "InventoryItem" ADD CONSTRAINT "InventoryItem_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InventoryMovement" ADD CONSTRAINT "InventoryMovement_inventoryId_fkey" FOREIGN KEY ("inventoryId") REFERENCES "InventoryItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "InventoryMovement" ADD CONSTRAINT "InventoryMovement_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1856,10 +1853,7 @@ ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFE
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1868,10 +1862,7 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") RE
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "ProductVariant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1880,10 +1871,10 @@ ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderI
 ALTER TABLE "OrderFulfillment" ADD CONSTRAINT "OrderFulfillment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DigitalDelivery" ADD CONSTRAINT "DigitalDelivery_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "DigitalDelivery" ADD CONSTRAINT "DigitalDelivery_orderItemId_fkey" FOREIGN KEY ("orderItemId") REFERENCES "OrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "DigitalDelivery" ADD CONSTRAINT "DigitalDelivery_productId_fkey" FOREIGN KEY ("productId") REFERENCES "DigitalProduct"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "DigitalDelivery" ADD CONSTRAINT "DigitalDelivery_digitalProductId_fkey" FOREIGN KEY ("digitalProductId") REFERENCES "DigitalProduct"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BlogPost" ADD CONSTRAINT "BlogPost_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1904,7 +1895,7 @@ ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Comment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1916,10 +1907,19 @@ ALTER TABLE "Reaction" ADD CONSTRAINT "Reaction_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "Reaction" ADD CONSTRAINT "Reaction_postId_fkey" FOREIGN KEY ("postId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reaction" ADD CONSTRAINT "Reaction_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Reaction" ADD CONSTRAINT "Reaction_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "ClientProject"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_serviceRequestId_fkey" FOREIGN KEY ("serviceRequestId") REFERENCES "ServiceRequest"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_supportTicketId_fkey" FOREIGN KEY ("supportTicketId") REFERENCES "SupportTicket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ConversationParticipant" ADD CONSTRAINT "ConversationParticipant_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES "Conversation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1940,19 +1940,13 @@ ALTER TABLE "Message" ADD CONSTRAINT "Message_replyToId_fkey" FOREIGN KEY ("repl
 ALTER TABLE "MessageAttachment" ADD CONSTRAINT "MessageAttachment_messageId_fkey" FOREIGN KEY ("messageId") REFERENCES "Message"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AssistanceRequest" ADD CONSTRAINT "AssistanceRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AssistanceRequest" ADD CONSTRAINT "AssistanceRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TicketMessage" ADD CONSTRAINT "TicketMessage_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "SupportTicket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TicketMessage" ADD CONSTRAINT "TicketMessage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1970,6 +1964,9 @@ ALTER TABLE "AnalyticsEvent" ADD CONSTRAINT "AnalyticsEvent_userId_fkey" FOREIGN
 ALTER TABLE "AnalyticsEvent" ADD CONSTRAINT "AnalyticsEvent_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "AnalyticsSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ProjectAnalytics" ADD CONSTRAINT "ProjectAnalytics_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1979,25 +1976,16 @@ ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_clientProjectId_fkey" FOREIGN KEY ("clientProjectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_projectUpdateId_fkey" FOREIGN KEY ("projectUpdateId") REFERENCES "ProjectUpdate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_portfolioProjectId_fkey" FOREIGN KEY ("portfolioProjectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_portfolioUpdateId_fkey" FOREIGN KEY ("portfolioUpdateId") REFERENCES "PortfolioProjectUpdate"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_ticketMessageId_fkey" FOREIGN KEY ("ticketMessageId") REFERENCES "TicketMessage"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MediaAsset" ADD CONSTRAINT "MediaAsset_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -2012,10 +2000,4 @@ ALTER TABLE "SeoMetadata" ADD CONSTRAINT "SeoMetadata_productId_fkey" FOREIGN KE
 ALTER TABLE "SeoMetadata" ADD CONSTRAINT "SeoMetadata_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SeoMetadata" ADD CONSTRAINT "SeoMetadata_portfolioProjectId_fkey" FOREIGN KEY ("portfolioProjectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProjectAnalytics" ADD CONSTRAINT "ProjectAnalytics_clientProjectId_fkey" FOREIGN KEY ("clientProjectId") REFERENCES "ClientProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProjectAnalytics" ADD CONSTRAINT "ProjectAnalytics_portfolioProjectId_fkey" FOREIGN KEY ("portfolioProjectId") REFERENCES "PortfolioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SeoMetadata" ADD CONSTRAINT "SeoMetadata_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
