@@ -676,21 +676,19 @@ model ServiceCategory {
 }
 
 model Service {
-  id               String        @id @default(cuid())
+  id               String         @id @default(cuid())
   categoryId       String?
   createdById      String
   name             String
-  slug             String        @unique
+  slug             String         @unique
   shortDescription String?
   description      String?
   type             ProjectType
-  status           ServiceStatus @default(DRAFT)
-  priceFrom        Decimal?      @db.Decimal(14, 2)
-  priceTo          Decimal?      @db.Decimal(14, 2)
-  currency         String        @default("NGN")
-  featured         Boolean       @default(false)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  status           ServiceStatus  @default(DRAFT)
+  prices           ServicePrice[]
+  featured         Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   category  ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdBy User             @relation("ServiceCreator", fields: [createdById], references: [id], onDelete: Restrict)
@@ -707,6 +705,24 @@ model Service {
   @@index([createdById])
   @@index([status])
   @@index([featured])
+}
+
+model ServicePrice {
+  id        String @id @default(cuid())
+  serviceId String
+
+  currency  String
+  priceFrom Decimal  @db.Decimal(14, 2)
+  priceTo   Decimal? @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, currency])
+  @@index([serviceId])
+  @@index([currency])
 }
 
 model ServiceRequest {
