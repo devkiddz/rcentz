@@ -21,7 +21,7 @@ export function HomeHeroIntro() {
       </div>
 
       <h1 className="mt-5 text-balance text-[2.45rem] font-semibold leading-[0.99] tracking-[-0.055em] sm:text-[2.9rem] lg:text-[3.15rem]">
-        We build systems that power{' '}
+        We engineer the technology that{' '}
         <span
           className={[
             'bg-gradient-to-r',
@@ -30,7 +30,7 @@ export function HomeHeroIntro() {
             'to-theme-accent-strong',
             'bg-clip-text text-transparent'
           ].join(' ')}>
-          real businesses.
+          powers market leaders...
         </span>
       </h1>
 
