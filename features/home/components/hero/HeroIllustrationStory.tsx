@@ -27,12 +27,21 @@ export function HeroIllustrationStory({
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="grid min-h-[460px] items-center gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-7">
-      {/* =====================================================
-          STORY COPY
-          ===================================================== */}
+    <div
+      className={[
+        'grid',
+        'min-h-[540px]',
+        'items-center',
+        'lg:min-h-[460px]',
+        'lg:grid-cols-[0.82fr_1.18fr]',
+        'lg:gap-7'
+      ].join(' ')}>
+      {/* DESKTOP STORY COPY */}
 
-      <div className={['relative z-10', 'flex max-w-[455px]', 'flex-col justify-center'].join(' ')}>
+      <div
+        className={['relative z-10', 'hidden', 'max-w-[455px]', 'flex-col justify-center', 'lg:flex'].join(
+          ' '
+        )}>
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-theme-accent" />
 
@@ -64,13 +73,11 @@ export function HeroIllustrationStory({
             'via-theme-accent',
             'to-theme-accent-strong',
             'bg-clip-text',
-            'text-[2.45rem]',
+            'text-[3.05rem]',
             'font-semibold',
             'leading-[0.98]',
             'tracking-[-0.055em]',
-            'text-transparent',
-            'sm:text-[2.85rem]',
-            'lg:text-[3.05rem]'
+            'text-transparent'
           ].join(' ')}>
           {title}
         </motion.h2>
@@ -90,15 +97,7 @@ export function HeroIllustrationStory({
             delay: 0.1,
             duration: 0.65
           }}
-          className={[
-            'mt-5',
-            'max-w-[410px]',
-            'text-[14px]',
-            'leading-6',
-            'text-muted',
-            'sm:text-[15px]',
-            'sm:leading-7'
-          ].join(' ')}>
+          className="mt-5 max-w-[410px] text-[15px] leading-7 text-muted">
           {description}
         </motion.p>
 
@@ -122,9 +121,7 @@ export function HeroIllustrationStory({
             href="#services"
             className={[
               'inline-flex h-10',
-              'items-center',
-              'justify-center',
-              'gap-2',
+              'items-center justify-center gap-2',
               'rounded-full',
               'bg-primary',
               'px-5',
@@ -164,11 +161,11 @@ export function HeroIllustrationStory({
         </div>
       </div>
 
-      {/* =====================================================
-          VISUAL STORY
-          ===================================================== */}
+      {/* MOBILE = STORY OWNS THE SCREEN */}
 
-      <HeroStoryIllustration variant={variant} />
+      <div className={['relative', 'min-w-0', 'min-h-[540px]', 'sm:min-h-[580px]', 'lg:min-h-0'].join(' ')}>
+        <HeroStoryIllustration variant={variant} />
+      </div>
     </div>
   );
 }

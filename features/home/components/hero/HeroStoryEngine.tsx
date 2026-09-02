@@ -97,10 +97,22 @@ export function HeroStoryEngine() {
 
     if (activeIndex === 1) {
       return (
-        <div className="grid min-h-[500px] items-stretch gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-8">
-          <HomeHeroIntro />
+        <div
+          className={[
+            'grid',
+            'min-h-[540px]',
+            'items-stretch',
+            'lg:min-h-[500px]',
+            'lg:grid-cols-[0.86fr_1.14fr]',
+            'lg:gap-8'
+          ].join(' ')}>
+          <div className="hidden lg:block">
+            <HomeHeroIntro />
+          </div>
 
-          <HomeHeroWorkspace />
+          <div className="min-w-0">
+            <HomeHeroWorkspace />
+          </div>
         </div>
       );
     }
