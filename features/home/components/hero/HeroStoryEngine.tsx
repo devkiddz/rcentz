@@ -1,13 +1,26 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  AppWindow,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Code2,
+  LayoutDashboard,
+  MessageSquareText,
+  ServerCog,
+  ShoppingCart,
+  Sparkles
+} from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
-import { HeroIllustrationStory } from '@/features/home/components/hero/HeroIllustrationStory';
+import {
+  HeroIllustrationStory,
+  type HeroServiceSlide
+} from '@/features/home/components/hero/HeroIllustrationStory';
 import { HomeHeroIntro } from '@/features/home/components/hero/HomeHeroIntro';
 import { HomeHeroWorkspace } from '@/features/home/components/hero/HomeHeroWorkspace';
-import { RcentzWebsiteStory } from '@/features/home/components/hero/stories/RcentzWebsiteStory';
 
 const STORIES = [
   {
@@ -36,6 +49,59 @@ const STORIES = [
     duration: 16000
   }
 ] as const;
+
+const RCENTZ_SERVICE_SLIDES: readonly HeroServiceSlide[] = [
+  {
+    label: 'Web Development',
+    description: 'Modern responsive websites built for performance and conversion.',
+    icon: Code2
+  },
+  {
+    label: 'Web Applications',
+    description: 'Custom application systems designed around real business workflows.',
+    icon: AppWindow
+  },
+  {
+    label: 'E-commerce Solutions',
+    description: 'Connected online stores, checkout flows and commerce experiences.',
+    icon: ShoppingCart
+  },
+  {
+    label: 'UI/UX Design',
+    description: 'Clean user-focused interfaces for web and application products.',
+    icon: Sparkles
+  },
+  {
+    label: 'Systems & Dashboards',
+    description: 'Operational, reporting and business management dashboards.',
+    icon: LayoutDashboard
+  },
+  {
+    label: 'Online Banking / Fintech',
+    description: 'Interface systems for modern fintech and financial platforms.',
+    icon: Building2
+  },
+  {
+    label: 'Brokers Dashboards',
+    description: 'Structured dashboards for trading, brokerage and market workflows.',
+    icon: ServerCog
+  },
+  {
+    label: 'Maintenance & Support',
+    description: 'Updates, ongoing improvements and dependable system support.',
+    icon: MessageSquareText
+  }
+];
+
+const RCENTZ_STORY = {
+  eyebrow: 'Websites · Systems · Business',
+  title: 'We build websites that power business.',
+  description:
+    'Premium digital solutions for modern businesses — designed to perform, built to scale and connected to real operations.',
+  status: 'Building production systems',
+  variant: 'rcentz' as const,
+  serviceSlides: RCENTZ_SERVICE_SLIDES
+};
 
 const ILLUSTRATION_STORIES = [
   {
@@ -92,7 +158,7 @@ export function HeroStoryEngine() {
 
   function renderActiveStory() {
     if (activeIndex === 0) {
-      return <RcentzWebsiteStory />;
+      return <HeroIllustrationStory {...RCENTZ_STORY} />;
     }
 
     if (activeIndex === 1) {
@@ -100,17 +166,61 @@ export function HeroStoryEngine() {
         <div
           className={[
             'grid',
-            'min-h-[540px]',
-            'items-stretch',
+            'items-start',
             'lg:min-h-[500px]',
             'lg:grid-cols-[0.86fr_1.14fr]',
+            'lg:items-stretch',
             'lg:gap-8'
           ].join(' ')}>
+          {/* MOBILE SYSTEM COPY */}
+
+          <div className="relative z-20 px-1 pt-1 lg:hidden">
+            <div className="flex items-center gap-2">
+              <span className="size-1.5 rounded-full bg-theme-accent" />
+
+              <p className="font-mono text-[7px] font-medium uppercase tracking-[0.16em] text-muted">
+                Software · Systems · Scale
+              </p>
+            </div>
+
+            <h2
+              className={[
+                'mt-3',
+                'max-w-[350px]',
+                'text-balance',
+                'text-[1.75rem]',
+                'font-semibold',
+                'leading-[1.02]',
+                'tracking-[-0.05em]'
+              ].join(' ')}>
+              We build systems that power{' '}
+              <span
+                className={[
+                  'bg-gradient-to-r',
+                  'from-foreground',
+                  'via-theme-accent',
+                  'to-theme-accent-strong',
+                  'bg-clip-text',
+                  'text-transparent'
+                ].join(' ')}>
+                real businesses.
+              </span>
+            </h2>
+
+            <p className="mt-2.5 max-w-[355px] text-[11px] leading-[1.55] text-muted">
+              Connected software, data and production infrastructure built as one working system.
+            </p>
+          </div>
+
+          {/* DESKTOP INTRO */}
+
           <div className="hidden lg:block">
             <HomeHeroIntro />
           </div>
 
-          <div className="min-w-0">
+          {/* WORKSPACE */}
+
+          <div className="-mt-1 min-w-0 lg:mt-0">
             <HomeHeroWorkspace />
           </div>
         </div>
@@ -165,7 +275,7 @@ export function HeroStoryEngine() {
 
       {/* STORY CONTROLLER */}
 
-      <div className="relative z-40 mt-2 flex justify-center sm:mt-3">
+      <div className="relative z-40 mt-1 flex justify-center sm:mt-2">
         <div
           className={[
             'inline-flex',
