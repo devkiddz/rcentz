@@ -60,8 +60,6 @@ export function HomeHeroCodeRotator() {
 
   useEffect(() => {
     if (reduceMotion) {
-      setTypedLength(activeContext.code.length);
-
       return;
     }
 
@@ -98,7 +96,9 @@ export function HomeHeroCodeRotator() {
     };
   }, [activeContext.code.length, reduceMotion, typedLength]);
 
-  const typedCode = activeContext.code.slice(0, typedLength);
+  const visibleTypedLength = reduceMotion ? activeContext.code.length : typedLength;
+
+  const typedCode = activeContext.code.slice(0, visibleTypedLength);
 
   return (
     <div
