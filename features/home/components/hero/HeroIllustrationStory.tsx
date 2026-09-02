@@ -2,7 +2,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
@@ -24,9 +24,11 @@ type HeroIllustrationStoryProps = {
   status: string;
   variant: HeroIllustrationVariant;
   serviceSlides?: readonly HeroServiceSlide[];
+  mobileDescription?: string;
+  mobileHighlights?: readonly string[];
 };
 
-const SERVICE_SLIDE_DURATION = 1650;
+const SERVICE_SLIDE_DURATION = 2250;
 
 export function HeroIllustrationStory({
   eyebrow,
@@ -34,7 +36,9 @@ export function HeroIllustrationStory({
   description,
   status,
   variant,
-  serviceSlides
+  serviceSlides,
+  mobileDescription,
+  mobileHighlights
 }: HeroIllustrationStoryProps) {
   const reduceMotion = Boolean(useReducedMotion());
   const [serviceIndex, setServiceIndex] = useState(0);
@@ -142,12 +146,12 @@ export function HeroIllustrationStory({
             duration: 0.65
           }}
           className={[
-            'mt-2.5',
-            'max-w-[370px]',
-            'text-[11px]',
-            'leading-[1.55]',
+            'mt-3',
+            'max-w-[390px]',
+            'text-[12px]',
+            'leading-[1.65]',
             'text-muted',
-            'sm:text-[12px]',
+            'sm:text-[13px]',
             'lg:mt-5',
             'lg:max-w-[410px]',
             'lg:text-[15px]',
@@ -156,10 +160,53 @@ export function HeroIllustrationStory({
           {description}
         </motion.p>
 
-        {/* RCENTZ SERVICE SLIDES */}
+        {/* MOBILE STORY CONTEXT */}
+
+        {mobileDescription || mobileHighlights?.length ? (
+          <motion.div
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 8
+                  }
+            }
+            animate={{
+              opacity: 1,
+              y: 0
+            }}
+            transition={{
+              delay: 0.16,
+              duration: 0.65
+            }}
+            className="mt-4 max-w-[390px] lg:hidden">
+            {mobileDescription ? (
+              <p className="text-[11px] leading-[1.7] text-muted">{mobileDescription}</p>
+            ) : null}
+
+            {mobileHighlights?.length ? (
+              <div className={mobileDescription ? 'mt-3 grid gap-1.5' : 'grid gap-1.5'}>
+                {mobileHighlights.map(highlight => (
+                  <div
+                    key={highlight}
+                    className="flex items-center gap-2 font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
+                    <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-theme-accent/16 bg-theme-accent-soft">
+                      <Check className="size-2.5 text-theme-accent" />
+                    </span>
+
+                    <span>{highlight}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </motion.div>
+        ) : null}
+
+        {/* RCENTZ SERVICE ROLLER */}
 
         {activeService && ActiveServiceIcon && serviceSlides ? (
-          <div className="mt-4 max-w-[410px] lg:mt-6">
+          <div className="mt-5 max-w-[410px] lg:mt-6">
             <div className="mb-2 flex items-center justify-between">
               <span className="font-mono text-[6px] uppercase tracking-[0.15em] text-muted lg:text-[7px]">
                 What we build
@@ -170,10 +217,10 @@ export function HeroIllustrationStory({
               </span>
             </div>
 
-            <div className="relative min-h-[76px] overflow-hidden rounded-2xl border border-border bg-background/58 p-3.5 backdrop-blur-xl lg:min-h-[88px] lg:p-4">
-              <div className="rcentz-grid-fade pointer-events-none absolute inset-0 opacity-35" />
+            <div className="relative min-h-[82px] overflow-hidden rounded-2xl border border-border bg-background/52 p-3.5 backdrop-blur-xl lg:min-h-[88px] lg:p-4">
+              <div className="rcentz-grid-fade pointer-events-none absolute inset-0 opacity-28" />
 
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={activeService.label}
                   initial={
@@ -181,26 +228,23 @@ export function HeroIllustrationStory({
                       ? false
                       : {
                           opacity: 0,
-                          x: 14,
-                          filter: 'blur(3px)'
+                          y: 18
                         }
                   }
                   animate={{
                     opacity: 1,
-                    x: 0,
-                    filter: 'blur(0px)'
+                    y: 0
                   }}
                   exit={
                     reduceMotion
                       ? undefined
                       : {
                           opacity: 0,
-                          x: -12,
-                          filter: 'blur(2px)'
+                          y: -18
                         }
                   }
                   transition={{
-                    duration: 0.48,
+                    duration: 0.68,
                     ease: [0.22, 1, 0.36, 1]
                   }}
                   className="relative z-10 flex items-center gap-3">
@@ -209,20 +253,20 @@ export function HeroIllustrationStory({
                       reduceMotion
                         ? undefined
                         : {
-                            scale: [1, 1.06, 1],
+                            scale: [1, 1.025, 1],
                             boxShadow: [
                               '0 0 0px var(--theme-accent)',
-                              '0 0 16px var(--theme-accent)',
+                              '0 0 10px var(--theme-accent)',
                               '0 0 0px var(--theme-accent)'
                             ]
                           }
                     }
                     transition={{
-                      duration: 2.4,
+                      duration: 3.2,
                       repeat: Infinity,
                       ease: 'easeInOut'
                     }}
-                    className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-theme-accent/20 bg-theme-accent-soft lg:size-11">
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-theme-accent/16 bg-theme-accent-soft lg:size-11">
                     <ActiveServiceIcon className="size-4 text-theme-accent lg:size-[18px]" />
                   </motion.span>
 
@@ -243,10 +287,11 @@ export function HeroIllustrationStory({
                   key={service.label}
                   animate={{
                     width: index === serviceIndex ? 20 : 5,
-                    opacity: index === serviceIndex ? 1 : 0.3
+                    opacity: index === serviceIndex ? 1 : 0.24
                   }}
                   transition={{
-                    duration: 0.35
+                    duration: 0.55,
+                    ease: [0.22, 1, 0.36, 1]
                   }}
                   className={[
                     'h-1 rounded-full',
@@ -325,9 +370,10 @@ export function HeroIllustrationStory({
       <div
         className={[
           'relative',
-          'mt-1',
+          'mt-4',
           'min-w-0',
           'min-h-[540px]',
+          'sm:mt-5',
           'sm:min-h-[580px]',
           'lg:mt-0',
           'lg:min-h-0'

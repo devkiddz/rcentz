@@ -3,6 +3,7 @@
 import {
   AppWindow,
   Building2,
+  Check,
   ChevronLeft,
   ChevronRight,
   Code2,
@@ -98,6 +99,13 @@ const RCENTZ_STORY = {
   title: 'We build websites that power business.',
   description:
     'Premium digital solutions for modern businesses — designed to perform, built to scale and connected to real operations.',
+  mobileDescription:
+    'From business websites and e-commerce to dashboards, fintech interfaces and custom applications, Rcentz builds connected digital systems around how businesses actually operate.',
+  mobileHighlights: [
+    'Responsive by design',
+    'Built for real business workflows',
+    'Scalable from website to full system'
+  ] as const,
   status: 'Building production systems',
   variant: 'rcentz' as const,
   serviceSlides: RCENTZ_SERVICE_SLIDES
@@ -109,6 +117,13 @@ const ILLUSTRATION_STORIES = [
     title: 'Business activity becomes structured data.',
     description:
       'Watch application events become persistent records as users, projects and activity move through the system.',
+    mobileDescription:
+      'Every meaningful action can become durable system history — captured, organized and ready to power dashboards, workflows and future decisions.',
+    mobileHighlights: [
+      'Structured records',
+      'Persistent application state',
+      'Traceable business activity'
+    ] as const,
     status: 'Live database activity',
     variant: 'workflow' as const
   },
@@ -117,6 +132,13 @@ const ILLUSTRATION_STORIES = [
     title: 'One purchase. One connected journey.',
     description:
       'From product selection and payment routing to fulfilment, notifications and final delivery.',
+    mobileDescription:
+      'A purchase is more than a checkout screen. Rcentz connects the commercial flow so the order can move cleanly from intent to payment, fulfilment and delivery.',
+    mobileHighlights: [
+      'Checkout & payment routing',
+      'Order state & notifications',
+      'Fulfilment & delivery'
+    ] as const,
     status: 'Order lifecycle active',
     variant: 'commerce' as const
   },
@@ -124,10 +146,23 @@ const ILLUSTRATION_STORIES = [
     eyebrow: 'Foundation · Products · Scale',
     title: 'One foundation. Multiple products.',
     description: 'Commerce, projects, services and platforms operate around one reusable Rcentz foundation.',
+    mobileDescription:
+      'Instead of rebuilding the same foundations for every product, shared engines can support new services, platforms and business experiences as Rcentz grows.',
+    mobileHighlights: [
+      'Shared architecture',
+      'Reusable product engines',
+      'Built to expand without starting over'
+    ] as const,
     status: 'Rcentz ecosystem active',
     variant: 'scale' as const
   }
 ];
+
+const SYSTEM_MOBILE_HIGHLIGHTS = [
+  'Frontend + backend connected',
+  'Database, auth and APIs working together',
+  'Structured for production growth'
+] as const;
 
 export function HeroStoryEngine() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -207,9 +242,29 @@ export function HeroStoryEngine() {
               </span>
             </h2>
 
-            <p className="mt-2.5 max-w-[355px] text-[11px] leading-[1.55] text-muted">
+            <p className="mt-3 max-w-[380px] text-[12px] leading-[1.65] text-muted">
               Connected software, data and production infrastructure built as one working system.
             </p>
+
+            <p className="mt-4 max-w-[390px] text-[11px] leading-[1.7] text-muted">
+              The interface is only one layer. Underneath it, Rcentz connects application logic, database
+              records, authentication and server behaviour so the product works as a complete operational
+              system.
+            </p>
+
+            <div className="mt-3 grid gap-1.5">
+              {SYSTEM_MOBILE_HIGHLIGHTS.map(highlight => (
+                <div
+                  key={highlight}
+                  className="flex items-center gap-2 font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
+                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-theme-accent/16 bg-theme-accent-soft">
+                    <Check className="size-2.5 text-theme-accent" />
+                  </span>
+
+                  <span>{highlight}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* DESKTOP INTRO */}
@@ -220,7 +275,7 @@ export function HeroStoryEngine() {
 
           {/* WORKSPACE */}
 
-          <div className="-mt-1 min-w-0 lg:mt-0">
+          <div className="mt-4 min-w-0 sm:mt-5 lg:mt-0">
             <HomeHeroWorkspace />
           </div>
         </div>
