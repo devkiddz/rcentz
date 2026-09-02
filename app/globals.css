@@ -46,6 +46,23 @@
   --destructive-foreground: #ffffff;
 
   /* ---------------------------------------------------------
+     Optional application accent
+
+     This is the active Rcentz accent preset hook.
+
+     Current preset:
+     JobRcentz Teal → #20B2A6
+
+     Future theme presets should override these variables instead
+     of requiring individual components to hardcode colors.
+     --------------------------------------------------------- */
+
+  --theme-accent: #20b2a6;
+  --theme-accent-strong: #168d84;
+  --theme-accent-soft: rgb(32 178 166 / 0.12);
+  --theme-accent-faint: rgb(32 178 166 / 0.055);
+
+  /* ---------------------------------------------------------
      Persistent shell surfaces
      --------------------------------------------------------- */
 
@@ -189,6 +206,18 @@
   --destructive-foreground: #ffffff;
 
   /* ---------------------------------------------------------
+     Optional application accent
+
+     The same base accent remains available in dark mode.
+     Only its translucent supporting values are adjusted.
+     --------------------------------------------------------- */
+
+  --theme-accent: #20b2a6;
+  --theme-accent-strong: #168d84;
+  --theme-accent-soft: rgb(32 178 166 / 0.14);
+  --theme-accent-faint: rgb(32 178 166 / 0.07);
+
+  /* ---------------------------------------------------------
      Persistent shell surfaces
      --------------------------------------------------------- */
 
@@ -291,6 +320,11 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-strong: var(--theme-accent-strong);
+  --color-theme-accent-soft: var(--theme-accent-soft);
+  --color-theme-accent-faint: var(--theme-accent-faint);
+
   --color-shell-header: var(--shell-header);
   --color-shell-footer: var(--shell-footer);
 
@@ -330,6 +364,16 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role='button'][aria-disabled='true'] {
+  cursor: not-allowed;
 }
 
 ::selection {
