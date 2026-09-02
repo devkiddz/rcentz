@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import {
   AppWindow,
+  ArrowRight,
   Building2,
   Check,
   ChevronLeft,
@@ -264,6 +266,38 @@ export function HeroStoryEngine() {
                   <span>{highlight}</span>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-5 flex flex-wrap items-center gap-2.5">
+              <Link
+                href="#work"
+                className={[
+                  'inline-flex h-9 items-center justify-center gap-2 rounded-full',
+                  'bg-primary px-4',
+                  'text-[11px] font-medium text-primary-foreground',
+                  'transition-[opacity,transform]',
+                  'hover:opacity-90',
+                  'active:scale-[0.98]'
+                ].join(' ')}>
+                View our work
+                <ArrowRight aria-hidden="true" className="size-3.5" />
+              </Link>
+
+              <Link
+                href="#services"
+                className={[
+                  'inline-flex h-9 items-center justify-center gap-2 rounded-full',
+                  'border border-border',
+                  'bg-background/40 px-4 backdrop-blur-xl',
+                  'text-[11px] font-medium text-foreground',
+                  'transition-[background-color,border-color,transform]',
+                  'hover:border-border-strong',
+                  'hover:bg-surface-muted',
+                  'active:scale-[0.98]'
+                ].join(' ')}>
+                Explore services
+                <ArrowRight aria-hidden="true" className="size-3.5" />
+              </Link>
             </div>
           </div>
 

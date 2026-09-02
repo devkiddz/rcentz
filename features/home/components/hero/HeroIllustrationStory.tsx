@@ -303,40 +303,59 @@ export function HeroIllustrationStory({
           </div>
         ) : null}
 
-        {/* DESKTOP ACTIONS */}
+        {/* STORY ACTIONS */}
 
         <motion.div
           initial={
             reduceMotion
               ? false
               : {
-                  opacity: 0
+                  opacity: 0,
+                  y: 6
                 }
           }
           animate={{
-            opacity: 1
+            opacity: 1,
+            y: 0
           }}
           transition={{
-            delay: 0.16,
+            delay: 0.18,
             duration: 0.6
           }}
-          className={['hidden lg:block', serviceSlides?.length ? 'mt-5' : 'mt-7'].join(' ')}>
+          className={[
+            'flex flex-wrap items-center gap-2.5',
+            serviceSlides?.length ? 'mt-5' : 'mt-6',
+            'lg:mt-7'
+          ].join(' ')}>
+          <Link
+            href="#work"
+            className={[
+              'inline-flex h-9 items-center justify-center gap-2 rounded-full',
+              'bg-primary px-4',
+              'text-[11px] font-medium text-primary-foreground',
+              'transition-[opacity,transform]',
+              'hover:opacity-90',
+              'active:scale-[0.98]',
+              'lg:h-10 lg:px-5 lg:text-[12px]'
+            ].join(' ')}>
+            View our work
+            <ArrowRight aria-hidden="true" className="size-3.5" />
+          </Link>
+
           <Link
             href="#services"
             className={[
-              'inline-flex h-10',
-              'items-center justify-center gap-2',
-              'rounded-full',
-              'bg-primary',
-              'px-5',
-              'text-[12px]',
-              'font-medium',
-              'text-primary-foreground',
-              'transition-[opacity,transform]',
-              'hover:opacity-90',
-              'active:scale-[0.98]'
+              'inline-flex h-9 items-center justify-center gap-2 rounded-full',
+              'border border-border',
+              'bg-background/40 px-4 backdrop-blur-xl',
+              'text-[11px] font-medium text-foreground',
+              'transition-[background-color,border-color,transform]',
+              'hover:border-border-strong',
+              'hover:bg-surface-muted',
+              'active:scale-[0.98]',
+              'lg:h-10 lg:px-5 lg:text-[12px]'
             ].join(' ')}>
-            Explore systems
+            Explore services
             <ArrowRight aria-hidden="true" className="size-3.5" />
           </Link>
         </motion.div>
