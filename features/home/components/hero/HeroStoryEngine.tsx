@@ -230,7 +230,7 @@ export function HeroStoryEngine() {
                 'leading-[1.02]',
                 'tracking-[-0.05em]'
               ].join(' ')}>
-              We build systems that power{' '}
+              We engineer the technology that powers{' '}
               <span
                 className={[
                   'bg-gradient-to-r',
@@ -240,7 +240,7 @@ export function HeroStoryEngine() {
                   'bg-clip-text',
                   'text-transparent'
                 ].join(' ')}>
-                real businesses.
+                market leaders...
               </span>
             </h2>
 
