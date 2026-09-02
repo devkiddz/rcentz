@@ -28,10 +28,10 @@ export function RcentzFooter() {
       <div className="rcentz-section py-10 md:py-12">
         <div className="grid gap-10 md:grid-cols-[1fr_auto] md:gap-16">
           <div className="max-w-md">
-            <Link href="/" aria-label="Rcentz Systems home" className="inline-flex items-center gap-2.5">
+            <Link href="/" aria-label="rcentz home" className="inline-flex items-center gap-2.5">
               <RcentzLogo />
 
-              <span className="text-sm font-semibold tracking-[-0.025em]">Rcentz Systems</span>
+              <span className="text-sm font-semibold tracking-[-0.025em]">rcentz</span>
             </Link>
 
             <p className="mt-3 max-w-xs text-sm leading-6 text-muted">
@@ -87,7 +87,7 @@ export function RcentzFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-border/70 pt-4 text-[11px] text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Rcentz Systems.</p>
+          <p>© {new Date().getFullYear()} rcentz.</p>
 
           <p className="font-mono tracking-[-0.01em]">Systems built from real data outward.</p>
         </div>

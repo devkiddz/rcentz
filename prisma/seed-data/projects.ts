@@ -765,7 +765,7 @@ export const projectSeedManifest: SeedProjectManifest[] = [
   },
 
   {
-    name: "Rcentz Systems",
+    name: "rcentz",
     slug: "rcentz-systems",
     description:
       "The current flagship Rcentz platform combining the public business presence with services, portfolio, project management, client operations, subscriptions, billing, commerce, support and future administration capabilities.",
@@ -783,7 +783,7 @@ export const projectSeedManifest: SeedProjectManifest[] = [
       tagline:
         "A living business platform where the portfolio and the operating system are the same product.",
       summary:
-        "Rcentz Systems consolidates lessons from earlier commerce, dashboard and marketplace projects into one modular platform for public presentation, services, client projects, subscriptions, billing, commerce, support and business operations.",
+        "rcentz consolidates lessons from earlier commerce, dashboard and marketplace projects into one modular platform for public presentation, services, client projects, subscriptions, billing, commerce, support and business operations.",
       challenge:
         "A conventional portfolio can display previous work but cannot demonstrate how Rcentz actually structures projects, services, payments, client relationships and reusable product architecture.",
       solution:

@@ -716,7 +716,7 @@ Seeded projects:
 * JobRcentz
 * NovaShad v01
 * NovaPanel v01
-* Rcentz Systems
+* rcentz
 
 The seed includes:
 

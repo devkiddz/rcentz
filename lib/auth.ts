@@ -4,7 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
-  appName: "Rcentz Systems",
+  appName: "rcentz",
   baseURL: process.env.BETTER_AUTH_URL,
 
   database: prismaAdapter(prisma, {

@@ -602,7 +602,7 @@ Engines should contain the reusable business capabilities behind those pages.
 
 # 18. Provider-Driven Architecture
 
-Where practical, Rcentz systems should be designed around providers rather than tightly coupling presentation directly to implementation details.
+Where practical, rcentz should be designed around providers rather than tightly coupling presentation directly to implementation details.
 
 Conceptually:
 

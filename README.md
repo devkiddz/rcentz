@@ -1,6 +1,6 @@
-# Rcentz Systems
+# rcentz
 
-Rcentz Systems is a production-focused business and software platform built with Next.js, TypeScript, Prisma, PostgreSQL, and Better Auth.
+rcentz is a production-focused business and software platform built with Next.js, TypeScript, Prisma, PostgreSQL, and Better Auth.
 
 It is not a conventional portfolio site. The platform is designed to operate real Rcentz business workflows while publicly demonstrating the engineering behind them.
 

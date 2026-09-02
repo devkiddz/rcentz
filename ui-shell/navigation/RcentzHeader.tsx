@@ -110,7 +110,7 @@ export function RcentzHeader() {
             <Link
               href="/"
               onClick={closeMobileNavigation}
-              aria-label="Rcentz Systems home"
+              aria-label="rcentz home"
               className="flex min-w-0 items-center gap-2.5">
               <RcentzLogo compact={scrolled} />
 
@@ -120,7 +120,7 @@ export function RcentzHeader() {
                   'transition-[font-size] duration-300 ease-out',
                   scrolled ? 'text-[13px]' : 'text-sm'
                 ].join(' ')}>
-                Rcentz Systems
+                rcentz
               </span>
             </Link>
 

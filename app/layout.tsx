@@ -19,10 +19,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Rcentz Systems',
-    template: '%s | Rcentz Systems'
+    default: 'rcentz',
+    template: '%s | rcentz'
   },
-  description: 'Rcentz Systems builds and operates modern software, digital products, and client systems.'
+  description: 'rcentz builds and operates modern software, digital products, and client systems.'
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
