@@ -98,7 +98,7 @@ const RCENTZ_SERVICE_SLIDES: readonly HeroServiceSlide[] = [
 
 const RCENTZ_STORY = {
   eyebrow: 'Websites · Systems · Business',
-  title: 'We build websites that power businesses.',
+  title: 'We build the digital systems that power modern businesses',
   description:
     'Premium digital solutions for modern businesses — designed to perform, built to scale and connected to real operations.',
   mobileDescription:
