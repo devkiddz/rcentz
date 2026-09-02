@@ -38,7 +38,7 @@ export function HomeHeroIntro() {
 
       <div className="mt-7 flex flex-wrap items-center gap-3">
         <Link
-          href="#work"
+          href="/work"
           className={[
             'inline-flex h-10 items-center justify-center gap-2 rounded-full',
             'bg-primary px-5',
@@ -52,7 +52,7 @@ export function HomeHeroIntro() {
         </Link>
 
         <Link
-          href="#services"
+          href="/services"
           className={[
             'inline-flex h-10 items-center justify-center gap-2 rounded-full',
             'border border-border',

@@ -98,7 +98,7 @@ const RCENTZ_SERVICE_SLIDES: readonly HeroServiceSlide[] = [
 
 const RCENTZ_STORY = {
   eyebrow: 'Websites · Systems · Business',
-  title: 'We build websites that power business.',
+  title: 'We build websites that power businesses.',
   description:
     'Premium digital solutions for modern businesses — designed to perform, built to scale and connected to real operations.',
   mobileDescription:
@@ -116,7 +116,7 @@ const RCENTZ_STORY = {
 const ILLUSTRATION_STORIES = [
   {
     eyebrow: 'Data · Prisma · Databases',
-    title: 'Business activity becomes structured data.',
+    title: 'When A Business activity becomes structured data.',
     description:
       'Watch application events become persistent records as users, projects and activity move through the system.',
     mobileDescription:
@@ -270,7 +270,7 @@ export function HeroStoryEngine() {
 
             <div className="mt-5 flex flex-wrap items-center gap-2.5">
               <Link
-                href="#work"
+                href="/work"
                 className={[
                   'inline-flex h-9 items-center justify-center gap-2 rounded-full',
                   'bg-primary px-4',
@@ -284,7 +284,7 @@ export function HeroStoryEngine() {
               </Link>
 
               <Link
-                href="#services"
+                href="/services"
                 className={[
                   'inline-flex h-9 items-center justify-center gap-2 rounded-full',
                   'border border-border',

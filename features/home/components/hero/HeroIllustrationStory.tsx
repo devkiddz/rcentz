@@ -328,7 +328,7 @@ export function HeroIllustrationStory({
             'lg:mt-7'
           ].join(' ')}>
           <Link
-            href="#work"
+            href="/work"
             className={[
               'inline-flex h-9 items-center justify-center gap-2 rounded-full',
               'bg-primary px-4',
@@ -343,7 +343,7 @@ export function HeroIllustrationStory({
           </Link>
 
           <Link
-            href="#services"
+            href="/services"
             className={[
               'inline-flex h-9 items-center justify-center gap-2 rounded-full',
               'border border-border',
