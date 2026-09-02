@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 import { PerspectiveSurface } from '@/features/home/components/hero/perspective/PerspectiveSurface';
 
 const CODE_LINES = [
-  "export default function Hero() {",
-  "  return (",
+  'export default function Hero() {',
+  '  return (',
   '    <section className="hero">',
   '      <h1>We build websites</h1>',
   '      <p>that power business.</p>',
@@ -18,31 +18,16 @@ const CODE_LINES = [
   '}'
 ] as const;
 
-function TypedLine({
-  text,
-  active,
-  done,
-  reduceMotion
-}: {
-  text: string;
-  active: boolean;
-  done: boolean;
-  reduceMotion: boolean;
-}) {
-  const [value, setValue] = useState(done || reduceMotion ? text : '');
+function ActiveTypewriter({ text, reduceMotion }: { text: string; reduceMotion: boolean }) {
+  const [value, setValue] = useState('');
 
   useEffect(() => {
-    if (reduceMotion || done) {
-      setValue(text);
-      return;
-    }
-
-    if (!active) {
-      setValue('');
+    if (reduceMotion) {
       return;
     }
 
     let index = 0;
+
     const interval = window.setInterval(() => {
       index += 1;
       setValue(text.slice(0, index));
@@ -55,12 +40,17 @@ function TypedLine({
     return () => {
       window.clearInterval(interval);
     };
-  }, [active, done, reduceMotion, text]);
+  }, [reduceMotion, text]);
+
+  if (reduceMotion) {
+    return <span>{text}</span>;
+  }
 
   return (
     <span>
       {value}
-      {active && !done && !reduceMotion ? (
+
+      {value.length < text.length ? (
         <motion.span
           animate={{ opacity: [0, 1, 0] }}
           transition={{ duration: 0.7, repeat: Infinity }}
@@ -69,6 +59,28 @@ function TypedLine({
       ) : null}
     </span>
   );
+}
+
+function TypedLine({
+  text,
+  active,
+  done,
+  reduceMotion
+}: {
+  text: string;
+  active: boolean;
+  done: boolean;
+  reduceMotion: boolean;
+}) {
+  if (reduceMotion || done) {
+    return <span>{text}</span>;
+  }
+
+  if (!active) {
+    return null;
+  }
+
+  return <ActiveTypewriter text={text} reduceMotion={reduceMotion} />;
 }
 
 export function CodeTypingPanel() {

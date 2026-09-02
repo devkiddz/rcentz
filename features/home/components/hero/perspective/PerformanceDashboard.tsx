@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Activity,
-  Database,
-  LayoutDashboard,
-  ServerCog,
-  TrendingUp,
-  UsersRound
-} from 'lucide-react';
+import { Activity, LayoutDashboard, ServerCog, TrendingUp, UsersRound } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
 import { PerspectiveSurface } from '@/features/home/components/hero/perspective/PerspectiveSurface';
@@ -133,13 +126,7 @@ function PerformanceChart({ reduceMotion }: { reduceMotion: boolean }) {
                 opacity="0.09"
                 strokeDasharray="3 7"
               />
-              <text
-                x="0"
-                y={y + 2}
-                fill="currentColor"
-                opacity="0.42"
-                fontSize="6"
-                fontFamily="monospace">
+              <text x="0" y={y + 2} fill="currentColor" opacity="0.42" fontSize="6" fontFamily="monospace">
                 {400 - index * 100}
               </text>
             </g>
@@ -208,13 +195,7 @@ function PerformanceChart({ reduceMotion }: { reduceMotion: boolean }) {
               strokeWidth="0.6"
               opacity="0.96"
             />
-            <text
-              x="310"
-              y="33.5"
-              fill="currentColor"
-              fontSize="7"
-              fontWeight="700"
-              fontFamily="monospace">
+            <text x="310" y="33.5" fill="currentColor" fontSize="7" fontWeight="700" fontFamily="monospace">
               +24.6%
             </text>
           </motion.g>
@@ -224,13 +205,7 @@ function PerformanceChart({ reduceMotion }: { reduceMotion: boolean }) {
   );
 }
 
-function ReadinessRing({
-  value,
-  reduceMotion
-}: {
-  value: number;
-  reduceMotion: boolean;
-}) {
+function ReadinessRing({ value, reduceMotion }: { value: number; reduceMotion: boolean }) {
   const radius = 31;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (value / 100) * circumference;
