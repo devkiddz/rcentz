@@ -388,6 +388,7 @@ button:disabled,
 /*
   Environmental canvas.
 */
+
 .rcentz-canvas {
   width: min(100%, var(--canvas-max));
   margin-inline: auto;
@@ -396,43 +397,84 @@ button:disabled,
 /*
   Broad application-shell allowance.
 */
+
 .rcentz-content {
   width: min(calc(100% - 2rem), var(--content-max));
-
   margin-inline: auto;
 }
 
 /*
   Canonical Rcentz application/content axis.
 */
+
 .rcentz-section {
   width: min(calc(100% - 2rem), var(--section-max));
-
   margin-inline: auto;
 }
 
 /* =========================================================
-   GENERIC ENVIRONMENTAL GRID
+   RCENTZ DATA MATRIX
+
+   The old square engineering grid has been replaced with a
+   dense data-point system.
+
+   Layer 1:
+   Larger structural anchor points.
+
+   Layer 2:
+   Dense micro-points forming the environmental matrix.
+
+   This allows the same Rcentz grid primitive to work behind:
+   - Hero stories
+   - code / data visualizations
+   - architecture illustrations
+   - dashboards
+   - future product surfaces
    ========================================================= */
 
 .rcentz-grid {
   background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    radial-gradient(circle at center, var(--grid-line-strong) 1px, transparent 1.2px),
+    radial-gradient(circle at center, var(--grid-line) 0.75px, transparent 1px);
 
-  background-size: 32px 32px;
+  background-size:
+    72px 72px,
+    18px 18px;
+
+  background-position:
+    0 0,
+    0 0;
 }
+
+/*
+  Faded environmental variant.
+
+  The matrix remains strongest around the useful visual area
+  and quietly disappears toward the page edges.
+*/
 
 .rcentz-grid-fade {
   background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
-    radial-gradient(circle at center, transparent 20%, var(--background) 78%);
+    radial-gradient(circle at center, var(--grid-line-strong) 1px, transparent 1.2px),
+    radial-gradient(circle at center, var(--grid-line) 0.75px, transparent 1px);
 
   background-size:
-    32px 32px,
-    32px 32px,
-    100% 100%;
+    72px 72px,
+    18px 18px;
+
+  background-position:
+    0 0,
+    0 0;
+
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    #000 0%,
+    #000 46%,
+    rgb(0 0 0 / 0.78) 68%,
+    transparent 96%
+  );
+
+  mask-image: radial-gradient(ellipse at center, #000 0%, #000 46%, rgb(0 0 0 / 0.78) 68%, transparent 96%);
 }
 
 /* =========================================================

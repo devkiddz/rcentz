@@ -1,26 +1,19 @@
+import { HeroStoryEngine } from '@/features/home/components/hero/HeroStoryEngine';
 import { HomeHeroCapabilities } from '@/features/home/components/hero/HomeHeroCapabilities';
-import { HomeHeroIntro } from '@/features/home/components/hero/HomeHeroIntro';
-import { HomeHeroWorkspace } from '@/features/home/components/hero/HomeHeroWorkspace';
-import { RcentzAce } from '@/ui-shell/layers/RcentzAce';
+import { HomeHeroEnvironment } from '@/features/home/components/hero/HomeHeroEnvironment';
 
 export function HomeHero() {
   return (
-    <section className="relative isolate">
-      {/* HERO-BOUND RCENTZ ACE */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <RcentzAce />
-      </div>
+    <section className="relative isolate overflow-hidden">
+      {/* PERSISTENT RCENTZ STORY ENVIRONMENT */}
+      <HomeHeroEnvironment />
 
-      {/* PRIMARY HERO */}
-      <div className="rcentz-section relative z-10 pt-14 sm:pt-16 lg:pt-20">
-        <div className="grid items-stretch gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-8">
-          <HomeHeroIntro />
+      {/* STORY PLAYER */}
+      <div className="rcentz-section relative z-10 pt-5 sm:pt-6">
+        <HeroStoryEngine />
 
-          <HomeHeroWorkspace />
-        </div>
-
-        {/* HERO → CONTENT BRIDGE */}
-        <div className="relative z-20 mt-4 translate-y-1/2">
+        {/* HERO → WEBSITE BRIDGE */}
+        <div className="relative z-30 mt-2 translate-y-1/2">
           <HomeHeroCapabilities />
         </div>
       </div>
