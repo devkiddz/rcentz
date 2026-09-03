@@ -1,3 +1,4 @@
+import { portfolioUISystemSeed } from './projects/portfolio-ui-system';
 export type SeedProjectType = "WEB_APP" | "SAAS" | "ECOMMERCE";
 
 export type SeedProjectStatus =
@@ -765,7 +766,7 @@ export const projectSeedManifest: SeedProjectManifest[] = [
   },
 
   {
-    name: "rcentz",
+    name: "Rcentz Core",
     slug: "rcentz-systems",
     description:
       "The current flagship Rcentz platform combining the public business presence with services, portfolio, project management, client operations, subscriptions, billing, commerce, support and future administration capabilities.",
@@ -842,4 +843,5 @@ export const projectSeedManifest: SeedProjectManifest[] = [
       },
     ],
   },
+  portfolioUISystemSeed,
 ] satisfies SeedProjectManifest[];

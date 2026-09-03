@@ -1,67 +1,64 @@
-import { ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
+import { HomeServiceCard } from '@/features/home/components/services/HomeServiceCard';
 import type { HomepageData } from '@/features/home/server/get-homepage-data';
 
 type HomeServicesProps = {
   services: HomepageData['services'];
 };
 
-function formatPrice(currency: string, amount: number) {
-  return new Intl.NumberFormat(currency === 'NGN' ? 'en-NG' : 'en-US', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0
-  }).format(amount);
-}
-
 export function HomeServices({ services }: HomeServicesProps) {
+  const visibleServices = services.slice(0, 6);
+
   return (
-    <section id="services" className="rcentz-section border-t border-border py-20">
-      <div className="flex items-end justify-between gap-6">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Services</p>
+    <section id="services" className="rcentz-section border-t border-border py-20 sm:py-24">
+      <div className="max-w-5xl">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Services</p>
 
-          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">What we build.</h2>
-        </div>
+        <h2 className="mt-4 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl lg:text-5xl">
+          Flexible digital systems for how modern businesses actually operate.
+          <span className="text-muted">
+            {' '}
+            Build the public experience, connect the workflow and keep the system moving.
+          </span>
+        </h2>
 
-        <p className="hidden max-w-sm text-right text-sm leading-6 text-muted md:block">
-          Selected services currently available through the Rcentz system.
+        <p className="mt-6 max-w-2xl text-sm leading-7 text-muted sm:text-base">
+          Selected Rcentz capabilities presented through the systems they create — not generic service boxes.
+          Each engagement starts from the business problem and grows into the right digital architecture.
         </p>
       </div>
 
-      <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-2">
-        {services.map(service => {
-          const ngnPrice = service.prices.find(price => price.currency === 'NGN');
+      <div className="mt-12 grid items-stretch gap-4 lg:grid-cols-3">
+        {visibleServices[0] ? (
+          <HomeServiceCard service={visibleServices[0]} index={0} className="lg:col-span-2" />
+        ) : null}
 
-          return (
-            <article key={service.id} className="bg-background p-6 transition-colors hover:bg-surface-raised">
-              <div className="flex items-start justify-between gap-5">
-                <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
-                    {service.category?.name ?? service.type}
-                  </p>
+        {visibleServices[1] ? <HomeServiceCard service={visibleServices[1]} index={1} /> : null}
 
-                  <h3 className="mt-3 text-base font-semibold tracking-[-0.02em]">{service.name}</h3>
-                </div>
+        {visibleServices.slice(2, 5).map((service, offset) => (
+          <HomeServiceCard key={service.id} service={service} index={offset + 2} />
+        ))}
 
-                <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted" />
-              </div>
+        {visibleServices[5] ? (
+          <HomeServiceCard service={visibleServices[5]} index={5} className="lg:col-span-3" />
+        ) : null}
+      </div>
 
-              {service.shortDescription ? (
-                <p className="mt-4 max-w-lg text-sm leading-6 text-muted">{service.shortDescription}</p>
-              ) : null}
-
-              {ngnPrice ? (
-                <p className="mt-6 font-mono text-[10px] text-muted">
-                  From{' '}
-                  <span className="text-foreground">
-                    {formatPrice(ngnPrice.currency, ngnPrice.priceFrom)}
-                  </span>
-                </p>
-              ) : null}
-            </article>
-          );
-        })}
+      <div className="mt-8">
+        <Link
+          href="/services"
+          className={[
+            'inline-flex h-10 items-center gap-2 rounded-full',
+            'border border-border bg-surface-muted px-4',
+            'text-[12px] font-medium text-foreground',
+            'transition-[background-color,border-color]',
+            'hover:border-border-strong hover:bg-secondary'
+          ].join(' ')}>
+          Explore all services
+          <ArrowRight aria-hidden="true" className="size-3.5" />
+        </Link>
       </div>
     </section>
   );

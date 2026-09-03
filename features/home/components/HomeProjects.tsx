@@ -1,5 +1,7 @@
-import { ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
+import { HomeProjectCard } from '@/features/home/components/projects/HomeProjectCard';
 import type { HomepageData } from '@/features/home/server/get-homepage-data';
 
 type HomeProjectsProps = {
@@ -7,84 +9,54 @@ type HomeProjectsProps = {
 };
 
 export function HomeProjects({ projects }: HomeProjectsProps) {
+  const visibleProjects = projects.slice(0, 6);
+  const [featured, ...rest] = visibleProjects;
+
+  if (!featured) {
+    return null;
+  }
+
   return (
-    <section id="work" className="rcentz-section border-t border-border py-20">
-      <div>
+    <section id="work" className="rcentz-section border-t border-border py-20 sm:py-24">
+      <div className="max-w-5xl">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Selected work</p>
 
-        <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
-          Systems already in motion.
+        <h2 className="mt-4 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl lg:text-5xl">
+          Built systems, shown as they actually exist.
+          <span className="text-muted"> Real project screens, real architecture and real outcomes.</span>
         </h2>
 
-        <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-          Real Rcentz projects, their current state and the technologies behind them.
+        <p className="mt-6 max-w-2xl text-sm leading-7 text-muted sm:text-base">
+          Browse selected Rcentz work through actual product screenshots rather than recreated portfolio
+          illustrations.
         </p>
       </div>
 
-      <div className="mt-10 space-y-3">
-        {projects.map(project => (
-          <article
-            key={project.id}
-            className={[
-              'group rounded-2xl border border-border',
-              'bg-background/55 p-6 backdrop-blur-sm',
-              'transition-[background-color,border-color]',
-              'hover:border-border-strong hover:bg-surface-raised/80'
-            ].join(' ')}>
-            <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-start">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
-                    {project.type}
-                  </p>
+      <div className="mt-12">
+        <HomeProjectCard project={featured} index={0} featured />
+      </div>
 
-                  <span className="size-1 rounded-full bg-border-strong" />
+      {rest.length ? (
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {rest.map((project, index) => (
+            <HomeProjectCard key={project.id} project={project} index={index + 1} />
+          ))}
+        </div>
+      ) : null}
 
-                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
-                    {project.status}
-                  </p>
-                </div>
-
-                <h3 className="mt-3 text-xl font-semibold tracking-[-0.03em]">{project.name}</h3>
-
-                {project.tagline ? (
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">{project.tagline}</p>
-                ) : null}
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {project.technologies.slice(0, 6).map(technology => (
-                    <span
-                      key={technology.slug}
-                      className="rounded-full border border-border bg-surface-muted px-2.5 py-1 font-mono text-[9px] text-muted">
-                      {technology.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 md:flex-col md:items-end">
-                <span className="font-mono text-[10px] text-muted">{project.progress}%</span>
-
-                {project.liveUrl ? (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Open ${project.name}`}
-                    className={[
-                      'inline-flex size-8 items-center justify-center rounded-full',
-                      'border border-border bg-surface-muted',
-                      'text-muted',
-                      'transition-[background-color,border-color,color]',
-                      'hover:border-border-strong hover:bg-secondary hover:text-foreground'
-                    ].join(' ')}>
-                    <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          </article>
-        ))}
+      <div className="mt-8">
+        <Link
+          href="/portfolio"
+          className={[
+            'inline-flex h-10 items-center gap-2 rounded-full',
+            'border border-border bg-surface-muted px-4',
+            'text-[12px] font-medium text-foreground',
+            'transition-[background-color,border-color]',
+            'hover:border-border-strong hover:bg-secondary'
+          ].join(' ')}>
+          Explore all work
+          <ArrowRight aria-hidden="true" className="size-3.5" />
+        </Link>
       </div>
     </section>
   );

@@ -47,8 +47,6 @@ export async function getHomepageData() {
 
     prisma.portfolioProfile.findMany({
       where: {
-        featured: true,
-
         publishedAt: {
           not: null
         },
@@ -64,6 +62,7 @@ export async function getHomepageData() {
         outcome: true,
         liveUrl: true,
         repositoryUrl: true,
+        featured: true,
         publishedAt: true,
 
         project: {
@@ -85,16 +84,44 @@ export async function getHomepageData() {
               orderBy: {
                 name: 'asc'
               }
+            },
+
+            media: {
+              select: {
+                id: true,
+                url: true,
+                alt: true,
+                caption: true,
+                width: true,
+                height: true,
+                sortOrder: true
+              },
+
+              orderBy: [
+                {
+                  sortOrder: 'asc'
+                },
+                {
+                  createdAt: 'asc'
+                }
+              ],
+
+              take: 5
             }
           }
         }
       },
 
-      orderBy: {
-        publishedAt: 'desc'
-      },
+      orderBy: [
+        {
+          featured: 'desc'
+        },
+        {
+          publishedAt: 'desc'
+        }
+      ],
 
-      take: 4
+      take: 6
     })
   ]);
 
@@ -143,12 +170,17 @@ export async function getHomepageData() {
         repositoryUrl:
           portfolio.repositoryUrl,
 
+        featured: portfolio.featured,
+
         publishedAt:
           portfolio.publishedAt?.toISOString() ??
           null,
 
         technologies:
-          portfolio.project.technologies
+          portfolio.project.technologies,
+
+        media:
+          portfolio.project.media
       })
     )
   };
