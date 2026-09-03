@@ -8,9 +8,11 @@ export function HomeHero() {
       <HomeHeroEnvironment />
 
       <div className="rcentz-section relative z-10 pt-2 sm:pt-3 lg:pt-5">
-        <HeroStoryEngine />
+        <div className="mx-auto w-full max-w-[1180px]">
+          <HeroStoryEngine />
+        </div>
 
-        <div className="relative z-30 mt-1 translate-y-1/2 sm:mt-2">
+        <div className="relative z-30 mt-8 pb-6 sm:mt-10 sm:pb-8 lg:mt-12 lg:pb-10">
           <HomeHeroCapabilities />
         </div>
       </div>

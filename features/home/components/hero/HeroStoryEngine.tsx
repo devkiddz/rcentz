@@ -1,175 +1,267 @@
 'use client';
 
-import Link from 'next/link';
 import {
-  AppWindow,
-  ArrowRight,
-  Building2,
-  Check,
+  Activity,
+  Blocks,
+  Boxes,
+  BrainCircuit,
   ChevronLeft,
   ChevronRight,
-  Code2,
-  LayoutDashboard,
-  MessageSquareText,
+  CreditCard,
+  Database,
+  Gauge,
+  Layers3,
+  MonitorSmartphone,
+  Network,
+  PackageCheck,
+  Rocket,
   ServerCog,
+  ShieldCheck,
   ShoppingCart,
-  Sparkles
+  Sparkles,
+  Truck,
+  UserRoundCheck,
+  Workflow
 } from 'lucide-react';
+
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+
 import { useEffect, useState } from 'react';
 
-import {
-  HeroIllustrationStory,
-  type HeroServiceSlide
-} from '@/features/home/components/hero/HeroIllustrationStory';
-import { HomeHeroIntro } from '@/features/home/components/hero/HomeHeroIntro';
-import { HomeHeroWorkspace } from '@/features/home/components/hero/HomeHeroWorkspace';
+import { HeroIllustrationStory } from '@/features/home/components/hero/HeroIllustrationStory';
 
 const STORIES = [
   {
-    id: 'delivery',
+    id: 'rcentz',
     label: 'Rcentz',
-    duration: 14000
+
+    // Website illustration completes its main build sequence
+    // before the slide transitions.
+    duration: 17000,
+
+    eyebrow: 'Websites · Applications · Systems',
+
+    title: 'Digital systems built to move business.',
+
+    description:
+      'Websites, applications and digital experiences shaped around how your business actually works.',
+
+    variant: 'rcentz' as const,
+
+    highlights: [
+      {
+        label: 'Responsive by design',
+        icon: MonitorSmartphone,
+        visual: 'icon' as const
+      },
+      {
+        label: 'Business-first workflows',
+        icon: Workflow,
+        visual: 'nodes' as const
+      },
+      {
+        label: 'Performance that scales',
+        icon: Gauge,
+        visual: 'bars' as const
+      },
+      {
+        label: 'Built for real operations',
+        icon: Blocks,
+        visual: 'pulse' as const
+      }
+    ]
   },
+
+  {
+    id: 'ai',
+    label: 'Rcentz × AI',
+
+    duration: 19000,
+
+    eyebrow: 'Human direction · AI acceleration',
+
+    title: 'Intelligence working beside engineering.',
+
+    description:
+      'Business understanding and engineering judgment amplified by AI-assisted execution from idea to production.',
+
+    variant: 'ai' as const,
+
+    highlights: [
+      {
+        label: 'Human-led decisions',
+        icon: UserRoundCheck,
+        visual: 'icon' as const
+      },
+      {
+        label: 'AI-assisted engineering',
+        icon: BrainCircuit,
+        visual: 'pulse' as const
+      },
+      {
+        label: 'Rapid intelligent iteration',
+        icon: Sparkles,
+        visual: 'bars' as const
+      },
+      {
+        label: 'Human-reviewed output',
+        icon: ShieldCheck,
+        visual: 'nodes' as const
+      }
+    ]
+  },
+
   {
     id: 'system',
     label: 'System',
-    duration: 15500
+
+    // The code engine has several contexts,
+    // therefore this receives the longest viewing period.
+    duration: 24000,
+
+    eyebrow: 'Software · Architecture · Production',
+
+    title: 'More than an interface.',
+
+    description: 'Frontend, backend, data and infrastructure working together as one production system.',
+
+    variant: 'system' as const,
+
+    highlights: [
+      {
+        label: 'Frontend + backend',
+        icon: Network,
+        visual: 'nodes' as const
+      },
+      {
+        label: 'Database + authentication',
+        icon: Database,
+        visual: 'pulse' as const
+      },
+      {
+        label: 'APIs + workflows',
+        icon: Workflow,
+        visual: 'bars' as const
+      },
+      {
+        label: 'Production deployment',
+        icon: ServerCog,
+        visual: 'icon' as const
+      }
+    ]
   },
+
   {
     id: 'data',
     label: 'Live Data',
-    duration: 14000
+
+    duration: 16000,
+
+    eyebrow: 'Data · Activity · Intelligence',
+
+    title: 'Turn activity into intelligence.',
+
+    description: 'Capture meaningful business events as structured data your system can actually use.',
+
+    variant: 'workflow' as const,
+
+    highlights: [
+      {
+        label: 'Structured persistent records',
+        icon: Database,
+        visual: 'pulse' as const
+      },
+      {
+        label: 'Traceable business activity',
+        icon: Activity,
+        visual: 'bars' as const
+      }
+    ]
   },
+
   {
     id: 'commerce',
     label: 'Commerce',
-    duration: 15500
+
+    duration: 18000,
+
+    eyebrow: 'Products · Payments · Delivery',
+
+    title: 'From click to delivery.',
+
+    description: 'Products, payments, orders and fulfilment moving through one connected journey.',
+
+    variant: 'commerce' as const,
+
+    highlights: [
+      {
+        label: 'Products & checkout',
+        icon: ShoppingCart,
+        visual: 'icon' as const
+      },
+      {
+        label: 'Connected payments',
+        icon: CreditCard,
+        visual: 'pulse' as const
+      },
+      {
+        label: 'Order lifecycle',
+        icon: PackageCheck,
+        visual: 'nodes' as const
+      },
+      {
+        label: 'Fulfilment & delivery',
+        icon: Truck,
+        visual: 'bars' as const
+      }
+    ]
   },
+
   {
     id: 'scale',
     label: 'Rcentz Core',
-    duration: 16000
-  }
-] as const;
 
-const RCENTZ_SERVICE_SLIDES: readonly HeroServiceSlide[] = [
-  {
-    label: 'Web Development',
-    description: 'Modern responsive websites built for performance and conversion.',
-    icon: Code2
-  },
-  {
-    label: 'Web Applications',
-    description: 'Custom application systems designed around real business workflows.',
-    icon: AppWindow
-  },
-  {
-    label: 'E-commerce Solutions',
-    description: 'Connected online stores, checkout flows and commerce experiences.',
-    icon: ShoppingCart
-  },
-  {
-    label: 'UI/UX Design',
-    description: 'Clean user-focused interfaces for web and application products.',
-    icon: Sparkles
-  },
-  {
-    label: 'Systems & Dashboards',
-    description: 'Operational, reporting and business management dashboards.',
-    icon: LayoutDashboard
-  },
-  {
-    label: 'Online Banking / Fintech',
-    description: 'Interface systems for modern fintech and financial platforms.',
-    icon: Building2
-  },
-  {
-    label: 'Brokers Dashboards',
-    description: 'Structured dashboards for trading, brokerage and market workflows.',
-    icon: ServerCog
-  },
-  {
-    label: 'Maintenance & Support',
-    description: 'Updates, ongoing improvements and dependable system support.',
-    icon: MessageSquareText
-  }
-];
+    duration: 17000,
 
-const RCENTZ_STORY = {
-  eyebrow: 'Websites · Systems · Business',
-  title: 'We build the digital systems that power modern businesses',
-  description:
-    'Premium digital solutions for modern businesses — designed to perform, built to scale and connected to real operations.',
-  mobileDescription:
-    'From business websites and e-commerce to dashboards, fintech interfaces and custom applications, Rcentz builds connected digital systems around how businesses actually operate.',
-  mobileHighlights: [
-    'Responsive by design',
-    'Built for real business workflows',
-    'Scalable from website to full system'
-  ] as const,
-  status: 'Building production systems',
-  variant: 'rcentz' as const,
-  serviceSlides: RCENTZ_SERVICE_SLIDES
-};
-
-const ILLUSTRATION_STORIES = [
-  {
-    eyebrow: 'Data · Prisma · Databases',
-    title: 'When A Business activity becomes structured data.',
-    description:
-      'Watch application events become persistent records as users, projects and activity move through the system.',
-    mobileDescription:
-      'Every meaningful action can become durable system history — captured, organized and ready to power dashboards, workflows and future decisions.',
-    mobileHighlights: [
-      'Structured records',
-      'Persistent application state',
-      'Traceable business activity'
-    ] as const,
-    status: 'Live database activity',
-    variant: 'workflow' as const
-  },
-  {
-    eyebrow: 'Commerce · Payments · Delivery',
-    title: 'One purchase. One connected journey.',
-    description:
-      'From product selection and payment routing to fulfilment, notifications and final delivery.',
-    mobileDescription:
-      'A purchase is more than a checkout screen. Rcentz connects the commercial flow so the order can move cleanly from intent to payment, fulfilment and delivery.',
-    mobileHighlights: [
-      'Checkout & payment routing',
-      'Order state & notifications',
-      'Fulfilment & delivery'
-    ] as const,
-    status: 'Order lifecycle active',
-    variant: 'commerce' as const
-  },
-  {
     eyebrow: 'Foundation · Products · Scale',
-    title: 'One foundation. Multiple products.',
-    description: 'Commerce, projects, services and platforms operate around one reusable Rcentz foundation.',
-    mobileDescription:
-      'Instead of rebuilding the same foundations for every product, shared engines can support new services, platforms and business experiences as Rcentz grows.',
-    mobileHighlights: [
-      'Shared architecture',
-      'Reusable product engines',
-      'Built to expand without starting over'
-    ] as const,
-    status: 'Rcentz ecosystem active',
-    variant: 'scale' as const
-  }
-];
 
-const SYSTEM_MOBILE_HIGHLIGHTS = [
-  'Frontend + backend connected',
-  'Database, auth and APIs working together',
-  'Structured for production growth'
+    title: 'One foundation. Built to expand.',
+
+    description: 'Reusable architecture for services, commerce and the products that come next.',
+
+    variant: 'scale' as const,
+
+    highlights: [
+      {
+        label: 'Shared architecture',
+        icon: Layers3,
+        visual: 'nodes' as const
+      },
+      {
+        label: 'Reusable product engines',
+        icon: Blocks,
+        visual: 'pulse' as const
+      },
+      {
+        label: 'Multiple product systems',
+        icon: Boxes,
+        visual: 'icon' as const
+      },
+      {
+        label: 'Scale without rebuilding',
+        icon: Rocket,
+        visual: 'bars' as const
+      }
+    ]
+  }
 ] as const;
 
 export function HeroStoryEngine() {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = Boolean(useReducedMotion());
+
+  const activeStory = STORIES[activeIndex];
 
   useEffect(() => {
     if (reduceMotion) {
@@ -178,12 +270,12 @@ export function HeroStoryEngine() {
 
     const timeout = window.setTimeout(() => {
       setActiveIndex(current => (current + 1) % STORIES.length);
-    }, STORIES[activeIndex].duration);
+    }, activeStory.duration);
 
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [activeIndex, reduceMotion]);
+  }, [activeStory.duration, reduceMotion]);
 
   function showPreviousStory() {
     setActiveIndex(current => (current - 1 + STORIES.length) % STORIES.length);
@@ -193,178 +285,64 @@ export function HeroStoryEngine() {
     setActiveIndex(current => (current + 1) % STORIES.length);
   }
 
-  function renderActiveStory() {
-    if (activeIndex === 0) {
-      return <HeroIllustrationStory {...RCENTZ_STORY} />;
-    }
-
-    if (activeIndex === 1) {
-      return (
-        <div
-          className={[
-            'grid',
-            'items-start',
-            'lg:min-h-[500px]',
-            'lg:grid-cols-[0.86fr_1.14fr]',
-            'lg:items-stretch',
-            'lg:gap-8'
-          ].join(' ')}>
-          {/* MOBILE SYSTEM COPY */}
-
-          <div className="relative z-20 px-1 pt-1 lg:hidden">
-            <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-theme-accent" />
-
-              <p className="font-mono text-[7px] font-medium uppercase tracking-[0.16em] text-muted">
-                Software · Systems · Scale
-              </p>
-            </div>
-
-            <h2
-              className={[
-                'mt-3',
-                'max-w-[350px]',
-                'text-balance',
-                'text-[1.75rem]',
-                'font-semibold',
-                'leading-[1.02]',
-                'tracking-[-0.05em]'
-              ].join(' ')}>
-              We engineer the technology that powers{' '}
-              <span
-                className={[
-                  'bg-gradient-to-r',
-                  'from-foreground',
-                  'via-theme-accent',
-                  'to-theme-accent-strong',
-                  'bg-clip-text',
-                  'text-transparent'
-                ].join(' ')}>
-                market leaders...
-              </span>
-            </h2>
-
-            <p className="mt-3 max-w-[380px] text-[12px] leading-[1.65] text-muted">
-              Connected software, data and production infrastructure built as one working system.
-            </p>
-
-            <p className="mt-4 max-w-[390px] text-[11px] leading-[1.7] text-muted">
-              The interface is only one layer. Underneath it, Rcentz connects application logic, database
-              records, authentication and server behaviour so the product works as a complete operational
-              system.
-            </p>
-
-            <div className="mt-3 grid gap-1.5">
-              {SYSTEM_MOBILE_HIGHLIGHTS.map(highlight => (
-                <div
-                  key={highlight}
-                  className="flex items-center gap-2 font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
-                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-theme-accent/16 bg-theme-accent-soft">
-                    <Check className="size-2.5 text-theme-accent" />
-                  </span>
-
-                  <span>{highlight}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 flex flex-wrap items-center gap-2.5">
-              <Link
-                href="/work"
-                className={[
-                  'inline-flex h-9 items-center justify-center gap-2 rounded-full',
-                  'bg-primary px-4',
-                  'text-[11px] font-medium text-primary-foreground',
-                  'transition-[opacity,transform]',
-                  'hover:opacity-90',
-                  'active:scale-[0.98]'
-                ].join(' ')}>
-                View our work
-                <ArrowRight aria-hidden="true" className="size-3.5" />
-              </Link>
-
-              <Link
-                href="/services"
-                className={[
-                  'inline-flex h-9 items-center justify-center gap-2 rounded-full',
-                  'border border-border',
-                  'bg-background/40 px-4 backdrop-blur-xl',
-                  'text-[11px] font-medium text-foreground',
-                  'transition-[background-color,border-color,transform]',
-                  'hover:border-border-strong',
-                  'hover:bg-surface-muted',
-                  'active:scale-[0.98]'
-                ].join(' ')}>
-                Explore services
-                <ArrowRight aria-hidden="true" className="size-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* DESKTOP INTRO */}
-
-          <div className="hidden lg:block">
-            <HomeHeroIntro />
-          </div>
-
-          {/* WORKSPACE */}
-
-          <div className="mt-4 min-w-0 sm:mt-5 lg:mt-0">
-            <HomeHeroWorkspace />
-          </div>
-        </div>
-      );
-    }
-
-    return <HeroIllustrationStory {...ILLUSTRATION_STORIES[activeIndex - 2]} />;
-  }
-
   return (
     <div className="relative">
-      {/* STORY STAGE */}
+      {/* ===============================
+          STORY STAGE
+          =============================== */}
 
       <div className="grid">
-        <AnimatePresence initial={false} mode="sync">
+        <AnimatePresence initial={false} mode="wait">
           <motion.div
-            key={activeIndex}
+            key={activeStory.id}
             style={{
-              gridArea: '1 / 1'
+              gridArea: '1 / 1',
+              willChange: reduceMotion ? 'auto' : 'transform, opacity'
             }}
             initial={
               reduceMotion
                 ? false
                 : {
                     opacity: 0,
-                    y: 5,
-                    filter: 'blur(3px)'
+                    x: 10,
+                    scale: 0.997
                   }
             }
             animate={{
               opacity: 1,
-              y: 0,
-              filter: 'blur(0px)'
+              x: 0,
+              scale: 1
             }}
             exit={
               reduceMotion
                 ? undefined
                 : {
                     opacity: 0,
-                    y: -4,
-                    filter: 'blur(2px)'
+                    x: -8,
+                    scale: 0.997
                   }
             }
             transition={{
-              duration: 1.05,
+              duration: 0.52,
               ease: [0.22, 1, 0.36, 1]
-            }}>
-            {renderActiveStory()}
+            }}
+            className="transform-gpu">
+            <HeroIllustrationStory
+              eyebrow={activeStory.eyebrow}
+              title={activeStory.title}
+              description={activeStory.description}
+              highlights={activeStory.highlights}
+              variant={activeStory.variant}
+            />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* STORY CONTROLLER */}
+      {/* ===============================
+          STORY CONTROLLER
+          =============================== */}
 
-      <div className="relative z-40 mt-1 flex justify-center sm:mt-2">
+      <div className="relative z-40 mt-2 flex justify-center sm:mt-3">
         <div
           className={[
             'inline-flex',
@@ -372,10 +350,10 @@ export function HeroStoryEngine() {
             'items-center gap-1',
             'rounded-full',
             'border border-border',
-            'bg-background/72',
+            'bg-background/76',
             'p-1',
             'shadow-lg',
-            'backdrop-blur-2xl'
+            'backdrop-blur-xl'
           ].join(' ')}>
           <button
             type="button"
@@ -409,7 +387,7 @@ export function HeroStoryEngine() {
                     'flex h-8',
                     'items-center gap-2',
                     'rounded-full',
-                    'px-2.5',
+                    'px-2',
                     'sm:px-3',
                     'transition-colors'
                   ].join(' ')}>
@@ -418,8 +396,9 @@ export function HeroStoryEngine() {
                       layoutId="hero-story-active"
                       transition={{
                         type: 'spring',
-                        stiffness: 340,
-                        damping: 32
+                        stiffness: 300,
+                        damping: 30,
+                        mass: 0.75
                       }}
                       className={[
                         'absolute inset-0',
@@ -437,7 +416,7 @@ export function HeroStoryEngine() {
                       opacity: active ? 1 : 0.35
                     }}
                     transition={{
-                      duration: 0.3
+                      duration: 0.28
                     }}
                     className={[
                       'relative z-10',
@@ -464,7 +443,7 @@ export function HeroStoryEngine() {
                       'hidden',
                       'text-[8px]',
                       'font-medium',
-                      'sm:inline',
+                      'md:inline',
                       active ? 'text-foreground' : 'text-muted'
                     ].join(' ')}>
                     {story.label}

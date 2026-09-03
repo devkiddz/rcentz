@@ -1,7 +1,14 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion
+} from 'motion/react';
+import {
+  useEffect,
+  useState
+} from 'react';
 
 const CODE_CONTEXTS = [
   {
@@ -46,29 +53,26 @@ return {
   }
 ];
 
-const TYPE_SPEED = 24;
-const HOLD_DURATION = 1800;
+const TYPE_STEP = 2;
+const TYPE_SPEED = 42;
+const HOLD_DURATION = 1900;
 
 export function HomeHeroCodeRotator() {
   const [activeIndex, setActiveIndex] = useState(0);
-
   const [typedLength, setTypedLength] = useState(0);
-
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = Boolean(useReducedMotion());
 
   const activeContext = CODE_CONTEXTS[activeIndex];
 
   useEffect(() => {
-    if (reduceMotion) {
-      return;
-    }
-
-    if (typedLength >= activeContext.code.length) {
+    if (reduceMotion || typedLength >= activeContext.code.length) {
       return;
     }
 
     const timeout = window.setTimeout(() => {
-      setTypedLength(current => Math.min(current + 1, activeContext.code.length));
+      setTypedLength(current =>
+        Math.min(current + TYPE_STEP, activeContext.code.length)
+      );
     }, TYPE_SPEED);
 
     return () => {
@@ -77,17 +81,12 @@ export function HomeHeroCodeRotator() {
   }, [activeContext.code, reduceMotion, typedLength]);
 
   useEffect(() => {
-    if (reduceMotion) {
-      return;
-    }
-
-    if (typedLength !== activeContext.code.length) {
+    if (reduceMotion || typedLength !== activeContext.code.length) {
       return;
     }
 
     const timeout = window.setTimeout(() => {
       setTypedLength(0);
-
       setActiveIndex(current => (current + 1) % CODE_CONTEXTS.length);
     }, HOLD_DURATION);
 
@@ -96,7 +95,9 @@ export function HomeHeroCodeRotator() {
     };
   }, [activeContext.code.length, reduceMotion, typedLength]);
 
-  const visibleTypedLength = reduceMotion ? activeContext.code.length : typedLength;
+  const visibleTypedLength = reduceMotion
+    ? activeContext.code.length
+    : typedLength;
 
   const typedCode = activeContext.code.slice(0, visibleTypedLength);
 
@@ -104,11 +105,12 @@ export function HomeHeroCodeRotator() {
     <div
       className={[
         'relative overflow-hidden',
-        'rounded-2xl border border-border',
-        'bg-background/76',
-        'shadow-2xl backdrop-blur-2xl'
+        'rounded-2xl',
+        'border border-border',
+        'bg-background/88',
+        'shadow-2xl',
+        'backdrop-blur-xl'
       ].join(' ')}>
-      {/* WINDOW HEADER */}
       <div className="flex h-10 items-center justify-between border-b border-border px-4">
         <div className="flex items-center gap-2">
           <span className="size-1.5 rounded-full bg-theme-accent" />
@@ -116,28 +118,11 @@ export function HomeHeroCodeRotator() {
           <AnimatePresence initial={false} mode="wait">
             <motion.span
               key={activeContext.file}
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      y: 5,
-                      opacity: 0
-                    }
-              }
-              animate={{
-                y: 0,
-                opacity: 1
-              }}
-              exit={
-                reduceMotion
-                  ? undefined
-                  : {
-                      y: -5,
-                      opacity: 0
-                    }
-              }
+              initial={reduceMotion ? false : { y: 4, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={reduceMotion ? undefined : { y: -4, opacity: 0 }}
               transition={{
-                duration: 0.3,
+                duration: 0.26,
                 ease: [0.22, 1, 0.36, 1]
               }}
               className="font-mono text-[9px] text-muted">
@@ -152,10 +137,10 @@ export function HomeHeroCodeRotator() {
               key={context.file}
               animate={{
                 width: index === activeIndex ? 14 : 5,
-                opacity: index === activeIndex ? 1 : 0.45
+                opacity: index === activeIndex ? 1 : 0.4
               }}
               transition={{
-                duration: 0.3
+                duration: 0.28
               }}
               className={[
                 'h-1 rounded-full',
@@ -166,52 +151,27 @@ export function HomeHeroCodeRotator() {
         </div>
       </div>
 
-      {/* CODE STAGE */}
-      <div
-        className="relative h-[245px] overflow-hidden"
-        style={{
-          perspective: '900px'
-        }}>
-        <AnimatePresence initial={false} mode="popLayout">
+      <div className="relative h-[220px] overflow-hidden sm:h-[232px] lg:h-[245px]">
+        <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={activeIndex}
-            initial={
-              reduceMotion
-                ? false
-                : {
-                    y: 22,
-                    rotateX: -18,
-                    opacity: 0
-                  }
-            }
-            animate={{
-              y: 0,
-              rotateX: 0,
-              opacity: 1
-            }}
-            exit={
-              reduceMotion
-                ? undefined
-                : {
-                    y: -22,
-                    rotateX: 18,
-                    opacity: 0
-                  }
-            }
+            initial={reduceMotion ? false : { y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduceMotion ? undefined : { y: -10, opacity: 0 }}
             transition={{
-              duration: 0.55,
+              duration: 0.38,
               ease: [0.22, 1, 0.36, 1]
             }}
             style={{
-              transformOrigin: 'center',
-              backfaceVisibility: 'hidden'
+              willChange: reduceMotion ? 'auto' : 'transform, opacity'
             }}
-            className="absolute inset-0 p-5">
+            className="absolute inset-0 transform-gpu p-5">
             <pre
               className={[
                 'whitespace-pre-wrap',
                 'font-mono',
-                'text-[10px] leading-[1.85]',
+                'text-[10px]',
+                'leading-[1.8]',
                 'text-muted',
                 'sm:text-[11px]'
               ].join(' ')}>
@@ -222,10 +182,10 @@ export function HomeHeroCodeRotator() {
                   <motion.span
                     aria-hidden="true"
                     animate={{
-                      opacity: [1, 0.15, 1]
+                      opacity: [1, 0.18, 1]
                     }}
                     transition={{
-                      duration: 0.8,
+                      duration: 0.9,
                       repeat: Infinity,
                       ease: 'easeInOut'
                     }}
@@ -238,20 +198,21 @@ export function HomeHeroCodeRotator() {
         </AnimatePresence>
       </div>
 
-      {/* STATUS */}
       <div className="flex items-center justify-between border-t border-border px-5 py-3">
         <div className="flex items-center gap-2">
           <span className="relative flex size-1.5">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-theme-accent opacity-35" />
-
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-theme-accent opacity-30" />
             <span className="relative inline-flex size-1.5 rounded-full bg-theme-accent" />
           </span>
 
-          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-muted">Rcentz system</span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-muted">
+            Rcentz system
+          </span>
         </div>
 
         <span className="font-mono text-[8px] text-muted">
-          {String(activeIndex + 1).padStart(2, '0')}/{String(CODE_CONTEXTS.length).padStart(2, '0')}
+          {String(activeIndex + 1).padStart(2, '0')}/
+          {String(CODE_CONTEXTS.length).padStart(2, '0')}
         </span>
       </div>
     </div>
