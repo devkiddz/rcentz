@@ -35,87 +35,101 @@ type DwellRange = readonly [number, number];
 const STORIES = [
   {
     id: 'rcentz',
-    label: 'Rcentz',
 
-    /*
-     * The website build completes fairly early.
-     * We intentionally leave a large quiet window
-     * afterwards so visitors can read the page.
-     */
+    label: 'Websites',
+
     dwell: [52000, 66000] as DwellRange,
 
-    eyebrow: 'Websites · Applications · Systems',
+    eyebrow: 'Website Development · E-commerce · Web Applications',
 
-    title: 'Digital systems built to move business.',
+    title: 'We build websites that power success.',
 
     description:
-      'Websites, applications and digital experiences shaped around how your business actually works.',
+      'Rcentz designs and develops professional, high-performance websites that help businesses attract customers, sell online, strengthen their brand and grow — from business websites and e-commerce stores to custom web applications.',
 
     variant: 'rcentz' as const,
 
     highlights: [
       {
-        label: 'Responsive by design',
+        label: 'Business websites built to convert',
+
         icon: MonitorSmartphone,
+
         visual: 'icon' as const
       },
+
       {
-        label: 'Business-first workflows',
-        icon: Workflow,
+        label: 'E-commerce stores built to sell',
+
+        icon: ShoppingCart,
+
         visual: 'nodes' as const
       },
+
       {
-        label: 'Performance that scales',
-        icon: Gauge,
-        visual: 'bars' as const
-      },
-      {
-        label: 'Built for real operations',
+        label: 'Custom web applications',
+
         icon: Blocks,
+
         visual: 'pulse' as const
+      },
+
+      {
+        label: 'Redesigns that move you forward',
+
+        icon: Rocket,
+
+        visual: 'bars' as const
       }
     ]
   },
 
   {
     id: 'ai',
+
     label: 'Rcentz × AI',
 
-    /*
-     * AI receives one of the longest dwells.
-     * Its motherboard can quietly remain alive
-     * without forcing another slide too quickly.
-     */
     dwell: [58000, 74000] as DwellRange,
 
-    eyebrow: 'Human direction · AI acceleration',
+    eyebrow: 'Rcentz × AI · Faster Thinking · Smarter Execution',
 
-    title: 'Intelligence working beside engineering.',
+    title: 'Turn ambitious ideas into working products faster.',
 
     description:
-      'Business understanding and engineering judgment amplified by AI-assisted execution from idea to production.',
+      'Rcentz combines human direction, engineering judgment and AI-assisted execution to explore faster, solve harder problems and move strong ideas toward production without sacrificing quality.',
 
     variant: 'ai' as const,
 
     highlights: [
       {
-        label: 'Human-led decisions',
+        label: 'Human-led product decisions',
+
         icon: UserRoundCheck,
+
         visual: 'icon' as const
       },
+
       {
-        label: 'AI-assisted engineering',
+        label: 'AI-accelerated engineering',
+
         icon: BrainCircuit,
+
         visual: 'pulse' as const
       },
+
       {
-        label: 'Rapid intelligent iteration',
+        label: 'Faster product iteration',
+
         icon: Sparkles,
+
         visual: 'bars' as const
       },
+
       {
-        label: 'Human-reviewed output',
+        label: 'Reviewed before production',
+
         icon: ShieldCheck,
+
         visual: 'nodes' as const
       }
     ]
@@ -123,41 +137,50 @@ const STORIES = [
 
   {
     id: 'system',
-    label: 'System',
 
-    /*
-     * The System slide contains the code rotator,
-     * so it gets the longest reading window.
-     */
+    label: 'Systems',
+
     dwell: [65000, 82000] as DwellRange,
 
-    eyebrow: 'Software · Architecture · Production',
+    eyebrow: 'Frontend · Backend · Data · Infrastructure',
 
-    title: 'More than an interface.',
+    title: 'Your business deserves more than a beautiful frontend.',
 
-    description: 'Frontend, backend, data and infrastructure working together as one production system.',
+    description:
+      'Rcentz builds complete digital systems where interfaces, authentication, databases, APIs, workflows and infrastructure work together to run real business operations.',
 
     variant: 'system' as const,
 
     highlights: [
       {
-        label: 'Frontend + backend',
+        label: 'Frontend + backend engineering',
+
         icon: Network,
+
         visual: 'nodes' as const
       },
+
       {
         label: 'Database + authentication',
+
         icon: Database,
+
         visual: 'pulse' as const
       },
+
       {
-        label: 'APIs + workflows',
+        label: 'APIs + business workflows',
+
         icon: Workflow,
+
         visual: 'bars' as const
       },
+
       {
-        label: 'Production deployment',
+        label: 'Production-ready deployment',
+
         icon: ServerCog,
+
         visual: 'icon' as const
       }
     ]
@@ -165,31 +188,34 @@ const STORIES = [
 
   {
     id: 'data',
+
     label: 'Live Data',
 
-    /*
-     * Record animation completes, then the
-     * database is allowed to sit quietly.
-     */
     dwell: [54000, 70000] as DwellRange,
 
-    eyebrow: 'Data · Activity · Intelligence',
+    eyebrow: 'Business Data · Activity · Decisions',
 
-    title: 'Turn activity into intelligence.',
+    title: 'Stop guessing. Build with data your business can use.',
 
-    description: 'Capture meaningful business events as structured data your system can actually use.',
+    description:
+      'Rcentz turns important actions, transactions and workflows into structured records that can power dashboards, automation, reporting and better business decisions.',
 
     variant: 'workflow' as const,
 
     highlights: [
       {
-        label: 'Structured persistent records',
+        label: 'Structured business records',
+
         icon: Database,
+
         visual: 'pulse' as const
       },
+
       {
-        label: 'Traceable business activity',
+        label: 'Traceable live activity',
+
         icon: Activity,
+
         visual: 'bars' as const
       }
     ]
@@ -197,41 +223,50 @@ const STORIES = [
 
   {
     id: 'commerce',
+
     label: 'Commerce',
 
-    /*
-     * Commerce reaches Delivered and then
-     * remains there long enough to be understood.
-     */
     dwell: [56000, 72000] as DwellRange,
 
-    eyebrow: 'Products · Payments · Delivery',
+    eyebrow: 'Products · Payments · Orders · Fulfilment',
 
-    title: 'From click to delivery.',
+    title: 'Build an online store designed to keep business moving.',
 
-    description: 'Products, payments, orders and fulfilment moving through one connected journey.',
+    description:
+      'From product discovery and checkout to payment, orders and fulfilment, Rcentz connects the complete commerce journey into one experience built to sell and operate.',
 
     variant: 'commerce' as const,
 
     highlights: [
       {
-        label: 'Products & checkout',
+        label: 'Product discovery + checkout',
+
         icon: ShoppingCart,
+
         visual: 'icon' as const
       },
+
       {
-        label: 'Connected payments',
+        label: 'Connected payment systems',
+
         icon: CreditCard,
+
         visual: 'pulse' as const
       },
+
       {
-        label: 'Order lifecycle',
+        label: 'Complete order lifecycle',
+
         icon: PackageCheck,
+
         visual: 'nodes' as const
       },
+
       {
-        label: 'Fulfilment & delivery',
+        label: 'Fulfilment + delivery workflows',
+
         icon: Truck,
+
         visual: 'bars' as const
       }
     ]
@@ -239,41 +274,50 @@ const STORIES = [
 
   {
     id: 'scale',
+
     label: 'Rcentz Core',
 
-    /*
-     * Core releases all four systems,
-     * then settles into its ambient globe.
-     */
     dwell: [56000, 72000] as DwellRange,
 
-    eyebrow: 'Foundation · Products · Scale',
+    eyebrow: 'Build Once · Extend · Operate · Scale',
 
-    title: 'One foundation. Built to expand.',
+    title: 'Build today without rebuilding everything tomorrow.',
 
-    description: 'Reusable architecture for services, commerce and the products that come next.',
+    description:
+      'Rcentz creates reusable foundations that can grow from one website or application into broader services, commerce platforms and business systems as your needs expand.',
 
     variant: 'scale' as const,
 
     highlights: [
       {
-        label: 'Shared architecture',
+        label: 'Shared system architecture',
+
         icon: Layers3,
+
         visual: 'nodes' as const
       },
+
       {
         label: 'Reusable product engines',
+
         icon: Blocks,
+
         visual: 'pulse' as const
       },
+
       {
-        label: 'Multiple product systems',
+        label: 'Multiple connected products',
+
         icon: Boxes,
+
         visual: 'icon' as const
       },
+
       {
-        label: 'Scale without rebuilding',
+        label: 'Expand without starting over',
+
         icon: Rocket,
+
         visual: 'bars' as const
       }
     ]

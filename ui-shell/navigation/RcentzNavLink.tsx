@@ -21,25 +21,121 @@ export function RcentzNavLink({ label, href, mobile = false, onNavigate }: Rcent
       aria-current={active ? 'page' : undefined}
       onClick={onNavigate}
       className={[
-        'inline-flex items-center rounded-full border',
+        'group',
+        'relative',
+        'isolate',
+        'inline-flex',
+        'items-center',
+        'overflow-hidden',
+        'border',
+        'border-transparent',
 
-        'transition-[color,background-color,border-color] duration-200',
+        'transition-[color,background-color,border-color]',
+        'duration-200',
+        'ease-out',
 
-        mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]',
+        'focus-visible:outline-none',
+        'focus-visible:ring-1',
+        'focus-visible:ring-[var(--theme-accent)]/35',
+
+        mobile
+          ? ['h-10', 'w-full', 'rounded-xl', 'px-3.5', 'text-[13px]'].join(' ')
+          : ['h-8', 'justify-center', 'rounded-full', 'px-3', 'text-[12px]'].join(' '),
 
         active
-          ? ['border-border-strong', 'bg-secondary', 'font-medium text-secondary-foreground'].join(' ')
+          ? ['border-border/40', 'bg-background/38', 'font-medium', 'text-foreground'].join(' ')
           : [
-              'border-border',
-              'bg-surface-muted',
               'text-muted',
 
-              'hover:border-border-strong',
-              'hover:bg-secondary',
-              'hover:text-foreground'
+              'hover:border-border/30',
+              'hover:bg-background/24',
+              'hover:text-foreground',
+
+              'focus-visible:border-border/40',
+              'focus-visible:bg-background/30',
+              'focus-visible:text-foreground'
             ].join(' ')
       ].join(' ')}>
-      {label}
+      {/* =====================================================
+          ATTENTION SURFACE
+
+          Only becomes visible when the user deliberately
+          interacts with the navigation.
+
+          The header owns the main glass surface.
+          Individual links remain visually quiet.
+          ===================================================== */}
+
+      <span
+        aria-hidden="true"
+        className={[
+          'pointer-events-none',
+          'absolute inset-0',
+          '-z-10',
+
+          'bg-gradient-to-b',
+          'from-foreground/[0.035]',
+          'to-transparent',
+
+          'transition-opacity',
+          'duration-200',
+
+          active
+            ? 'opacity-100'
+            : ['opacity-0', 'group-hover:opacity-100', 'group-focus-visible:opacity-100'].join(' ')
+        ].join(' ')}
+      />
+
+      {/* =====================================================
+          LABEL
+          ===================================================== */}
+
+      <span className="relative z-10">{label}</span>
+
+      {/* =====================================================
+          ACTIVE ROUTE SIGNAL
+
+          Desktop:
+          tiny bottom accent rail.
+
+          Mobile:
+          tiny left-side accent rail.
+
+          This gives active state without turning every
+          navigation item into a loud capsule.
+          ===================================================== */}
+
+      {active ? (
+        mobile ? (
+          <span
+            aria-hidden="true"
+            className={[
+              'absolute',
+              'left-1.5',
+              'top-1/2',
+              'h-4',
+              'w-px',
+              '-translate-y-1/2',
+              'rounded-full',
+              'bg-[var(--theme-accent)]'
+            ].join(' ')}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className={[
+              'absolute',
+              'bottom-[3px]',
+              'left-1/2',
+              'h-px',
+              'w-4',
+              '-translate-x-1/2',
+              'rounded-full',
+              'bg-[var(--theme-accent)]'
+            ].join(' ')}
+          />
+        )
+      ) : null}
     </Link>
   );
 }

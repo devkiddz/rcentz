@@ -1,36 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+
 import { Menu, X } from 'lucide-react';
+
 import { useEffect, useState } from 'react';
 
 import { RcentzLogo } from '../brand/RcentzLogo';
 import { RcentzThemeControl } from '../theme/RcentzThemeControl';
-import { RcentzAuthActions } from './RcentzAuthActions';
-import { RcentzNavLink } from './RcentzNavLink';
 
-const navigation = [
-  {
-    label: 'Services',
-    href: '/services'
-  },
-  {
-    label: 'Work',
-    href: '/portfolio'
-  },
-  {
-    label: 'Store',
-    href: '/store'
-  },
-  {
-    label: 'Blog',
-    href: '/blog'
-  },
-  {
-    label: 'About',
-    href: '/about'
-  }
-] as const;
+import { RcentzAuthActions } from './RcentzAuthActions';
+import { RcentzNavigation } from './RcentzNavigation';
 
 export function RcentzHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,7 +50,8 @@ export function RcentzHeader() {
       {/* =====================================================
           DOCUMENT SPACER
 
-          Keeps page content below the fixed header.
+          Keeps application content beneath the
+          fixed floating header.
           ===================================================== */}
 
       <div aria-hidden="true" className="h-[72px]" />
@@ -78,19 +59,27 @@ export function RcentzHeader() {
       {/* =====================================================
           PRISMA-STYLE TOP MASK
 
-          This is important.
+          Protected presentation behavior.
 
-          It creates the clean environmental surface above the
-          floating navigation and contracts when scrolling.
+          This creates the clean environmental surface
+          above the floating navigation.
+
+          It compresses when scrolling.
           ===================================================== */}
 
       <div
         aria-hidden="true"
         className={[
           'pointer-events-none',
-          'fixed inset-x-0 top-0',
+
+          'fixed',
+          'inset-x-0',
+          'top-0',
+
           'z-40',
+
           'origin-top',
+
           'bg-background',
 
           'transition-[height,transform,opacity]',
@@ -106,39 +95,36 @@ export function RcentzHeader() {
       />
 
       {/* =====================================================
-          NAVIGATION
+          FLOATING HEADER SHELL
 
-          Width remains aligned with the application body.
+          The Header owns:
+          - reveal
+          - scroll compression
+          - glass
+          - environmental masking
+          - brand
+          - actions
+          - mobile expansion
 
-          The Prisma-like effect now comes from:
-          - vertical position
-          - height
-          - padding
-          - glass density
-          - shadow
-          - radius
-          - content sizing
-
-          NOT from breaking the site's width axis.
+          Navigation composition now lives independently.
           ===================================================== */}
 
       <header
         className={[
           'fixed',
+
           'left-1/2',
+
           'z-50',
+
           '-translate-x-1/2',
 
-          /*
-           * SAME AXIS AS .rcentz-section
-           *
-           * globals:
-           * --section-max: 1200px
-           * mobile: calc(100% - 1rem)
-           * sm+: calc(100% - 2rem)
-           */
+          /* SAME PUBLIC AXIS AS .rcentz-section */
+
           'w-[calc(100%-1rem)]',
+
           'sm:w-[calc(100%-2rem)]',
+
           'max-w-[1200px]',
 
           'origin-top',
@@ -146,10 +132,13 @@ export function RcentzHeader() {
           'border',
 
           'backdrop-blur-2xl',
+
           'transform-gpu',
 
           'transition-[top,border-radius,background-color,border-color,box-shadow,transform,opacity]',
+
           'duration-500',
+
           'ease-[cubic-bezier(0.22,1,0.36,1)]',
 
           revealed
@@ -157,72 +146,105 @@ export function RcentzHeader() {
             : ['-translate-y-4', 'scale-y-[0.94]', 'opacity-0'].join(' '),
 
           /*
-           * PRISMA FLOATING EFFECT
+           * PRISMA FLOATING STATE
+           *
+           * Preserve the difference between the
+           * resting and scrolled environment.
            */
+
           scrolled
             ? [
                 'top-[6px]',
+
                 'border-border/80',
+
                 'bg-background/78',
+
                 'shadow-[0_12px_40px_rgb(0_0_0/0.08)]',
+
                 'dark:shadow-[0_12px_40px_rgb(0_0_0/0.34)]'
               ].join(' ')
             : [
                 'top-[10px]',
+
                 'border-border/65',
+
                 'bg-background/38',
+
                 'shadow-[0_8px_30px_rgb(0_0_0/0.055)]',
+
                 'dark:shadow-[0_8px_30px_rgb(0_0_0/0.22)]'
               ].join(' '),
 
-          /*
-           * MENU OPEN:
-           * retain rounded floating panel,
-           * otherwise use pill navigation.
-           */
           mobileOpen ? 'rounded-[28px]' : 'rounded-full'
         ].join(' ')}>
         {/* ===================================================
             AMBIENT HEADER SURFACE
-
-            Gives the floating header a subtle internal
-            highlight without changing its real width.
             =================================================== */}
 
         <div
           aria-hidden="true"
-          className={['pointer-events-none', 'absolute inset-0', 'overflow-hidden', 'rounded-[inherit]'].join(
-            ' '
-          )}>
+          className={[
+            'pointer-events-none',
+
+            'absolute',
+            'inset-0',
+
+            'overflow-hidden',
+
+            'rounded-[inherit]'
+          ].join(' ')}>
+          {/* TOP LIGHT */}
+
           <div
             className={[
-              'absolute inset-x-[8%]',
+              'absolute',
+
+              'inset-x-[8%]',
+
               'top-0',
+
               'h-px',
+
               'bg-gradient-to-r',
+
               'from-transparent',
+
               'via-foreground/10',
+
               'to-transparent',
 
               'transition-opacity',
+
               'duration-500',
 
               scrolled ? 'opacity-60' : 'opacity-30'
             ].join(' ')}
           />
 
+          {/* AMBIENT ACCENT */}
+
           <div
             className={[
               'absolute',
-              'left-1/2 top-[-36px]',
+
+              'left-1/2',
+              'top-[-36px]',
+
               'h-[54px]',
+
               'w-[55%]',
+
               '-translate-x-1/2',
+
               'rounded-full',
+
               'bg-theme-accent-faint',
+
               'blur-3xl',
 
               'transition-opacity',
+
               'duration-500',
 
               scrolled ? 'opacity-30' : 'opacity-55'
@@ -231,16 +253,20 @@ export function RcentzHeader() {
         </div>
 
         {/* ===================================================
-            INNER NAVIGATION AXIS
+            INNER HEADER AXIS
             =================================================== */}
 
         <div
           className={[
-            'relative z-10',
+            'relative',
+            'z-10',
+
             'mx-auto',
 
             'transition-[padding]',
+
             'duration-300',
+
             'ease-[cubic-bezier(0.22,1,0.36,1)]',
 
             scrolled ? ['px-3', 'sm:px-4', 'lg:px-5'].join(' ') : ['px-4', 'sm:px-5', 'lg:px-5'].join(' ')
@@ -252,16 +278,22 @@ export function RcentzHeader() {
           <div
             className={[
               'flex',
+
               'items-center',
+
               'justify-between',
 
               'transition-[height]',
+
               'duration-300',
+
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
 
               scrolled ? 'h-[48px]' : 'h-[56px]'
             ].join(' ')}>
-            {/* BRAND */}
+            {/* =============================================
+                BRAND
+                ============================================= */}
 
             <Link
               href="/"
@@ -273,12 +305,17 @@ export function RcentzHeader() {
               <span
                 className={[
                   'truncate',
+
                   'font-semibold',
+
                   'tracking-[-0.025em]',
+
                   'text-foreground',
 
                   'transition-[font-size]',
+
                   'duration-300',
+
                   'ease-out',
 
                   scrolled ? 'text-[13px]' : 'text-sm'
@@ -287,17 +324,17 @@ export function RcentzHeader() {
               </span>
             </Link>
 
-            {/* DESKTOP NAVIGATION */}
+            {/* =============================================
+                DESKTOP NAVIGATION
 
-            <nav
-              aria-label="Primary navigation"
-              className={['hidden', 'items-center', 'gap-1.5', 'md:flex', 'lg:gap-2'].join(' ')}>
-              {navigation.map(item => (
-                <RcentzNavLink key={item.href} label={item.label} href={item.href} />
-              ))}
-            </nav>
+                Navigation now owns its own visual contract.
+                ============================================= */}
 
-            {/* DESKTOP ACTIONS */}
+            <RcentzNavigation />
+
+            {/* =============================================
+                DESKTOP ACTIONS
+                ============================================= */}
 
             <div className={['hidden', 'items-center', 'gap-1.5', 'md:flex'].join(' ')}>
               <RcentzThemeControl />
@@ -308,18 +345,24 @@ export function RcentzHeader() {
                 href="/services"
                 className={[
                   'rounded-full',
+
                   'border',
                   'border-primary',
+
                   'bg-primary',
 
                   'font-medium',
+
                   'text-primary-foreground',
 
                   'transition-[padding,font-size,opacity,transform]',
+
                   'duration-300',
+
                   'ease-out',
 
                   'hover:opacity-85',
+
                   'active:scale-[0.98]',
 
                   scrolled
@@ -330,7 +373,9 @@ export function RcentzHeader() {
               </Link>
             </div>
 
-            {/* MOBILE MENU BUTTON */}
+            {/* =============================================
+                MOBILE MENU BUTTON
+                ============================================= */}
 
             <button
               type="button"
@@ -342,22 +387,30 @@ export function RcentzHeader() {
               }}
               className={[
                 'flex',
+
                 'items-center',
+
                 'justify-center',
 
                 'rounded-full',
 
                 'border',
-                'border-border',
 
-                'bg-surface-muted',
+                'border-border/55',
+
+                'bg-background/28',
+
                 'text-foreground',
 
+                'backdrop-blur-xl',
+
                 'transition-[width,height,background-color,border-color,color,transform]',
+
                 'duration-300',
 
-                'hover:border-border-strong',
-                'hover:bg-secondary',
+                'hover:border-border-strong/70',
+
+                'hover:bg-background/48',
 
                 'active:scale-[0.96]',
 
@@ -374,7 +427,7 @@ export function RcentzHeader() {
           </div>
 
           {/* ===============================================
-              MOBILE NAVIGATION
+              MOBILE NAVIGATION PANEL
               =============================================== */}
 
           <div
@@ -383,7 +436,9 @@ export function RcentzHeader() {
               'grid',
 
               'transition-[grid-template-rows,opacity]',
+
               'duration-300',
+
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
 
               mobileOpen
@@ -391,28 +446,27 @@ export function RcentzHeader() {
                 : ['pointer-events-none', 'grid-rows-[0fr]', 'opacity-0'].join(' ')
             ].join(' ')}>
             <div className="overflow-hidden">
-              <div className="border-t border-border pb-3">
-                <nav
-                  aria-label="Mobile navigation"
-                  className={['flex', 'flex-col', 'gap-1.5', 'py-3'].join(' ')}>
-                  {navigation.map(item => (
-                    <RcentzNavLink
-                      key={item.href}
-                      label={item.label}
-                      href={item.href}
-                      mobile
-                      onNavigate={closeMobileNavigation}
-                    />
-                  ))}
-                </nav>
+              <div className="border-t border-border/60 pb-3">
+                {/* MOBILE LINKS */}
+
+                <div className="py-3">
+                  <RcentzNavigation mobile onNavigate={closeMobileNavigation} />
+                </div>
+
+                {/* MOBILE ACTIONS */}
 
                 <div
                   className={[
                     'grid',
+
                     'grid-cols-[auto_1fr_1fr]',
+
                     'gap-2',
+
                     'border-t',
-                    'border-border',
+
+                    'border-border/60',
+
                     'pt-3'
                   ].join(' ')}>
                   <RcentzThemeControl mobile />
@@ -423,24 +477,33 @@ export function RcentzHeader() {
                     href="/services"
                     onClick={closeMobileNavigation}
                     className={[
-                      'flex h-9',
+                      'flex',
+                      'h-9',
+
                       'items-center',
+
                       'justify-center',
 
                       'rounded-full',
 
                       'border',
+
                       'border-primary',
 
                       'bg-primary',
+
                       'px-3',
 
                       'text-xs',
+
                       'font-medium',
+
                       'text-primary-foreground',
 
                       'transition-[opacity,transform]',
+
                       'hover:opacity-85',
+
                       'active:scale-[0.98]'
                     ].join(' ')}>
                     Start project

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+
 import { ArrowRight, Compass } from 'lucide-react';
 
 import { motion, useReducedMotion } from 'motion/react';
@@ -15,12 +16,32 @@ import {
   type HeroIllustrationVariant
 } from '@/features/home/components/hero/HeroStoryIllustration';
 
+type HeroStoryAction = {
+  label: string;
+  href: string;
+};
+
 type HeroIllustrationStoryProps = {
   eyebrow: string;
   title: string;
   description: string;
+
   highlights: readonly HeroStoryHighlight[];
+
   variant: HeroIllustrationVariant;
+
+  primaryAction?: HeroStoryAction;
+  secondaryAction?: HeroStoryAction;
+};
+
+const DEFAULT_PRIMARY_ACTION: HeroStoryAction = {
+  label: 'View our work',
+  href: '/portfolio'
+};
+
+const DEFAULT_SECONDARY_ACTION: HeroStoryAction = {
+  label: 'Explore services',
+  href: '/services'
 };
 
 export function HeroIllustrationStory({
@@ -28,7 +49,11 @@ export function HeroIllustrationStory({
   title,
   description,
   highlights,
-  variant
+  variant,
+
+  primaryAction = DEFAULT_PRIMARY_ACTION,
+
+  secondaryAction = DEFAULT_SECONDARY_ACTION
 }: HeroIllustrationStoryProps) {
   const reduceMotion = Boolean(useReducedMotion());
 
@@ -45,28 +70,41 @@ export function HeroIllustrationStory({
 
         'xl:gap-7'
       ].join(' ')}>
-      {/* LEFT */}
+      {/* ===================================================
+          LEFT — STORY / COMMERCIAL MESSAGE
+          =================================================== */}
 
       <div
         className={[
-          'relative z-20',
-          'flex flex-col',
+          'relative',
+          'z-20',
+
+          'flex',
+          'flex-col',
+
           'justify-center',
+
           'pt-1',
 
           'lg:max-w-[445px]',
           'lg:pt-0'
         ].join(' ')}>
-        <div className="flex items-center gap-2">
-          <span className="size-1.5 rounded-full bg-theme-accent" />
+        {/* EYEBROW */}
+
+        <div className={['flex', 'items-center', 'gap-2'].join(' ')}>
+          <span className={['size-1.5', 'rounded-full', 'bg-theme-accent'].join(' ')} />
 
           <p
             className={[
               'font-mono',
+
               'text-[8px]',
               'font-medium',
+
               'uppercase',
+
               'tracking-[0.17em]',
+
               'text-muted',
 
               'sm:text-[9px]',
@@ -75,6 +113,8 @@ export function HeroIllustrationStory({
             {eyebrow}
           </p>
         </div>
+
+        {/* HEADLINE */}
 
         <motion.h2
           initial={
@@ -91,27 +131,37 @@ export function HeroIllustrationStory({
           }}
           transition={{
             duration: 0.6,
+
             ease: [0.22, 1, 0.36, 1]
           }}
           className={[
             'mt-3',
-            'max-w-[390px]',
+
+            'max-w-[410px]',
+
             'text-balance',
 
             'text-[2rem]',
             'font-semibold',
+
             'leading-[0.98]',
+
             'tracking-[-0.055em]',
 
             'sm:text-[2.35rem]',
 
             'lg:mt-4',
-            'lg:max-w-[445px]',
+
+            'lg:max-w-[455px]',
+
             'lg:text-[3.3rem]',
+
             'lg:leading-[0.97]'
           ].join(' ')}>
           {title}
         </motion.h2>
+
+        {/* DESCRIPTION */}
 
         <motion.p
           initial={
@@ -132,27 +182,37 @@ export function HeroIllustrationStory({
           }}
           className={[
             'mt-3',
-            'max-w-[380px]',
+
+            'max-w-[410px]',
 
             'text-[12px]',
-            'leading-[1.65]',
+
+            'leading-[1.7]',
+
             'text-muted',
 
             'sm:text-[13px]',
 
             'lg:mt-4',
-            'lg:max-w-[410px]',
+
+            'lg:max-w-[435px]',
+
             'lg:text-[15px]',
+
             'lg:leading-6'
           ].join(' ')}>
           {description}
         </motion.p>
 
+        {/* CAPABILITY HIGHLIGHTS */}
+
         <div className="mt-5 lg:mt-5">
           <HeroStoryHighlights items={highlights} />
         </div>
 
-        {/* CTAs */}
+        {/* =================================================
+            ACTIONS
+            ================================================= */}
 
         <motion.div
           initial={
@@ -171,61 +231,114 @@ export function HeroIllustrationStory({
             delay: 0.2,
             duration: 0.5
           }}
-          className="mt-5 flex items-center gap-2.5 lg:mt-6">
-          <Link
-            href="/portfolio"
-            className={[
-              'inline-flex h-9',
-              'items-center justify-center',
-              'gap-2 rounded-full',
-              'bg-primary px-4',
+          className={['mt-5', 'flex', 'items-center', 'gap-2.5', 'lg:mt-6'].join(' ')}>
+          {/* PRIMARY */}
 
-              'text-[12px] font-medium',
+          <Link
+            href={primaryAction.href}
+            className={[
+              'group',
+
+              'inline-flex',
+              'h-9',
+
+              'items-center',
+              'justify-center',
+
+              'gap-2',
+
+              'rounded-full',
+
+              'bg-primary',
+
+              'px-4',
+
+              'text-[12px]',
+              'font-medium',
+
               'text-primary-foreground',
 
               'transition-[opacity,transform]',
+
               'hover:opacity-90',
+
               'active:scale-[0.98]',
 
               'lg:h-10',
+
               'lg:px-5',
+
               'lg:text-[13px]'
             ].join(' ')}>
-            View our work
-            <ArrowRight aria-hidden="true" className="size-3.5" />
+            {primaryAction.label}
+
+            <ArrowRight
+              aria-hidden="true"
+              className={[
+                'size-3.5',
+
+                'transition-transform',
+
+                'duration-300',
+
+                'group-hover:translate-x-0.5'
+              ].join(' ')}
+            />
           </Link>
 
+          {/* SECONDARY */}
+
           <Link
-            href="/services"
-            aria-label="Explore services"
+            href={secondaryAction.href}
+            aria-label={secondaryAction.label}
             className={[
-              'relative isolate',
-              'inline-flex size-9',
-              'items-center justify-center',
+              'relative',
+              'isolate',
+
+              'inline-flex',
+
+              'size-9',
+
+              'items-center',
+              'justify-center',
+
               'overflow-visible',
+
               'rounded-full',
 
               'border',
+
               'border-theme-accent/25',
+
               'bg-theme-accent-faint',
 
               'text-foreground',
 
               'transition-[transform,background-color,border-color]',
+
               'hover:border-theme-accent/45',
+
               'active:scale-[0.97]',
 
               'sm:size-10',
 
               'lg:h-10',
               'lg:w-auto',
+
               'lg:gap-2',
+
               'lg:border-border',
+
               'lg:bg-background/40',
+
               'lg:px-5',
+
               'lg:text-[13px]',
+
               'lg:backdrop-blur-xl',
+
               'lg:hover:border-border-strong',
+
               'lg:hover:bg-surface-muted'
             ].join(' ')}>
             {!reduceMotion ? (
@@ -233,29 +346,44 @@ export function HeroIllustrationStory({
                 aria-hidden="true"
                 animate={{
                   scale: [0.88, 1.24, 0.88],
+
                   opacity: [0.12, 0.4, 0.12]
                 }}
                 transition={{
                   duration: 3.8,
+
                   repeat: Infinity,
+
                   ease: 'easeInOut'
                 }}
-                className="absolute inset-0 rounded-full bg-theme-accent-soft lg:hidden"
+                className={['absolute', 'inset-0', 'rounded-full', 'bg-theme-accent-soft', 'lg:hidden'].join(
+                  ' '
+                )}
               />
             ) : null}
 
-            <Compass aria-hidden="true" className="relative z-10 size-3.5 text-theme-accent lg:hidden" />
+            <Compass
+              aria-hidden="true"
+              className={['relative', 'z-10', 'size-3.5', 'text-theme-accent', 'lg:hidden'].join(' ')}
+            />
 
-            <span className="relative z-10 hidden lg:inline">Explore services</span>
+            <span className={['relative', 'z-10', 'hidden', 'lg:inline'].join(' ')}>
+              {secondaryAction.label}
+            </span>
 
-            <ArrowRight aria-hidden="true" className="relative z-10 hidden size-3.5 lg:block" />
+            <ArrowRight
+              aria-hidden="true"
+              className={['relative', 'z-10', 'hidden', 'size-3.5', 'lg:block'].join(' ')}
+            />
           </Link>
         </motion.div>
       </div>
 
-      {/* RIGHT */}
+      {/* ===================================================
+          RIGHT — SYSTEM ILLUSTRATION
+          =================================================== */}
 
-      <div className="mt-6 min-w-0 sm:mt-7 lg:mt-0">
+      <div className={['mt-6', 'min-w-0', 'sm:mt-7', 'lg:mt-0'].join(' ')}>
         <HeroStoryIllustration variant={variant} />
       </div>
     </div>

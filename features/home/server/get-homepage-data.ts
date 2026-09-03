@@ -1,9 +1,16 @@
 import { prisma } from '@/lib/prisma';
 
+const homepagePricingSlugs = [
+  'business-website-development',
+  'ecommerce-store-development',
+  'business-management-system'
+] as const;
+
 export async function getHomepageData() {
   const [
     featuredServices,
-    featuredPortfolio
+    featuredPortfolio,
+    pricingServices
   ] = await Promise.all([
     prisma.service.findMany({
       where: {
@@ -122,71 +129,196 @@ export async function getHomepageData() {
       ],
 
       take: 6
+    }),
+
+    prisma.service.findMany({
+      where: {
+        status: 'ACTIVE',
+
+        slug: {
+          in: [...homepagePricingSlugs]
+        }
+      },
+
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        shortDescription: true,
+        type: true,
+
+        category: {
+          select: {
+            name: true,
+            slug: true
+          }
+        },
+
+        prices: {
+          select: {
+            currency: true,
+            priceFrom: true,
+            priceTo: true
+          },
+
+          orderBy: {
+            currency: 'asc'
+          }
+        }
+      }
     })
   ]);
 
+  const orderedPricingServices =
+    homepagePricingSlugs
+      .map(slug =>
+        pricingServices.find(
+          service =>
+            service.slug === slug
+        )
+      )
+      .filter(
+        (
+          service
+        ): service is NonNullable<
+          typeof service
+        > => Boolean(service)
+      );
+
   return {
-    services: featuredServices.map(service => ({
-      id: service.id,
-      name: service.name,
-      slug: service.slug,
-      shortDescription:
-        service.shortDescription,
-      type: service.type,
+    services: featuredServices.map(
+      service => ({
+        id: service.id,
+        name: service.name,
+        slug: service.slug,
 
-      category: service.category
-        ? {
-            name: service.category.name,
-            slug: service.category.slug
-          }
-        : null,
+        shortDescription:
+          service.shortDescription,
 
-      prices: service.prices.map(price => ({
-        currency: price.currency,
-        priceFrom: Number(price.priceFrom),
-        priceTo:
-          price.priceTo === null
-            ? null
-            : Number(price.priceTo)
-      }))
-    })),
+        type: service.type,
+
+        category: service.category
+          ? {
+              name: service.category.name,
+              slug: service.category.slug
+            }
+          : null,
+
+        prices: service.prices.map(
+          price => ({
+            currency:
+              price.currency,
+
+            priceFrom:
+              Number(
+                price.priceFrom
+              ),
+
+            priceTo:
+              price.priceTo === null
+                ? null
+                : Number(
+                    price.priceTo
+                  )
+          })
+        )
+      })
+    ),
 
     projects: featuredPortfolio.map(
       portfolio => ({
         id: portfolio.project.id,
         name: portfolio.project.name,
         slug: portfolio.project.slug,
+
         description:
-          portfolio.project.description,
+          portfolio.project
+            .description,
+
         type: portfolio.project.type,
-        status: portfolio.project.status,
-        progress: portfolio.project.progress,
+        status:
+          portfolio.project.status,
+
+        progress:
+          portfolio.project.progress,
 
         tagline: portfolio.tagline,
         summary: portfolio.summary,
         outcome: portfolio.outcome,
 
         liveUrl: portfolio.liveUrl,
+
         repositoryUrl:
           portfolio.repositoryUrl,
 
-        featured: portfolio.featured,
+        featured:
+          portfolio.featured,
 
         publishedAt:
-          portfolio.publishedAt?.toISOString() ??
+          portfolio.publishedAt
+            ?.toISOString() ??
           null,
 
         technologies:
-          portfolio.project.technologies,
+          portfolio.project
+            .technologies,
 
         media:
           portfolio.project.media
       })
-    )
+    ),
+
+    pricingServices:
+      orderedPricingServices.map(
+        service => ({
+          id: service.id,
+          name: service.name,
+          slug: service.slug,
+
+          shortDescription:
+            service.shortDescription,
+
+          type: service.type,
+
+          category: service.category
+            ? {
+                name:
+                  service.category
+                    .name,
+
+                slug:
+                  service.category
+                    .slug
+              }
+            : null,
+
+          prices: service.prices.map(
+            price => ({
+              currency:
+                price.currency,
+
+              priceFrom:
+                Number(
+                  price.priceFrom
+                ),
+
+              priceTo:
+                price.priceTo ===
+                null
+                  ? null
+                  : Number(
+                      price.priceTo
+                    )
+            })
+          )
+        })
+      )
   };
 }
 
 export type HomepageData =
   Awaited<
-    ReturnType<typeof getHomepageData>
+    ReturnType<
+      typeof getHomepageData
+    >
   >;
