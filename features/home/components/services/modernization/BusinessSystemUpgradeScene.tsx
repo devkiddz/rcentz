@@ -20,11 +20,9 @@ export function BusinessSystemUpgradeScene() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="grid min-h-[315px] gap-3 px-4 pb-4 sm:px-5 lg:grid-cols-[0.72fr_1.28fr]">
+    <div className="grid min-h-[315px] gap-3 pb-4 lg:grid-cols-[0.72fr_1.28fr] lg:px-4">
       <div className="rounded-[20px] border border-border bg-background/88 p-4">
-        <p className="font-mono text-[6px] uppercase tracking-[0.15em] text-muted">
-          Before
-        </p>
+        <p className="font-mono text-[6px] uppercase tracking-[0.15em] text-muted">Before</p>
         <p className="mt-1.5 text-sm font-semibold">Scattered operations</p>
 
         <div className="mt-3 space-y-2">
@@ -37,11 +35,7 @@ export function BusinessSystemUpgradeScene() {
             <motion.div
               key={label as string}
               className="flex items-center gap-3 rounded-xl border border-border bg-surface-muted/25 px-3 py-2.5"
-              animate={
-                reduceMotion
-                  ? undefined
-                  : { x: [0, index % 2 ? 3 : -3, 0] }
-              }
+              animate={reduceMotion ? undefined : { x: [0, index % 2 ? 3 : -3, 0] }}
               transition={{ duration: 5 + index * 0.2, repeat: Infinity, ease: 'easeInOut' }}>
               <div className="flex size-7 items-center justify-center rounded-lg border border-border bg-background/80">
                 <Icon className="size-3.5 text-muted" />

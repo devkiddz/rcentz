@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion
-} from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
 import type { CommerceProduct } from './commerce-products';
 
@@ -13,33 +9,25 @@ type CommerceProductVisualProps = {
   compact?: boolean;
 };
 
-export function CommerceProductVisual({
-  product,
-  compact = false
-}: CommerceProductVisualProps) {
+export function CommerceProductVisual({ product, compact = false }: CommerceProductVisualProps) {
   const reduceMotion = useReducedMotion();
 
   return (
     <div
       className={[
-        'relative overflow-hidden rounded-2xl border border-border bg-white',
+        'relative overflow-hidden rounded-2xl border border-border',
         compact ? 'h-24' : 'h-32'
-      ].join(' ')}>
+      ].join(' ')}
+      style={{
+        backgroundColor: product.visual.background
+      }}>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={product.id}
           className="absolute inset-0"
-          initial={
-            reduceMotion
-              ? false
-              : { y: '100%' }
-          }
+          initial={reduceMotion ? false : { y: '100%' }}
           animate={{ y: 0 }}
-          exit={
-            reduceMotion
-              ? undefined
-              : { y: '-100%' }
-          }
+          exit={reduceMotion ? undefined : { y: '-100%' }}
           transition={{
             duration: 0.55,
             ease: [0.22, 1, 0.36, 1]
@@ -49,7 +37,14 @@ export function CommerceProductVisual({
             aria-label={product.name}
             className="absolute inset-0 bg-contain bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url("${product.image}")`
+              backgroundImage: `url("${product.image}")`,
+              backgroundColor: product.visual.background,
+              transform: `translate3d(
+                ${product.visual.x},
+                ${product.visual.y},
+                0
+              ) scale(${product.visual.scale})`,
+              transformOrigin: 'center'
             }}
           />
         </motion.div>
