@@ -133,11 +133,13 @@ export function RcentzHeader() {
            * SAME AXIS AS .rcentz-section
            *
            * globals:
-           * --section-max: 1280px
-           * width: calc(100% - 2rem)
+           * --section-max: 1200px
+           * mobile: calc(100% - 1rem)
+           * sm+: calc(100% - 2rem)
            */
-          'w-[calc(100%-2rem)]',
-          'max-w-[1280px]',
+          'w-[calc(100%-1rem)]',
+          'sm:w-[calc(100%-2rem)]',
+          'max-w-[1200px]',
 
           'origin-top',
 

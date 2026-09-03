@@ -30,14 +30,19 @@ import { useEffect, useState } from 'react';
 
 import { HeroIllustrationStory } from '@/features/home/components/hero/HeroIllustrationStory';
 
+type DwellRange = readonly [number, number];
+
 const STORIES = [
   {
     id: 'rcentz',
     label: 'Rcentz',
 
-    // Website illustration completes its main build sequence
-    // before the slide transitions.
-    duration: 17000,
+    /*
+     * The website build completes fairly early.
+     * We intentionally leave a large quiet window
+     * afterwards so visitors can read the page.
+     */
+    dwell: [52000, 66000] as DwellRange,
 
     eyebrow: 'Websites · Applications · Systems',
 
@@ -76,7 +81,12 @@ const STORIES = [
     id: 'ai',
     label: 'Rcentz × AI',
 
-    duration: 19000,
+    /*
+     * AI receives one of the longest dwells.
+     * Its motherboard can quietly remain alive
+     * without forcing another slide too quickly.
+     */
+    dwell: [58000, 74000] as DwellRange,
 
     eyebrow: 'Human direction · AI acceleration',
 
@@ -115,9 +125,11 @@ const STORIES = [
     id: 'system',
     label: 'System',
 
-    // The code engine has several contexts,
-    // therefore this receives the longest viewing period.
-    duration: 24000,
+    /*
+     * The System slide contains the code rotator,
+     * so it gets the longest reading window.
+     */
+    dwell: [65000, 82000] as DwellRange,
 
     eyebrow: 'Software · Architecture · Production',
 
@@ -155,7 +167,11 @@ const STORIES = [
     id: 'data',
     label: 'Live Data',
 
-    duration: 16000,
+    /*
+     * Record animation completes, then the
+     * database is allowed to sit quietly.
+     */
+    dwell: [54000, 70000] as DwellRange,
 
     eyebrow: 'Data · Activity · Intelligence',
 
@@ -183,7 +199,11 @@ const STORIES = [
     id: 'commerce',
     label: 'Commerce',
 
-    duration: 18000,
+    /*
+     * Commerce reaches Delivered and then
+     * remains there long enough to be understood.
+     */
+    dwell: [56000, 72000] as DwellRange,
 
     eyebrow: 'Products · Payments · Delivery',
 
@@ -221,7 +241,11 @@ const STORIES = [
     id: 'scale',
     label: 'Rcentz Core',
 
-    duration: 17000,
+    /*
+     * Core releases all four systems,
+     * then settles into its ambient globe.
+     */
+    dwell: [56000, 72000] as DwellRange,
 
     eyebrow: 'Foundation · Products · Scale',
 
@@ -256,6 +280,10 @@ const STORIES = [
   }
 ] as const;
 
+function getDwellDuration([minimum, maximum]: DwellRange) {
+  return Math.round(minimum + Math.random() * (maximum - minimum));
+}
+
 export function HeroStoryEngine() {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -268,14 +296,24 @@ export function HeroStoryEngine() {
       return;
     }
 
+    /*
+     * The timing is deliberately variable.
+     *
+     * This prevents the visitor from subconsciously
+     * learning "the Hero changes every 20 seconds".
+     *
+     * It should feel alive rather than scheduled.
+     */
+    const dwellDuration = getDwellDuration(activeStory.dwell);
+
     const timeout = window.setTimeout(() => {
       setActiveIndex(current => (current + 1) % STORIES.length);
-    }, activeStory.duration);
+    }, dwellDuration);
 
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [activeStory.duration, reduceMotion]);
+  }, [activeIndex, activeStory.dwell, reduceMotion]);
 
   function showPreviousStory() {
     setActiveIndex(current => (current - 1 + STORIES.length) % STORIES.length);
@@ -283,6 +321,10 @@ export function HeroStoryEngine() {
 
   function showNextStory() {
     setActiveIndex(current => (current + 1) % STORIES.length);
+  }
+
+  function showStory(index: number) {
+    setActiveIndex(index);
   }
 
   return (
@@ -297,6 +339,7 @@ export function HeroStoryEngine() {
             key={activeStory.id}
             style={{
               gridArea: '1 / 1',
+
               willChange: reduceMotion ? 'auto' : 'transform, opacity'
             }}
             initial={
@@ -304,8 +347,8 @@ export function HeroStoryEngine() {
                 ? false
                 : {
                     opacity: 0,
-                    x: 10,
-                    scale: 0.997
+                    x: 8,
+                    scale: 0.998
                   }
             }
             animate={{
@@ -318,12 +361,17 @@ export function HeroStoryEngine() {
                 ? undefined
                 : {
                     opacity: 0,
-                    x: -8,
-                    scale: 0.997
+                    x: -6,
+                    scale: 0.998
                   }
             }
             transition={{
-              duration: 0.52,
+              /*
+               * Story changes should feel calm,
+               * not like a carousel swipe.
+               */
+              duration: 0.72,
+
               ease: [0.22, 1, 0.36, 1]
             }}
             className="transform-gpu">
@@ -381,7 +429,7 @@ export function HeroStoryEngine() {
                   type="button"
                   aria-label={`Show ${story.label} story`}
                   aria-current={active ? 'true' : undefined}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => showStory(index)}
                   className={[
                     'relative',
                     'flex h-8',
@@ -396,9 +444,12 @@ export function HeroStoryEngine() {
                       layoutId="hero-story-active"
                       transition={{
                         type: 'spring',
-                        stiffness: 300,
+
+                        stiffness: 260,
+
                         damping: 30,
-                        mass: 0.75
+
+                        mass: 0.8
                       }}
                       className={[
                         'absolute inset-0',
@@ -413,15 +464,17 @@ export function HeroStoryEngine() {
                   <motion.span
                     animate={{
                       scale: active ? 1 : 0.68,
+
                       opacity: active ? 1 : 0.35
                     }}
                     transition={{
-                      duration: 0.28
+                      duration: 0.3
                     }}
                     className={[
                       'relative z-10',
                       'size-1.5',
                       'rounded-full',
+
                       active ? 'bg-theme-accent' : 'bg-muted'
                     ].join(' ')}
                   />
@@ -432,6 +485,7 @@ export function HeroStoryEngine() {
                       'font-mono',
                       'text-[7px]',
                       'tracking-[0.11em]',
+
                       active ? 'text-foreground' : 'text-muted'
                     ].join(' ')}>
                     {String(index + 1).padStart(2, '0')}
@@ -444,6 +498,7 @@ export function HeroStoryEngine() {
                       'text-[8px]',
                       'font-medium',
                       'md:inline',
+
                       active ? 'text-foreground' : 'text-muted'
                     ].join(' ')}>
                     {story.label}

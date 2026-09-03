@@ -153,12 +153,12 @@
 
     1440px → environmental canvas
     1200px → broad shell allowance
-    1080px → primary application/content axis
+    1200px → canonical application/content axis
   */
 
   --canvas-max: 1440px;
-  --content-max: 1280px;
-  --section-max: 1280px;
+  --content-max: 1200px;
+  --section-max: 1200px;
 }
 
 /* =========================================================
@@ -399,7 +399,8 @@ button:disabled,
 */
 
 .rcentz-content {
-  width: min(calc(100% - 2rem), var(--content-max));
+  width: min(calc(100% - 1rem), var(--content-max));
+
   margin-inline: auto;
 }
 
@@ -408,10 +409,27 @@ button:disabled,
 */
 
 .rcentz-section {
-  width: min(calc(100% - 2rem), var(--section-max));
+  width: min(calc(100% - 1rem), var(--section-max));
+
   margin-inline: auto;
 }
 
+/*
+  Mobile intentionally keeps a wider usable canvas:
+  0.5rem gutter on each side.
+
+  From sm upward, restore the standard 1rem gutter
+  on each side while preserving the same 1200px axis.
+*/
+@media (min-width: 640px) {
+  .rcentz-content {
+    width: min(calc(100% - 2rem), var(--content-max));
+  }
+
+  .rcentz-section {
+    width: min(calc(100% - 2rem), var(--section-max));
+  }
+}
 /* =========================================================
    RCENTZ DATA MATRIX
 

@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  Boxes,
-  Check,
-  Gauge,
-  GitBranch,
-  LockKeyhole,
-  ServerCog,
-  ShieldCheck,
-  Workflow,
-  Wrench
-} from 'lucide-react';
+import { Boxes, Check, Gauge, GitBranch, LockKeyhole, ServerCog, ShieldCheck, Wrench } from 'lucide-react';
 
 import { motion, useReducedMotion } from 'motion/react';
 

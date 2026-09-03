@@ -1,6 +1,7 @@
 'use client';
 
 import type { LucideIcon } from 'lucide-react';
+
 import { motion, useReducedMotion } from 'motion/react';
 
 export type HeroHighlightVisual = 'icon' | 'pulse' | 'bars' | 'nodes';
@@ -28,15 +29,16 @@ function HighlightVisual({
     return (
       <div
         className={[
-          'relative flex size-9 shrink-0',
-          'items-end justify-center gap-[2px]',
+          'relative flex size-10 shrink-0',
+          'items-end justify-center',
+          'gap-[2px]',
           'rounded-full',
           'border border-border',
           'bg-background/58',
-          'pb-2',
+          'pb-[9px]',
           'backdrop-blur-xl'
         ].join(' ')}>
-        {[7, 12, 9].map((height, index) => (
+        {[8, 14, 10].map((height, index) => (
           <motion.span
             key={index}
             animate={
@@ -63,23 +65,16 @@ function HighlightVisual({
 
   if (visual === 'nodes') {
     return (
-      <div
-        className={[
-          'relative size-9 shrink-0',
-          'rounded-full',
-          'border border-border',
-          'bg-background/58',
-          'backdrop-blur-xl'
-        ].join(' ')}>
-        <span className="absolute left-[9px] top-[10px] size-1.5 rounded-full bg-theme-accent" />
+      <div className="relative size-10 shrink-0 rounded-full border border-border bg-background/58 backdrop-blur-xl">
+        <span className="absolute left-[10px] top-[11px] size-1.5 rounded-full bg-theme-accent" />
 
-        <span className="absolute right-[8px] top-[8px] size-1 rounded-full bg-theme-accent/55" />
+        <span className="absolute right-[9px] top-[9px] size-1 rounded-full bg-theme-accent/55" />
 
-        <span className="absolute bottom-[8px] left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-theme-accent/75" />
+        <span className="absolute bottom-[9px] left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-theme-accent/75" />
 
-        <span className="absolute left-[11px] top-[13px] h-px w-[13px] rotate-[-8deg] bg-theme-accent/30" />
+        <span className="absolute left-[12px] top-[14px] h-px w-[14px] rotate-[-8deg] bg-theme-accent/30" />
 
-        <span className="absolute bottom-[12px] left-[12px] h-px w-[12px] rotate-[48deg] bg-theme-accent/30" />
+        <span className="absolute bottom-[13px] left-[13px] h-px w-[13px] rotate-[48deg] bg-theme-accent/30" />
 
         {!reduceMotion ? (
           <motion.span
@@ -92,7 +87,7 @@ function HighlightVisual({
               repeat: Infinity,
               ease: 'easeInOut'
             }}
-            className="absolute left-[7px] top-[8px] size-5 rounded-full border border-theme-accent/25"
+            className="absolute left-[8px] top-[9px] size-5 rounded-full border border-theme-accent/25"
           />
         ) : null}
       </div>
@@ -100,15 +95,7 @@ function HighlightVisual({
   }
 
   return (
-    <div
-      className={[
-        'relative flex size-9 shrink-0',
-        'items-center justify-center',
-        'rounded-full',
-        'border border-border',
-        'bg-background/58',
-        'backdrop-blur-xl'
-      ].join(' ')}>
+    <div className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-background/58 backdrop-blur-xl">
       {visual === 'pulse' && !reduceMotion ? (
         <motion.span
           aria-hidden="true"
@@ -125,7 +112,7 @@ function HighlightVisual({
         />
       ) : null}
 
-      <Icon aria-hidden="true" className="relative z-10 size-3.5 text-theme-accent" />
+      <Icon aria-hidden="true" className="relative z-10 size-4 text-theme-accent" />
     </div>
   );
 }
@@ -137,11 +124,12 @@ export function HeroStoryHighlights({ items }: HeroStoryHighlightsProps) {
     <div
       className={[
         'grid',
-        'max-w-[430px]',
+        'max-w-[440px]',
         'grid-cols-2',
         'gap-x-3',
         'gap-y-3',
-        'lg:gap-x-5',
+
+        'lg:gap-x-4',
         'lg:gap-y-4'
       ].join(' ')}>
       {items.map((item, index) => (
@@ -169,11 +157,13 @@ export function HeroStoryHighlights({ items }: HeroStoryHighlightsProps) {
 
           <span
             className={[
-              'text-[9px]',
+              'text-[10px]',
               'leading-[1.35]',
               'text-muted',
-              'sm:text-[10px]',
-              'lg:text-[11px]',
+
+              'sm:text-[11px]',
+
+              'lg:text-[12px]',
               'lg:leading-[1.4]'
             ].join(' ')}>
             {item.label}

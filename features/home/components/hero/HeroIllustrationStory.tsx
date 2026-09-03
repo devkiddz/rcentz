@@ -37,14 +37,15 @@ export function HeroIllustrationStory({
       className={[
         'grid',
         'items-start',
-        'lg:min-h-[520px]',
-        'lg:grid-cols-[0.76fr_1.24fr]',
+
+        'lg:min-h-[500px]',
+        'lg:grid-cols-[0.82fr_1.18fr]',
         'lg:items-center',
-        'lg:gap-10'
+        'lg:gap-5',
+
+        'xl:gap-7'
       ].join(' ')}>
-      {/* ===============================
-          LEFT STORY
-          =============================== */}
+      {/* LEFT */}
 
       <div
         className={[
@@ -52,7 +53,8 @@ export function HeroIllustrationStory({
           'flex flex-col',
           'justify-center',
           'pt-1',
-          'lg:max-w-[470px]',
+
+          'lg:max-w-[445px]',
           'lg:pt-0'
         ].join(' ')}>
         <div className="flex items-center gap-2">
@@ -61,13 +63,14 @@ export function HeroIllustrationStory({
           <p
             className={[
               'font-mono',
-              'text-[7px]',
+              'text-[8px]',
               'font-medium',
               'uppercase',
               'tracking-[0.17em]',
               'text-muted',
-              'sm:text-[8px]',
-              'lg:text-[9px]'
+
+              'sm:text-[9px]',
+              'lg:text-[10px]'
             ].join(' ')}>
             {eyebrow}
           </p>
@@ -92,16 +95,19 @@ export function HeroIllustrationStory({
           }}
           className={[
             'mt-3',
-            'max-w-[385px]',
+            'max-w-[390px]',
             'text-balance',
+
             'text-[2rem]',
             'font-semibold',
             'leading-[0.98]',
             'tracking-[-0.055em]',
+
             'sm:text-[2.35rem]',
+
             'lg:mt-4',
-            'lg:max-w-[470px]',
-            'lg:text-[3.35rem]',
+            'lg:max-w-[445px]',
+            'lg:text-[3.3rem]',
             'lg:leading-[0.97]'
           ].join(' ')}>
           {title}
@@ -126,22 +132,23 @@ export function HeroIllustrationStory({
           }}
           className={[
             'mt-3',
-            'max-w-[370px]',
-            'text-[11px]',
+            'max-w-[380px]',
+
+            'text-[12px]',
             'leading-[1.65]',
             'text-muted',
-            'sm:text-[12px]',
+
+            'sm:text-[13px]',
+
             'lg:mt-4',
-            'lg:max-w-[420px]',
-            'lg:text-[14px]',
+            'lg:max-w-[410px]',
+            'lg:text-[15px]',
             'lg:leading-6'
           ].join(' ')}>
           {description}
         </motion.p>
 
-        {/* VISUAL EXPLANATIONS */}
-
-        <div className="mt-5 lg:mt-6">
+        <div className="mt-5 lg:mt-5">
           <HeroStoryHighlights items={highlights} />
         </div>
 
@@ -164,7 +171,7 @@ export function HeroIllustrationStory({
             delay: 0.2,
             duration: 0.5
           }}
-          className="mt-6 flex items-center gap-2.5 lg:mt-7">
+          className="mt-5 flex items-center gap-2.5 lg:mt-6">
           <Link
             href="/portfolio"
             className={[
@@ -172,25 +179,21 @@ export function HeroIllustrationStory({
               'items-center justify-center',
               'gap-2 rounded-full',
               'bg-primary px-4',
-              'text-[11px] font-medium',
+
+              'text-[12px] font-medium',
               'text-primary-foreground',
+
               'transition-[opacity,transform]',
               'hover:opacity-90',
               'active:scale-[0.98]',
+
               'lg:h-10',
               'lg:px-5',
-              'lg:text-[12px]'
+              'lg:text-[13px]'
             ].join(' ')}>
             View our work
             <ArrowRight aria-hidden="true" className="size-3.5" />
           </Link>
-
-          {/* MOBILE:
-              icon only + breathing background
-
-              DESKTOP:
-              full CTA
-          */}
 
           <Link
             href="/services"
@@ -201,10 +204,13 @@ export function HeroIllustrationStory({
               'items-center justify-center',
               'overflow-visible',
               'rounded-full',
+
               'border',
               'border-theme-accent/25',
               'bg-theme-accent-faint',
+
               'text-foreground',
+
               'transition-[transform,background-color,border-color]',
               'hover:border-theme-accent/45',
               'active:scale-[0.97]',
@@ -217,7 +223,7 @@ export function HeroIllustrationStory({
               'lg:border-border',
               'lg:bg-background/40',
               'lg:px-5',
-              'lg:text-[12px]',
+              'lg:text-[13px]',
               'lg:backdrop-blur-xl',
               'lg:hover:border-border-strong',
               'lg:hover:bg-surface-muted'
@@ -247,11 +253,9 @@ export function HeroIllustrationStory({
         </motion.div>
       </div>
 
-      {/* ===============================
-          RIGHT ILLUSTRATION
-          =============================== */}
+      {/* RIGHT */}
 
-      <div className="mt-7 min-w-0 sm:mt-8 lg:mt-0">
+      <div className="mt-6 min-w-0 sm:mt-7 lg:mt-0">
         <HeroStoryIllustration variant={variant} />
       </div>
     </div>
