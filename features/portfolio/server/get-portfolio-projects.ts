@@ -52,6 +52,29 @@ export async function getPortfolioProjects() {
             orderBy: {
               name: 'asc'
             }
+          },
+
+          media: {
+            select: {
+              id: true,
+              url: true,
+              alt: true,
+              caption: true,
+              width: true,
+              height: true,
+              sortOrder: true
+            },
+
+            orderBy: [
+              {
+                sortOrder: 'asc'
+              },
+              {
+                createdAt: 'asc'
+              }
+            ],
+
+            take: 5
           }
         }
       }
@@ -96,12 +119,11 @@ export async function getPortfolioProjects() {
     updatedAt: portfolio.project.updatedAt.toISOString(),
     portfolioUpdatedAt: portfolio.updatedAt.toISOString(),
 
-    technologies: portfolio.project.technologies
+    technologies: portfolio.project.technologies,
+    media: portfolio.project.media
   }));
 }
 
-export type PortfolioProjects = Awaited<
-  ReturnType<typeof getPortfolioProjects>
->;
+export type PortfolioProjects = Awaited<ReturnType<typeof getPortfolioProjects>>;
 
 export type PortfolioProject = PortfolioProjects[number];
