@@ -52,14 +52,17 @@ function getFallbackMark(name: string) {
 
 function TechnologyMark({ name, slug, compact = false }: { name: string; slug: string; compact?: boolean }) {
   const visual = technologyVisuals[slug];
-  const sizeClass = compact ? 'size-9 rounded-xl' : 'size-11 rounded-[14px]';
+
+  const sizeClass = compact ? 'size-9 rounded-xl' : 'size-10 rounded-[13px] sm:size-11 sm:rounded-[14px]';
 
   if (visual?.path) {
     return (
       <div
         aria-hidden="true"
         className={`flex ${sizeClass} shrink-0 items-center justify-center border border-border/70 bg-background/75 text-foreground shadow-sm`}>
-        <svg viewBox="0 0 24 24" className={compact ? 'size-4 fill-current' : 'size-[19px] fill-current'}>
+        <svg
+          viewBox="0 0 24 24"
+          className={compact ? 'size-4 fill-current' : 'size-[17px] fill-current sm:size-[19px]'}>
           <path d={visual.path} />
         </svg>
       </div>
@@ -70,7 +73,7 @@ function TechnologyMark({ name, slug, compact = false }: { name: string; slug: s
     <div
       aria-hidden="true"
       className={`flex ${sizeClass} shrink-0 items-center justify-center border border-border/70 bg-background/75 font-mono font-semibold tracking-[-0.04em] text-theme-accent-strong shadow-sm ${
-        compact ? 'text-[7px]' : 'text-[8px]'
+        compact ? 'text-[7px]' : 'text-[7px] sm:text-[8px]'
       }`}>
       {visual?.mark ?? getFallbackMark(name)}
     </div>
@@ -85,7 +88,7 @@ function CoreTechnologyCard({
   index: number;
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-[22px] border border-border/70 bg-background/55 p-6 shadow-sm transition-[border-color,background-color,transform,box-shadow] duration-500 hover:-translate-y-0.5 hover:border-border-strong/70 hover:bg-background/80 hover:shadow-lg sm:p-7">
+    <article className="group relative overflow-hidden rounded-[20px] border border-border/70 bg-background/55 p-4 shadow-sm transition-[border-color,background-color,transform,box-shadow] duration-500 hover:-translate-y-0.5 hover:border-border-strong/70 hover:bg-background/80 hover:shadow-lg sm:rounded-[22px] sm:p-7">
       {/* TOP SIGNAL */}
       <div
         aria-hidden="true"
@@ -98,40 +101,40 @@ function CoreTechnologyCard({
       />
 
       {/* IDENTITY */}
-      <div className="relative flex items-start justify-between gap-5">
-        <div className="flex items-start gap-4">
+      <div className="relative flex items-start justify-between gap-3 sm:gap-5">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           <TechnologyMark name={technology.name} slug={technology.slug} />
 
-          <div>
-            <p className="font-mono text-[8px] uppercase tracking-[0.17em] text-muted">
+          <div className="min-w-0">
+            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted sm:text-[8px] sm:tracking-[0.17em]">
               {technology.category ?? 'Core architecture'}
             </p>
 
-            <h3 className="mt-1.5 text-lg font-semibold tracking-[-0.035em] text-foreground sm:text-xl">
+            <h3 className="mt-1.5 break-words text-[17px] font-semibold tracking-[-0.035em] text-foreground sm:text-xl">
               {technology.name}
             </h3>
           </div>
         </div>
 
-        <span className="font-mono text-[8px] tracking-[0.16em] text-muted/60">
+        <span className="shrink-0 font-mono text-[7px] tracking-[0.14em] text-muted/60 sm:text-[8px] sm:tracking-[0.16em]">
           {String(index + 1).padStart(2, '0')}
         </span>
       </div>
 
       {/* GENERIC TECHNOLOGY CONTEXT */}
       {technology.description ? (
-        <p className="relative mt-5 max-w-[34rem] text-[12px] leading-[1.75] text-muted">
+        <p className="relative mt-4 max-w-[34rem] text-[12px] leading-[1.7] text-muted sm:mt-5 sm:leading-[1.75]">
           {technology.description}
         </p>
       ) : null}
 
       {/* PROJECT-SPECIFIC RESPONSIBILITY */}
-      <div className="relative mt-6 grid gap-5 border-t border-border/60 pt-5 sm:grid-cols-2 sm:gap-6">
+      <div className="relative mt-5 grid gap-5 border-t border-border/60 pt-5 sm:mt-6 sm:grid-cols-2 sm:gap-6">
         <div>
           <div className="flex items-center gap-2">
             <span className="size-1 rounded-full bg-theme-accent shadow-[0_0_10px_var(--theme-accent)]" />
 
-            <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-theme-accent-strong">
+            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-theme-accent-strong sm:tracking-[0.16em]">
               Responsibility
             </p>
           </div>
@@ -145,7 +148,9 @@ function CoreTechnologyCard({
           <div className="flex items-center gap-2">
             <span className="size-1 rounded-full bg-foreground/45" />
 
-            <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-muted">Why this choice</p>
+            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted sm:tracking-[0.16em]">
+              Why this choice
+            </p>
           </div>
 
           <p className="mt-2.5 text-[12px] leading-[1.7] text-foreground/64">
@@ -163,7 +168,7 @@ function SupportingTechnology({
   technology: PublicPortfolioProject['technologies'][number];
 }) {
   return (
-    <article className="group rounded-[18px] border border-border/65 bg-background/45 p-4 transition-[border-color,background-color,box-shadow] duration-300 hover:border-border-strong/70 hover:bg-background/75 hover:shadow-sm">
+    <article className="group rounded-[17px] border border-border/65 bg-background/45 p-3.5 transition-[border-color,background-color,box-shadow] duration-300 hover:border-border-strong/70 hover:bg-background/75 hover:shadow-sm sm:rounded-[18px] sm:p-4">
       <div className="flex items-start gap-3">
         <TechnologyMark name={technology.name} slug={technology.slug} compact />
 
@@ -172,7 +177,7 @@ function SupportingTechnology({
             {technology.name}
           </h4>
 
-          <p className="mt-0.5 truncate font-mono text-[7px] uppercase tracking-[0.13em] text-muted">
+          <p className="mt-0.5 truncate font-mono text-[7px] uppercase tracking-[0.12em] text-muted sm:tracking-[0.13em]">
             {technology.category ?? 'Supporting technology'}
           </p>
         </div>
@@ -201,86 +206,89 @@ export function PortfolioDetailTechnology({ technologies }: PortfolioDetailTechn
   }
 
   const coreTechnologies = ordered.filter(technology => technology.featured);
+
   const supportingTechnologies = ordered.filter(technology => !technology.featured);
 
   return (
-    <section className="py-20 sm:py-24">
+    <section className="py-16 sm:py-24">
       <div className="rcentz-section">
-        {/* CINEMATIC SYSTEM PANEL */}
-        <div className="relative overflow-hidden bg-background px-5 py-10 text-foreground sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+        {/* SYSTEM PANEL */}
+        <div className="relative overflow-hidden bg-background py-8 text-foreground sm:px-8 sm:py-14 lg:px-10 lg:py-16">
           {/* BACKGROUND SYSTEM */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[760px] -translate-x-1/2 -translate-y-[46%] rounded-full bg-theme-accent/[0.07] blur-[120px]"
+            className="pointer-events-none absolute left-1/2 top-0 h-[360px] w-[520px] -translate-x-1/2 -translate-y-[46%] rounded-full bg-theme-accent/[0.07] blur-[100px] sm:h-[520px] sm:w-[760px] sm:blur-[120px]"
           />
 
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute right-[5%] top-[10%] size-[340px] rounded-full bg-foreground/[0.025] blur-[110px]"
+            className="pointer-events-none absolute right-[5%] top-[10%] hidden size-[340px] rounded-full bg-foreground/[0.025] blur-[110px] sm:block"
           />
 
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:54px_54px]"
+            className="pointer-events-none absolute inset-0 hidden opacity-[0.035] [background-image:linear-gradient(to_right,currentColor_1px,transparent_1px),linear-gradient(to_bottom,currentColor_1px,transparent_1px)] [background-size:54px_54px] sm:block"
           />
 
           <div className="relative">
             {/* SECTION INTRODUCTION */}
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-border/70 bg-background/65 px-3.5 py-1.5 backdrop-blur-md">
+            <div className="max-w-3xl text-left sm:mx-auto sm:text-center">
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-border/70 bg-background/65 px-3 py-1.5 backdrop-blur-md sm:px-3.5">
                 <span className="size-1.5 rounded-full bg-theme-accent shadow-[0_0_12px_var(--theme-accent)]" />
 
-                <span className="font-mono text-[8px] font-medium uppercase tracking-[0.18em] text-muted">
+                <span className="font-mono text-[7px] font-medium uppercase tracking-[0.15em] text-muted sm:text-[8px] sm:tracking-[0.18em]">
                   System architecture
                 </span>
               </div>
 
-              <h2 className="mt-6 text-balance text-3xl font-semibold leading-[1.03] tracking-[-0.055em] text-foreground sm:text-4xl lg:text-[3.35rem]">
+              <h2 className="mt-5 text-[2rem] font-semibold leading-[1.08] tracking-[-0.055em] text-foreground sm:mt-6 sm:text-balance sm:text-4xl sm:leading-[1.03] lg:text-[3.35rem]">
                 Technology chosen around
                 <span className="block text-theme-accent-strong">the responsibility of the system.</span>
               </h2>
 
-              <p className="mx-auto mt-5 max-w-2xl text-balance text-[13px] leading-6 text-muted sm:text-sm">
+              <p className="mt-4 max-w-2xl text-[13px] leading-6 text-muted sm:mx-auto sm:mt-5 sm:text-balance sm:text-sm">
                 Each technology had a defined job: shaping the interface, protecting application boundaries,
                 managing data, handling transactions or supporting the wider product experience.
               </p>
             </div>
 
             {/* SECTION METRICS */}
-            <div className="mx-auto mt-9 flex max-w-xl items-center justify-center divide-x divide-border border-y border-border py-4">
-              <div className="px-6 text-center">
+            <div className="mt-8 grid grid-cols-3 border-y border-border py-4 sm:mx-auto sm:mt-9 sm:max-w-xl">
+              <div className="border-r border-border px-1 text-center sm:px-6">
                 <p className="text-lg font-semibold tracking-[-0.04em] text-foreground">{ordered.length}</p>
 
-                <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.14em] text-muted">
+                <p className="mt-1 font-mono text-[6px] uppercase tracking-[0.1em] text-muted sm:text-[7px] sm:tracking-[0.14em]">
                   Technologies
                 </p>
               </div>
 
-              <div className="px-6 text-center">
+              <div className="border-r border-border px-1 text-center sm:px-6">
                 <p className="text-lg font-semibold tracking-[-0.04em] text-foreground">
                   {coreTechnologies.length}
                 </p>
 
-                <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.14em] text-muted">
+                <p className="mt-1 font-mono text-[6px] uppercase tracking-[0.1em] text-muted sm:text-[7px] sm:tracking-[0.14em]">
                   Core choices
                 </p>
               </div>
 
-              <div className="px-6 text-center">
+              <div className="px-1 text-center sm:px-6">
                 <p className="text-lg font-semibold tracking-[-0.04em] text-foreground">
                   {supportingTechnologies.length}
                 </p>
 
-                <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.14em] text-muted">Supporting</p>
+                <p className="mt-1 font-mono text-[6px] uppercase tracking-[0.1em] text-muted sm:text-[7px] sm:tracking-[0.14em]">
+                  Supporting
+                </p>
               </div>
             </div>
 
             {/* CORE ARCHITECTURE */}
             {coreTechnologies.length > 0 ? (
-              <div className="mt-12 sm:mt-14">
+              <div className="mt-10 sm:mt-14">
                 <div className="mb-5 flex items-end justify-between gap-6">
                   <div>
-                    <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-theme-accent-strong">
+                    <p className="font-mono text-[8px] uppercase tracking-[0.17em] text-theme-accent-strong sm:tracking-[0.18em]">
                       Core architecture
                     </p>
 
@@ -304,10 +312,10 @@ export function PortfolioDetailTechnology({ technologies }: PortfolioDetailTechn
 
             {/* SUPPORTING SYSTEM */}
             {supportingTechnologies.length > 0 ? (
-              <div className="mt-12 border-t border-border pt-8 sm:mt-14">
+              <div className="mt-10 border-t border-border pt-7 sm:mt-14 sm:pt-8">
                 <div className="mb-5 flex items-end justify-between gap-6">
                   <div>
-                    <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-theme-accent-strong">
+                    <p className="font-mono text-[8px] uppercase tracking-[0.17em] text-theme-accent-strong sm:tracking-[0.18em]">
                       Supporting system
                     </p>
 

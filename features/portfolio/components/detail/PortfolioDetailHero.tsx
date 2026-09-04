@@ -21,17 +21,17 @@ function humanize(value: string) {
 
 export function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
   return (
-    <section className="relative isolate overflow-hidden px-4 pb-20 pt-5 sm:px-6 sm:pb-24 sm:pt-7 lg:px-8 lg:pb-28">
-      {/* Environmental background */}
+    <section className="relative isolate overflow-hidden px-2 md:px-4 pb-16 pt-5 sm:pb-24 sm:pt-7 lg:px-8 lg:pb-28">
+      {/* ENVIRONMENTAL BACKGROUND */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-60 rcentz-grid-fade" />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-12 h-[360px] w-[720px] -translate-x-1/2 rounded-full bg-theme-accent-faint blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-10 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-theme-accent-faint blur-3xl sm:top-12 sm:h-[360px] sm:w-[720px]"
       />
 
       <div className="relative z-10 mx-auto w-full max-w-[1140px]">
-        {/* Back */}
+        {/* BACK */}
         <Link
           href="/portfolio"
           className="group inline-flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.15em] text-muted transition-colors hover:text-foreground">
@@ -42,10 +42,10 @@ export function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
           Back to portfolio
         </Link>
 
-        {/* Hero copy */}
-        <div className="mx-auto mt-14 max-w-[900px] text-center sm:mt-16 lg:mt-20">
-          {/* Project state */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
+        {/* HERO COPY */}
+        <div className="mt-10 max-w-[900px] text-left sm:mx-auto sm:mt-16 sm:text-center lg:mt-20">
+          {/* PROJECT STATE */}
+          <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-center">
             <span className="rounded-full border border-border bg-background/55 px-2.5 py-1 font-mono text-[7px] uppercase tracking-[0.15em] text-theme-accent backdrop-blur-xl">
               {humanize(project.type)}
             </span>
@@ -59,29 +59,31 @@ export function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
             </span>
           </div>
 
-          {/* Case-study eyebrow */}
-          <p className="mt-7 font-mono text-[9px] uppercase tracking-[0.2em] text-muted sm:text-[10px]">
+          {/* CASE STUDY EYEBROW */}
+          <p className="mt-6 font-mono text-[8px] uppercase tracking-[0.18em] text-muted sm:mt-7 sm:text-[10px] sm:tracking-[0.2em]">
             {project.featured ? 'Featured project' : 'Project case study'} · Rcentz Systems
           </p>
 
-          {/* Project name — Hero focal point */}
-          <PortfolioHeroProjectTitle title={project.name} />
+          {/* PROJECT NAME */}
+          <div className="mt-2 sm:mt-0">
+            <PortfolioHeroProjectTitle title={project.name} />
+          </div>
 
-          {/* Project proposition */}
+          {/* PROJECT PROPOSITION */}
           {project.tagline ? (
-            <h2 className="mx-auto mt-6 max-w-[800px] text-balance text-xl font-medium leading-[1.12] tracking-[-0.04em] text-foreground/82 sm:text-2xl lg:text-[2rem]">
+            <h2 className="mt-5 max-w-[800px] text-xl font-medium leading-[1.18] tracking-[-0.04em] text-foreground/82 sm:mx-auto sm:mt-6 sm:text-balance sm:text-2xl sm:leading-[1.12] lg:text-[2rem]">
               {project.tagline}
             </h2>
           ) : null}
 
-          {/* Summary */}
-          <p className="mx-auto mt-6 max-w-[690px] text-balance text-[12px] leading-6 text-muted sm:text-[14px] sm:leading-7 lg:text-[15px]">
+          {/* SUMMARY */}
+          <p className="mt-5 max-w-[690px] text-[13px] leading-6 text-muted sm:mx-auto sm:mt-6 sm:text-balance sm:text-[14px] sm:leading-7 lg:text-[15px]">
             {project.summary ?? project.description ?? 'Published Rcentz project.'}
           </p>
 
-          {/* Actions */}
+          {/* ACTIONS */}
           {project.liveUrl || project.repositoryUrl ? (
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+            <div className="mt-7 flex flex-wrap items-center justify-start gap-2.5 sm:mt-8 sm:justify-center">
               {project.liveUrl ? (
                 <a
                   href={project.liveUrl}
@@ -101,7 +103,7 @@ export function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
                   href={project.repositoryUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="group inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-background/45 px-5 text-[12px] font-medium text-foreground backdrop-blur-xl transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-surface-muted active:scale-[0.98]">
+                  className="group inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-background/45 md:px-5 text-[12px] font-medium text-foreground backdrop-blur-xl transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-surface-muted active:scale-[0.98]">
                   <GitBranch aria-hidden="true" className="size-3.5" />
                   Source
                   <ArrowUpRight
@@ -114,11 +116,11 @@ export function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
           ) : null}
         </div>
 
-        {/* Project illustration */}
-        <div className="relative mt-14 sm:mt-16 lg:mt-20">
+        {/* PROJECT ILLUSTRATION */}
+        <div className="relative mt-12 sm:mt-16 lg:mt-20">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-8 -inset-y-10 rounded-[50%] bg-theme-accent-faint blur-3xl"
+            className="pointer-events-none absolute -inset-x-4 -inset-y-8 rounded-[45%] bg-theme-accent-faint blur-3xl sm:-inset-x-8 sm:-inset-y-10 sm:rounded-[50%]"
           />
 
           <div className="relative">
