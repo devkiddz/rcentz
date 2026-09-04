@@ -159,6 +159,22 @@
   --canvas-max: 1440px;
   --content-max: 1200px;
   --section-max: 1200px;
+
+  /* ---------------------------------------------------------
+   Data visualisation
+
+   Chart components consume these tokens instead of owning
+   their own colour palette.
+
+   This keeps portfolio illustrations, analytics and future
+   dashboard visualisations theme-aware.
+   --------------------------------------------------------- */
+
+  --chart-positive: var(--theme-accent);
+  --chart-warning: #f59e0b;
+  --chart-danger: #ef4444;
+  --chart-info: #6366f1;
+  --chart-neutral: var(--border-strong);
 }
 
 /* =========================================================
@@ -285,6 +301,12 @@
   --ace-ink-soft: rgb(var(--environment-rgb) / 0.065);
 
   --ace-ink-faint: rgb(var(--environment-rgb) / 0.018);
+
+  --chart-positive: var(--theme-accent);
+  --chart-warning: #fbbf24;
+  --chart-danger: #f87171;
+  --chart-info: #818cf8;
+  --chart-neutral: var(--border-strong);
 }
 
 /* =========================================================
@@ -546,3 +568,116 @@ button:disabled,
     transform: none;
   }
 }
+
+/* =========================================================
+   PORTFOLIO HERO TAGLINE — DNA / LIVING SYSTEM MOTION
+   ========================================================= */
+
+/* .portfolio-hero-tagline-dna {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  /*
+   * Layers:
+   *
+   * 1. Slow foreground/accent sweep
+   * 2. DNA strand A
+   * 3. DNA strand B
+   * 4. Permanent foreground base
+   *
+   * Transparent areas in the moving layers expose
+   * the foreground layer underneath, keeping the
+   * title permanently readable.
+   */
+
+/*
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--theme-accent) 18%,
+      var(--foreground) 34%,
+      var(--theme-accent-strong) 48%,
+      var(--foreground) 62%,
+      var(--theme-accent) 78%,
+      transparent 100%
+    ),
+    repeating-linear-gradient(
+      58deg,
+      transparent 0px,
+      transparent 14px,
+      var(--theme-accent) 15px,
+      var(--theme-accent) 22px,
+      transparent 23px,
+      transparent 42px
+    ),
+    repeating-linear-gradient(
+      -58deg,
+      transparent 0px,
+      transparent 17px,
+      var(--theme-accent-strong) 18px,
+      var(--theme-accent-strong) 24px,
+      transparent 25px,
+      transparent 46px
+    ),
+    linear-gradient(var(--foreground), var(--foreground));
+
+  background-size:
+    240% 100%,
+    180px 100%,
+    220px 100%,
+    100% 100%;
+
+  background-position:
+    -140% 50%,
+    0 50%,
+    0 50%,
+    0 0;
+
+  background-repeat: no-repeat, repeat, repeat, no-repeat;
+
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  animation: portfolio-hero-tagline-dna-flow 6s linear infinite;
+
+  will-change: background-position;
+}
+
+@keyframes portfolio-hero-tagline-dna-flow {
+  0% {
+    background-position:
+      -140% 50%,
+      0 50%,
+      0 50%,
+      0 0;
+  }
+
+  50% {
+    background-position:
+      20% 50%,
+      90px 50%,
+      -110px 50%,
+      0 0;
+  }
+
+  100% {
+    background-position:
+      180% 50%,
+      180px 50%,
+      -220px 50%,
+      0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-hero-tagline-dna {
+    animation: none;
+
+    background-position:
+      50% 50%,
+      0 50%,
+      0 50%,
+      0 0;
+  }
+} */

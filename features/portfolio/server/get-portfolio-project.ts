@@ -1,574 +1,392 @@
+import { cache } from 'react';
+
 import { prisma } from '@/lib/prisma';
 
 /**
  * Canonical public query for one portfolio project.
  *
  * Public portfolio access requires BOTH:
- *
  * 1. PortfolioProfile.publishedAt !== null
  * 2. Project.visibility === PUBLIC
  *
  * This server boundary owns those rules so presentation
  * components never decide whether a project is public.
  */
-export async function getPortfolioProject(
-  slug: string
-) {
-  const normalizedSlug =
-    slug.trim();
+export const getPortfolioProject = cache(async (slug: string) => {
+  const normalizedSlug = slug.trim();
 
   if (!normalizedSlug) {
     return null;
   }
 
-  const portfolio =
-    await prisma.portfolioProfile.findFirst({
-      where: {
-        publishedAt: {
-          not: null
-        },
-
-        project: {
-          slug: normalizedSlug,
-
-          visibility: 'PUBLIC'
-        }
+  const portfolio = await prisma.portfolioProfile.findFirst({
+    where: {
+      publishedAt: {
+        not: null
       },
+      project: {
+        slug: normalizedSlug,
+        visibility: 'PUBLIC'
+      }
+    },
+    select: {
+      id: true,
 
-      select: {
-        /* ==============================================
-           PORTFOLIO PRESENTATION
-           ============================================== */
+      tagline: true,
+      summary: true,
+      challenge: true,
+      solution: true,
+      outcome: true,
 
-        id: true,
+      liveUrl: true,
+      repositoryUrl: true,
 
-        tagline: true,
-        summary: true,
+      featured: true,
+      publishedAt: true,
+      createdAt: true,
+      updatedAt: true,
 
-        challenge: true,
-        solution: true,
-        outcome: true,
+      project: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
 
-        liveUrl: true,
-        repositoryUrl: true,
+          description: true,
+          purpose: true,
+          vision: true,
+          expectedOutcome: true,
 
-        featured: true,
-        publishedAt: true,
+          type: true,
+          status: true,
+          visibility: true,
+          progress: true,
 
-        createdAt: true,
-        updatedAt: true,
+          startedAt: true,
+          expectedEndAt: true,
+          completedAt: true,
+          createdAt: true,
+          updatedAt: true,
 
-        /* ==============================================
-           CANONICAL PROJECT
-           ============================================== */
-
-        project: {
-          select: {
-            id: true,
-
-            name: true,
-            slug: true,
-
-            description: true,
-
-            purpose: true,
-            vision: true,
-
-            expectedOutcome: true,
-
-            type: true,
-            status: true,
-            visibility: true,
-
-            progress: true,
-
-            startedAt: true,
-            expectedEndAt: true,
-            completedAt: true,
-
-            createdAt: true,
-            updatedAt: true,
-
-            /* ==========================================
-               TECHNOLOGY
-               ========================================== */
-
-            technologies: {
-              select: {
-                id: true,
-
-                name: true,
-                slug: true,
-                icon: true
+          technologies: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              icon: true,
+              category: true,
+              description: true,
+              purpose: true,
+              rationale: true,
+              sortOrder: true,
+              featured: true
+            },
+            orderBy: [
+              {
+                sortOrder: 'asc'
               },
-
-              orderBy: {
+              {
                 name: 'asc'
               }
+            ]
+          },
+
+          media: {
+            select: {
+              id: true,
+              url: true,
+              publicId: true,
+              fileName: true,
+              mimeType: true,
+              width: true,
+              height: true,
+              alt: true,
+              caption: true,
+              sortOrder: true,
+              createdAt: true,
+              updatedAt: true
             },
-
-            /* ==========================================
-               MEDIA CANDIDATES
-
-               IMPORTANT:
-               MediaAsset currently has no visibility
-               field in the schema.
-
-               These records are therefore NOT treated
-               as automatically public.
-
-               The case-study presentation must only
-               render media after deliberate review /
-               curation.
-               ========================================== */
-
-            media: {
-              select: {
-                id: true,
-
-                url: true,
-                publicId: true,
-
-                fileName: true,
-                mimeType: true,
-
-                width: true,
-                height: true,
-
-                alt: true,
-                caption: true,
-
-                sortOrder: true,
-
-                createdAt: true,
-                updatedAt: true
+            orderBy: [
+              {
+                sortOrder: 'asc'
               },
+              {
+                createdAt: 'asc'
+              }
+            ],
+            take: 12
+          },
 
-              orderBy: [
-                {
-                  sortOrder: 'asc'
-                },
+          updates: {
+            where: {
+              visibility: 'PUBLIC'
+            },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              type: true,
+              progress: true,
+              createdAt: true,
+              updatedAt: true,
 
-                {
-                  createdAt: 'asc'
+              milestone: {
+                select: {
+                  id: true,
+                  title: true,
+                  slug: true
                 }
-              ]
-            },
-
-            /* ==========================================
-               PUBLIC DEVELOPMENT RECORD
-
-               Client/internal updates never leave
-               this query.
-               ========================================== */
-
-            updates: {
-              where: {
-                visibility: 'PUBLIC'
               },
 
-              select: {
-                id: true,
+              feature: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true
+                }
+              },
 
-                title: true,
-                description: true,
-
-                type: true,
-                progress: true,
-
-                createdAt: true,
-                updatedAt: true,
-
-                milestone: {
-                  select: {
-                    id: true,
-                    title: true,
-                    slug: true
-                  }
+              media: {
+                select: {
+                  id: true,
+                  url: true,
+                  fileName: true,
+                  mimeType: true,
+                  width: true,
+                  height: true,
+                  alt: true,
+                  caption: true,
+                  sortOrder: true
                 },
-
-                feature: {
-                  select: {
-                    id: true,
-                    name: true,
-                    slug: true
-                  }
-                },
-
-                media: {
-                  select: {
-                    id: true,
-
-                    url: true,
-
-                    fileName: true,
-                    mimeType: true,
-
-                    width: true,
-                    height: true,
-
-                    alt: true,
-                    caption: true,
-
-                    sortOrder: true
+                orderBy: [
+                  {
+                    sortOrder: 'asc'
                   },
+                  {
+                    createdAt: 'asc'
+                  }
+                ]
+              }
+            },
+            orderBy: {
+              createdAt: 'desc'
+            }
+          },
 
-                  orderBy: [
-                    {
-                      sortOrder: 'asc'
-                    },
+          analytics: {
+            select: {
+              views: true,
+              uniqueViews: true,
+              shares: true,
+              downloads: true,
+              lastViewedAt: true,
+              createdAt: true,
+              updatedAt: true
+            }
+          },
 
-                    {
-                      createdAt: 'asc'
-                    }
-                  ]
+          reactions: {
+            select: {
+              type: true
+            }
+          },
+
+          comments: {
+            where: {
+              status: 'APPROVED'
+            },
+            select: {
+              id: true
+            }
+          },
+
+          attributions: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+
+              user: {
+                select: {
+                  name: true
                 }
-              },
+              }
+            },
+            orderBy: {
+              createdAt: 'asc'
+            }
+          },
 
-              orderBy: {
+          features: {
+            where: {
+              status: {
+                in: ['PROPOSED', 'NOMINATED']
+              }
+            },
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              expectedOutcome: true,
+              status: true,
+              priority: true,
+              progress: true,
+              nominatedAt: true
+            },
+            orderBy: [
+              {
+                nominatedAt: 'desc'
+              },
+              {
                 createdAt: 'desc'
               }
-            },
+            ],
+            take: 6
+          },
 
-            /* ==========================================
-               REAL ANALYTICS
-
-               Null remains null.
-               We do not fabricate zero-value metrics
-               when analytics has not been created.
-               ========================================== */
-
-            analytics: {
-              select: {
-                views: true,
-                uniqueViews: true,
-
-                reactions: true,
-                comments: true,
-
-                shares: true,
-                downloads: true,
-
-                lastViewedAt: true,
-
-                createdAt: true,
-                updatedAt: true
-              }
-            },
-
-            /* ==========================================
-               SEO
-               ========================================== */
-
-            seo: {
-              select: {
-                title: true,
-                description: true,
-                keywords: true,
-
-                canonicalUrl: true,
-
-                ogTitle: true,
-                ogDescription: true,
-                ogImage: true,
-
-                robots: true,
-
-                updatedAt: true
-              }
+          seo: {
+            select: {
+              title: true,
+              description: true,
+              keywords: true,
+              canonicalUrl: true,
+              ogTitle: true,
+              ogDescription: true,
+              ogImage: true,
+              robots: true,
+              updatedAt: true
             }
           }
         }
       }
-    });
+    }
+  });
 
   if (!portfolio) {
     return null;
   }
 
+  const reactionCounts = portfolio.project.reactions.reduce<Record<string, number>>(
+    (counts, reaction) => {
+      counts[reaction.type] = (counts[reaction.type] ?? 0) + 1;
+      return counts;
+    },
+    {}
+  );
+
   return {
-    /* ================================================
-       IDENTITY
-       ================================================ */
+    id: portfolio.project.id,
+    portfolioProfileId: portfolio.id,
 
-    id:
-      portfolio.project.id,
+    name: portfolio.project.name,
+    slug: portfolio.project.slug,
 
-    portfolioProfileId:
-      portfolio.id,
+    description: portfolio.project.description,
+    purpose: portfolio.project.purpose,
+    vision: portfolio.project.vision,
+    expectedOutcome: portfolio.project.expectedOutcome,
 
-    name:
-      portfolio.project.name,
+    type: portfolio.project.type,
+    status: portfolio.project.status,
+    visibility: portfolio.project.visibility,
+    progress: portfolio.project.progress,
 
-    slug:
-      portfolio.project.slug,
+    tagline: portfolio.tagline,
+    summary: portfolio.summary,
+    challenge: portfolio.challenge,
+    solution: portfolio.solution,
+    outcome: portfolio.outcome,
 
-    /* ================================================
-       PROJECT TRUTH
-       ================================================ */
+    liveUrl: portfolio.liveUrl,
+    repositoryUrl: portfolio.repositoryUrl,
 
-    description:
-      portfolio.project.description,
+    featured: portfolio.featured,
 
-    purpose:
-      portfolio.project.purpose,
+    publishedAt: portfolio.publishedAt?.toISOString() ?? null,
+    startedAt: portfolio.project.startedAt?.toISOString() ?? null,
+    expectedEndAt: portfolio.project.expectedEndAt?.toISOString() ?? null,
+    completedAt: portfolio.project.completedAt?.toISOString() ?? null,
 
-    vision:
-      portfolio.project.vision,
+    createdAt: portfolio.project.createdAt.toISOString(),
+    updatedAt: portfolio.project.updatedAt.toISOString(),
 
-    expectedOutcome:
-      portfolio.project
-        .expectedOutcome,
+    portfolioCreatedAt: portfolio.createdAt.toISOString(),
+    portfolioUpdatedAt: portfolio.updatedAt.toISOString(),
 
-    type:
-      portfolio.project.type,
+    technologies: portfolio.project.technologies,
 
-    status:
-      portfolio.project.status,
+    media: portfolio.project.media.map(media => ({
+      ...media,
+      createdAt: media.createdAt.toISOString(),
+      updatedAt: media.updatedAt.toISOString()
+    })),
 
-    visibility:
-      portfolio.project.visibility,
+    updates: portfolio.project.updates.map(update => ({
+      ...update,
+      createdAt: update.createdAt.toISOString(),
+      updatedAt: update.updatedAt.toISOString()
+    })),
 
-    progress:
-      portfolio.project.progress,
+    analytics: portfolio.project.analytics
+      ? {
+          views: portfolio.project.analytics.views,
+          uniqueViews: portfolio.project.analytics.uniqueViews,
+          shares: portfolio.project.analytics.shares,
+          downloads: portfolio.project.analytics.downloads,
+          lastViewedAt: portfolio.project.analytics.lastViewedAt?.toISOString() ?? null,
+          createdAt: portfolio.project.analytics.createdAt.toISOString(),
+          updatedAt: portfolio.project.analytics.updatedAt.toISOString()
+        }
+      : null,
 
-    /* ================================================
-       CASE STUDY
-       ================================================ */
+    engagement: {
+      reactions: portfolio.project.reactions.length,
+      comments: portfolio.project.comments.length
+    },
 
-    tagline:
-      portfolio.tagline,
+    reactions: {
+      like: reactionCounts.LIKE ?? 0,
+      love: reactionCounts.LOVE ?? 0,
+      clap: reactionCounts.CLAP ?? 0,
+      fire: reactionCounts.FIRE ?? 0,
+      insightful: reactionCounts.INSIGHTFUL ?? 0,
+      celebrate: reactionCounts.CELEBRATE ?? 0,
+      upvote: reactionCounts.UPVOTE ?? 0,
+      downvote: reactionCounts.DOWNVOTE ?? 0
+    },
 
-    summary:
-      portfolio.summary,
+    credits: portfolio.project.attributions.map(attribution => ({
+      id: attribution.id,
+      name: attribution.name ?? attribution.user?.name ?? null,
+      role: attribution.role
+    })),
 
-    challenge:
-      portfolio.challenge,
+    suggestions: portfolio.project.features.map(feature => ({
+      id: feature.id,
+      name: feature.name,
+      description: feature.description,
+      expectedOutcome: feature.expectedOutcome,
+      status: feature.status,
+      priority: feature.priority,
+      progress: feature.progress,
+      nominatedAt: feature.nominatedAt?.toISOString() ?? null
+    })),
 
-    solution:
-      portfolio.solution,
-
-    outcome:
-      portfolio.outcome,
-
-    /* ================================================
-       EXTERNAL ACTIONS
-       ================================================ */
-
-    liveUrl:
-      portfolio.liveUrl,
-
-    repositoryUrl:
-      portfolio.repositoryUrl,
-
-    featured:
-      portfolio.featured,
-
-    /* ================================================
-       DATES
-       ================================================ */
-
-    publishedAt:
-      portfolio.publishedAt
-        ?.toISOString() ??
-      null,
-
-    startedAt:
-      portfolio.project
-        .startedAt
-        ?.toISOString() ??
-      null,
-
-    expectedEndAt:
-      portfolio.project
-        .expectedEndAt
-        ?.toISOString() ??
-      null,
-
-    completedAt:
-      portfolio.project
-        .completedAt
-        ?.toISOString() ??
-      null,
-
-    createdAt:
-      portfolio.project
-        .createdAt
-        .toISOString(),
-
-    updatedAt:
-      portfolio.project
-        .updatedAt
-        .toISOString(),
-
-    portfolioCreatedAt:
-      portfolio.createdAt
-        .toISOString(),
-
-    portfolioUpdatedAt:
-      portfolio.updatedAt
-        .toISOString(),
-
-    /* ================================================
-       TECHNOLOGY
-       ================================================ */
-
-    technologies:
-      portfolio.project
-        .technologies,
-
-    /* ================================================
-       MEDIA
-
-       Deliberately named mediaCandidates until
-       public-media curation is formally established.
-       ================================================ */
-
-    mediaCandidates:
-      portfolio.project.media.map(
-        media => ({
-          ...media,
-
-          createdAt:
-            media.createdAt
-              .toISOString(),
-
-          updatedAt:
-            media.updatedAt
-              .toISOString()
-        })
-      ),
-
-    /* ================================================
-       PUBLIC DEVELOPMENT RECORD
-       ================================================ */
-
-    updates:
-      portfolio.project
-        .updates.map(
-          update => ({
-            ...update,
-
-            createdAt:
-              update.createdAt
-                .toISOString(),
-
-            updatedAt:
-              update.updatedAt
-                .toISOString()
-          })
-        ),
-
-    /* ================================================
-       ANALYTICS
-       ================================================ */
-
-    analytics:
-      portfolio.project.analytics
-        ? {
-            views:
-              portfolio.project
-                .analytics.views,
-
-            uniqueViews:
-              portfolio.project
-                .analytics
-                .uniqueViews,
-
-            reactions:
-              portfolio.project
-                .analytics.reactions,
-
-            comments:
-              portfolio.project
-                .analytics.comments,
-
-            shares:
-              portfolio.project
-                .analytics.shares,
-
-            downloads:
-              portfolio.project
-                .analytics.downloads,
-
-            lastViewedAt:
-              portfolio.project
-                .analytics
-                .lastViewedAt
-                ?.toISOString() ??
-              null,
-
-            createdAt:
-              portfolio.project
-                .analytics
-                .createdAt
-                .toISOString(),
-
-            updatedAt:
-              portfolio.project
-                .analytics
-                .updatedAt
-                .toISOString()
-          }
-        : null,
-
-    /* ================================================
-       SEO
-       ================================================ */
-
-    seo:
-      portfolio.project.seo
-        ? {
-            title:
-              portfolio.project
-                .seo.title,
-
-            description:
-              portfolio.project
-                .seo.description,
-
-            keywords:
-              portfolio.project
-                .seo.keywords,
-
-            canonicalUrl:
-              portfolio.project
-                .seo.canonicalUrl,
-
-            ogTitle:
-              portfolio.project
-                .seo.ogTitle,
-
-            ogDescription:
-              portfolio.project
-                .seo
-                .ogDescription,
-
-            ogImage:
-              portfolio.project
-                .seo.ogImage,
-
-            robots:
-              portfolio.project
-                .seo.robots,
-
-            updatedAt:
-              portfolio.project
-                .seo.updatedAt
-                .toISOString()
-          }
-        : null
+    seo: portfolio.project.seo
+      ? {
+          title: portfolio.project.seo.title,
+          description: portfolio.project.seo.description,
+          keywords: portfolio.project.seo.keywords,
+          canonicalUrl: portfolio.project.seo.canonicalUrl,
+          ogTitle: portfolio.project.seo.ogTitle,
+          ogDescription: portfolio.project.seo.ogDescription,
+          ogImage: portfolio.project.seo.ogImage,
+          robots: portfolio.project.seo.robots,
+          updatedAt: portfolio.project.seo.updatedAt.toISOString()
+        }
+      : null
   };
-}
+});
 
-export type PortfolioProjectDetail =
-  Awaited<
-    ReturnType<
-      typeof getPortfolioProject
-    >
-  >;
-
-export type PublicPortfolioProject =
-  NonNullable<
-    PortfolioProjectDetail
-  >;
+export type PortfolioProjectDetail = Awaited<ReturnType<typeof getPortfolioProject>>;
+export type PublicPortfolioProject = NonNullable<PortfolioProjectDetail>;

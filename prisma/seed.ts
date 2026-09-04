@@ -239,12 +239,31 @@ async function seedOfficialProjects(adminId: string) {
 
         update: {
           name: technology.name,
+          icon: technology.icon ?? null,
+
+          category: technology.category,
+          description: technology.description,
+          purpose: technology.purpose,
+          rationale: technology.rationale,
+
+          sortOrder: technology.sortOrder,
+          featured: technology.featured ?? false,
         },
 
         create: {
           projectId: project.id,
+
           name: technology.name,
           slug: technology.slug,
+          icon: technology.icon ?? null,
+
+          category: technology.category,
+          description: technology.description,
+          purpose: technology.purpose,
+          rationale: technology.rationale,
+
+          sortOrder: technology.sortOrder,
+          featured: technology.featured ?? false,
         },
       });
     }

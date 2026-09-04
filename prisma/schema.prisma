@@ -1124,16 +1124,29 @@ model PortfolioProfile {
 }
 
 model ProjectTechnology {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   projectId String
-  name      String
-  slug      String
-  icon      String?
+
+  // Technology identity
+  name String
+  slug String
+  icon String?
+
+  // Portfolio / engineering context
+  category    String?
+  description String?
+  purpose     String?
+  rationale   String?
+
+  // Presentation
+  sortOrder Int     @default(0)
+  featured  Boolean @default(false)
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, slug])
-  @@index([projectId])
+  @@index([projectId, sortOrder])
+  @@index([slug])
 }
 
 model ProjectMilestone {
