@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+
 import { CircleUserRound, LoaderCircle } from 'lucide-react';
+
+import { useTranslations } from 'next-intl';
 
 import { authClient } from '@/lib/auth-client';
 
@@ -11,12 +14,14 @@ type RcentzAuthActionsProps = {
 };
 
 export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActionsProps) {
+  const t = useTranslations('Header');
+
   const { data: session, isPending } = authClient.useSession();
 
   if (isPending) {
     return (
       <div
-        aria-label="Checking account"
+        aria-label={t('checkingAccount')}
         className={['flex items-center', mobile ? 'h-9 w-full px-3' : 'h-8 justify-center px-2'].join(' ')}>
         <LoaderCircle aria-hidden="true" className="size-3.5 animate-spin text-muted" />
       </div>
@@ -45,7 +50,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
         ].join(' ')}>
         <CircleUserRound aria-hidden="true" className="size-3.5" />
 
-        <span>Dashboard</span>
+        <span>{t('dashboard')}</span>
       </Link>
     );
   }
@@ -69,7 +74,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
 
         mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]'
       ].join(' ')}>
-      Sign in
+      {t('signIn')}
     </Link>
   );
 }

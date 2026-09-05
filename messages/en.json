@@ -1,0 +1,331 @@
+{
+  "Header": {
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "store": "Store",
+    "blog": "Blog",
+    "about": "About",
+    "signIn": "Sign in",
+    "dashboard": "Dashboard",
+    "checkingAccount": "Checking account",
+    "startProject": "Start a project",
+    "translateWebsite": "Translate website",
+    "translationNote": "Choose your preferred language."
+  },
+  "ServiceDetailHero": {
+    "backToServices": "Back to services",
+    "serviceBy": "Service by Rcentz Systems",
+    "requestService": "Request this service",
+    "customOffer": "Custom offer",
+    "featuredService": "Featured Rcentz service"
+  },
+  "ServiceOverview": {
+    "eyebrow": "Service overview",
+    "title": "Built around the real workflow, not a generic template.",
+    "partOf": "Part of",
+    "onboardingNote": "Scope, technology and delivery are refined during onboarding."
+  },
+  "ServiceFeatures": {
+    "eyebrow": "Expected capabilities",
+    "title": "What this service may include.",
+    "description": "These capabilities describe the typical direction of the service. Final scope depends on the project requirements, integrations, workflows and priorities confirmed during onboarding.",
+    "tabsAriaLabel": "Service capabilities",
+    "capabilitiesTab": "Capabilities",
+    "resultsTab": "Expected results",
+    "featured": "Featured",
+    "expectedEffect": "Expected effect",
+    "resultsEyebrow": "Expected results",
+    "resultsTitle": "What the finished solution should move toward.",
+    "resultsDescription": "These are practical outcomes the service is designed to support, not guaranteed performance metrics."
+  },
+  "ServiceTechnology": {
+    "eyebrow": "Technology direction",
+    "title": "Selected tools, with a reason for being there.",
+    "description": "The stack is shaped around the approved scope, integrations, performance needs and long-term maintenance direction. These are typical choices for this service, not fixed requirements for every project.",
+    "coreTechnology": "Core technology",
+    "roleInSolution": "Role in the solution",
+    "whyItFits": "Why it fits"
+  },
+  "ServiceDelivery": {
+    "eyebrow": "Delivery direction",
+    "title": "A clear path from discovery to delivery.",
+    "description": "Every engagement moves through a structured sequence. The public timeline provides planning direction, while the approved project later receives its own real dates, status and execution milestones.",
+    "planningEstimate": "Planning estimate",
+    "typicalDeliveryRange": "Typical delivery range",
+    "important": "Important",
+    "planningDisclaimer": "This is a planning range, not a contractual deadline. The final project timeline is confirmed after scope review and becomes part of the approved quote and project plan.",
+    "milestoneJourney": "Typical milestone journey",
+    "stage": "Stage {number}",
+    "purpose": "Purpose",
+    "stageOutcome": "Stage outcome",
+    "rangeBetween": "{min}–{max} days",
+    "rangeFrom": "From {min} days",
+    "rangeUpTo": "Up to {max} days",
+    "confirmedAfterDiscovery": "Confirmed after discovery"
+  },
+  "ServicePricing": {
+    "planningRange": "Planning range",
+    "pricingGuide": "Pricing guide",
+    "title": "Start with a range. Finalize after scope.",
+    "description": "These figures provide an initial commercial direction for this service. The approved quote is prepared after the project requirements are reviewed.",
+    "typicalStartingPoint": "Typical starting point",
+    "typicalScopeRange": "Typical scope range up to <amount>{value}</amount>",
+    "quoteFactorsTitle": "What shapes the final quote",
+    "quoteFactorsDescription": "Final pricing depends on project scope, integrations, technical complexity, delivery timeline, compliance requirements and ongoing support needs.",
+    "customScopeTitle": "Need something outside this range?",
+    "customScopeDescription": "Larger, unusual or regulated scopes can be reviewed as a custom offer."
+  },
+  "ServiceOnboarding": {
+    "intakePreview": "Intake preview",
+    "beforeScope": "Before we scope it",
+    "title": "A few things we will need from you.",
+    "description": "These questions form part of the service onboarding flow. They help us understand the project direction, requirements and constraints before preparing the final scope or custom offer.",
+    "required": "Required",
+    "optional": "Optional",
+    "moreOptions": "+ {count} more",
+    "remainingQuestions": "{count, plural, one {# more onboarding question will appear in the full request flow.} other {# more onboarding questions will appear in the full request flow.}}",
+    "fullOnboardingTitle": "Full onboarding comes next.",
+    "fullOnboardingDescription": "Once you start the request, these questions become the structured intake that helps us prepare the service review and quote.",
+    "questionTypes": {
+      "text": "Text",
+      "textarea": "Long text",
+      "select": "Select",
+      "multiselect": "Multiple select",
+      "radio": "Single choice",
+      "checkbox": "Checkbox",
+      "date": "Date",
+      "number": "Number",
+      "email": "Email",
+      "phone": "Phone",
+      "url": "URL"
+    }
+  },
+  "ServiceFaq": {
+    "eyebrow": "Frequently asked",
+    "title": "Questions before you request the service.",
+    "description": "These answers provide general guidance. Exact technical, commercial and delivery decisions are confirmed after your project requirements have been reviewed.",
+    "helper": "Still unsure whether this service fits your project? You can begin with a custom request and we will help determine the right direction."
+  },
+  "ServiceDetailCTA": {
+    "eyebrow": "Start the project",
+    "title": "Ready to shape this service around your project?",
+    "description": "Tell us what you are trying to build. We will review the requirements, workflows, integrations and delivery direction before preparing the right scope and offer.",
+    "structuredOnboarding": "Structured onboarding",
+    "scopeReview": "Scope review",
+    "finalQuote": "Final quote",
+    "requestService": "Request this service",
+    "customOffer": "Get a custom offer",
+    "reviewBeforeCommitment": "Review before commitment"
+  },
+  "SuggestedServices": {
+    "eyebrow": "Explore more",
+    "title": "Other services worth exploring.",
+    "description": "Continue through related Rcentz services or explore another direction for your project.",
+    "previousServices": "Previous services",
+    "nextServices": "Next services",
+    "featured": "Featured",
+    "viewService": "View service",
+    "swipeToExplore": "Swipe to explore"
+  },
+  "ServicesHero": {
+    "previousService": "Previous service",
+    "nextService": "Next service",
+    "serviceSlides": "Service slides",
+    "showService": "Show {service}",
+    "slides": {
+      "webDevelopment": "Web Development",
+      "wordpress": "WordPress",
+      "mobileAdaptive": "Mobile & Adaptive",
+      "businessSystems": "Business Systems",
+      "ecommerce": "E-commerce",
+      "maintenanceModernization": "Maintenance & Modernization",
+      "technicalConsulting": "Technical Consulting"
+    }
+  },
+  "ServicesInspiration": {
+    "artworkAlt": "Illustrated Rcentz project workspace showing strategy, development and delivery",
+    "projectActive": "Project active",
+    "structuredDelivery": "Structured delivery",
+    "deliveryFlow": "Strategy → Build → Launch",
+    "eyebrow": "How it works",
+    "title": "Simple steps to move your idea into execution.",
+    "description": "From the first conversation to delivery, every project follows a clear path built around understanding, structure and execution.",
+    "closingLine": "Clear direction. Structured delivery. Better outcomes.",
+    "highlights": {
+      "strategicPlanning": {
+        "title": "Strategic Planning",
+        "description": "Clear direction before development begins."
+      },
+      "collaborativeDelivery": {
+        "title": "Collaborative Delivery",
+        "description": "Transparent workflows and practical communication."
+      },
+      "performanceScale": {
+        "title": "Performance & Scale",
+        "description": "Systems designed for speed, structure and growth."
+      },
+      "secureReliable": {
+        "title": "Secure & Reliable",
+        "description": "Stable architecture and dependable implementation."
+      }
+    },
+    "steps": {
+      "discover": {
+        "title": "Discover the need",
+        "description": "We understand the business goal, audience and project direction."
+      },
+      "design": {
+        "title": "Design the solution",
+        "description": "We define the experience, architecture and implementation path."
+      },
+      "build": {
+        "title": "Build & deliver",
+        "description": "We develop, refine and move the solution into real use."
+      }
+    }
+  },
+  "ServicesCategoryBlocks": {
+    "eyebrow": "Service catalogue",
+    "titleLineOne": "Find the right direction.",
+    "titleLineTwo": "Then explore the service.",
+    "description": "Services are grouped by the kind of problem they solve, making it easier to explore focused solutions without scrolling through one endless catalogue.",
+    "categoryLabel": "Service category",
+    "serviceCount": "{count, plural, one {# service} other {# services}}",
+    "exploreHint": "Swipe or use the arrows to explore"
+  },
+  "ServiceCategorySlider": {
+    "browseCategory": "Browse {category}",
+    "previousServices": "Previous {category} services",
+    "nextServices": "Next {category} services"
+  },
+  "ServiceRichCard": {
+    "serviceIndex": "Service {number}",
+    "featured": "Featured",
+    "categorySystem": "Category system",
+    "typicalTechnology": "Typical technology",
+    "premiumStack": "Premium stack",
+    "serviceType": "Service type",
+    "viewMore": "View more",
+    "visualLabels": {
+      "webExperience": "Web experience",
+      "contentPlatform": "Content platform",
+      "adaptiveExperience": "Adaptive experience",
+      "operationsSystem": "Operations system",
+      "commerceSystem": "Commerce system",
+      "financialPlatform": "Financial platform",
+      "trackingSystem": "Tracking system",
+      "interactivePlatform": "Interactive platform",
+      "modernization": "Modernization",
+      "technicalDirection": "Technical direction",
+      "digitalSolution": "Digital solution"
+    },
+    "serviceTypes": {
+      "website": "Website",
+      "web_app": "Web application",
+      "mobile_app": "Mobile application",
+      "saas": "SaaS",
+      "ecommerce": "E-commerce",
+      "maintenance": "Maintenance",
+      "consulting": "Consulting"
+    }
+  },
+  "WebDevelopmentStory": {
+    "eyebrow": "01 · Web Development",
+    "title": "Websites built to work for your business.",
+    "description": "From focused landing pages and professional business websites to complete custom web applications, Rcentz builds responsive digital experiences around your brand, customers and real business workflows.",
+    "cta": "Explore Web Development",
+    "capabilities": {
+      "businessWebsites": "Business websites",
+      "customWebApplications": "Custom web applications",
+      "landingPages": "Landing pages",
+      "portfolioWebsites": "Portfolio websites"
+    }
+  },
+  "WordPressStory": {
+    "eyebrow": "02 · WordPress",
+    "title": "Keep what works. Modernize what does not.",
+    "description": "Rcentz develops, repairs and modernizes WordPress websites while preserving the content, structure and business value that still matters.",
+    "cta": "Explore WordPress",
+    "capabilities": {
+      "wordpressDevelopment": "WordPress development",
+      "websiteRedesign": "Website redesign",
+      "repairsRecovery": "Repairs & recovery",
+      "nextjsMigration": "Next.js migration"
+    }
+  },
+  "MobileAdaptiveStory": {
+    "eyebrow": "03 · Mobile & Adaptive",
+    "title": "Designed for every screen your customers use.",
+    "description": "Rcentz creates mobile and adaptive experiences intentionally around smaller screens, touch interaction and focused user journeys instead of simply compressing a desktop website.",
+    "cta": "Explore Mobile Experiences",
+    "capabilities": {
+      "mobileRedesign": "Mobile redesign",
+      "appLikeInterfaces": "App-like interfaces",
+      "responsiveOptimization": "Responsive optimization",
+      "adaptiveExperiences": "Adaptive experiences"
+    }
+  },
+  "BusinessSystemsStory": {
+    "eyebrow": "04 · Business Systems",
+    "title": "Put your operations in one system.",
+    "description": "Rcentz builds structured business systems that bring users, records, workflows, reporting and daily operations into one connected application.",
+    "cta": "Explore Business Systems",
+    "capabilities": {
+      "businessManagement": "Business management",
+      "adminDashboards": "Admin dashboards",
+      "clientPortals": "Client portals",
+      "internalOperations": "Internal operations"
+    }
+  },
+  "EcommerceStory": {
+    "eyebrow": "05 · E-commerce",
+    "title": "Commerce built beyond the storefront.",
+    "description": "Rcentz builds commerce experiences where products, customers, checkout, payments and operations work together as one connected system.",
+    "cta": "Explore E-commerce",
+    "capabilities": {
+      "onlineStores": "Online stores",
+      "productCatalogues": "Product catalogues",
+      "checkoutPayments": "Checkout & payments",
+      "marketplaceSystems": "Marketplace systems"
+    }
+  },
+  "MaintenanceModernizationStory": {
+    "eyebrow": "06 · Maintenance & Modernization",
+    "titlePrimary": "Repair what is broken.",
+    "titleSecondary": "Modernize what remains.",
+    "description": "Rcentz repairs, rebuilds and modernizes existing websites and applications while preserving the critical business content, data schema, and core functionality that drive your operations.",
+    "specializationsLabel": "Core Specializations",
+    "cta": "Explore Modernization",
+    "status": "Zero Downtime Migration",
+    "capabilities": {
+      "repairs": {
+        "label": "Website repairs",
+        "detail": "Fix bug backlogs, broken routes & layout issues"
+      },
+      "legacy": {
+        "label": "Legacy modernization",
+        "detail": "Migrate monolithic apps to Next.js App Router"
+      },
+      "rebuild": {
+        "label": "Redesign & rebuild",
+        "detail": "Modernize UI/UX while preserving business data"
+      },
+      "performance": {
+        "label": "Performance upgrades",
+        "detail": "Optimize Core Web Vitals, speed & asset load"
+      }
+    }
+  },
+  "TechnicalConsultingStory": {
+    "eyebrow": "07 · Technical Consulting",
+    "title": "Clarity before development begins.",
+    "description": "Rcentz helps turn business ideas, existing systems and technical uncertainty into practical architecture, modernization plans and clear implementation direction.",
+    "cta": "Explore Consulting",
+    "capabilities": {
+      "architecturePlanning": "Architecture planning",
+      "systemAudits": "System audits",
+      "modernizationStrategy": "Modernization strategy",
+      "technicalDirection": "Technical direction"
+    }
+  }
+}

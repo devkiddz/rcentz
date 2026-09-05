@@ -6,13 +6,18 @@ import { Menu, X } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { RcentzLogo } from '../brand/RcentzLogo';
 import { RcentzThemeControl } from '../theme/RcentzThemeControl';
 
 import { RcentzAuthActions } from './RcentzAuthActions';
+import { RcentzLanguageControl } from './RcentzLanguageControl';
 import { RcentzNavigation } from './RcentzNavigation';
 
 export function RcentzHeader() {
+  const t = useTranslations('Header');
+
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const [scrolled, setScrolled] = useState(false);
@@ -49,22 +54,12 @@ export function RcentzHeader() {
     <>
       {/* =====================================================
           DOCUMENT SPACER
-
-          Keeps application content beneath the
-          fixed floating header.
           ===================================================== */}
 
-      <div aria-hidden="true" className="h-[72px]" />
+      <div aria-hidden="true" className="h-[68px] sm:h-[72px]" />
 
       {/* =====================================================
-          PRISMA-STYLE TOP MASK
-
-          Protected presentation behavior.
-
-          This creates the clean environmental surface
-          above the floating navigation.
-
-          It compresses when scrolling.
+          DESKTOP-ONLY TOP ENVIRONMENT MASK
           ===================================================== */}
 
       <div
@@ -77,6 +72,9 @@ export function RcentzHeader() {
           'top-0',
 
           'z-40',
+
+          'hidden',
+          'md:block',
 
           'origin-top',
 
@@ -95,18 +93,15 @@ export function RcentzHeader() {
       />
 
       {/* =====================================================
-          FLOATING HEADER SHELL
+          FLOATING HEADER
 
-          The Header owns:
-          - reveal
-          - scroll compression
-          - glass
-          - environmental masking
-          - brand
-          - actions
-          - mobile expansion
+          Mobile:
+          Radius stays CONSTANT.
 
-          Navigation composition now lives independently.
+          We do not animate:
+          rounded-full -> rounded rectangle.
+
+          Only the contents/height expand.
           ===================================================== */}
 
       <header
@@ -119,8 +114,6 @@ export function RcentzHeader() {
 
           '-translate-x-1/2',
 
-          /* SAME PUBLIC AXIS AS .rcentz-section */
-
           'w-[calc(100%-1rem)]',
 
           'sm:w-[calc(100%-2rem)]',
@@ -131,11 +124,26 @@ export function RcentzHeader() {
 
           'border',
 
+          /* =========================================
+             CONSTANT MOBILE SHAPE
+             ========================================= */
+
+          'rounded-[24px]',
+
+          /* Desktop remains a floating pill */
+
+          'md:rounded-full',
+
           'backdrop-blur-2xl',
 
           'transform-gpu',
 
-          'transition-[top,border-radius,background-color,border-color,box-shadow,transform,opacity]',
+          /* IMPORTANT:
+             border-radius deliberately removed
+             from the transition.
+          */
+
+          'transition-[top,background-color,border-color,box-shadow,transform,opacity]',
 
           'duration-500',
 
@@ -145,12 +153,9 @@ export function RcentzHeader() {
             ? ['translate-y-0', 'scale-y-100', 'opacity-100'].join(' ')
             : ['-translate-y-4', 'scale-y-[0.94]', 'opacity-0'].join(' '),
 
-          /*
-           * PRISMA FLOATING STATE
-           *
-           * Preserve the difference between the
-           * resting and scrolled environment.
-           */
+          /* =========================================
+             SCROLLED
+             ========================================= */
 
           scrolled
             ? [
@@ -158,25 +163,43 @@ export function RcentzHeader() {
 
                 'border-border/80',
 
-                'bg-background/78',
+                'bg-background/94',
 
-                'shadow-[0_12px_40px_rgb(0_0_0/0.08)]',
+                'shadow-[0_12px_38px_rgb(0_0_0/0.10)]',
 
-                'dark:shadow-[0_12px_40px_rgb(0_0_0/0.34)]'
+                'dark:shadow-[0_12px_38px_rgb(0_0_0/0.38)]',
+
+                /* desktop */
+
+                'md:bg-background/78',
+
+                'md:shadow-[0_12px_40px_rgb(0_0_0/0.08)]',
+
+                'md:dark:shadow-[0_12px_40px_rgb(0_0_0/0.34)]'
               ].join(' ')
             : [
-                'top-[10px]',
+                'top-[8px]',
 
-                'border-border/65',
+                'border-border/70',
 
-                'bg-background/38',
+                'bg-background/88',
 
-                'shadow-[0_8px_30px_rgb(0_0_0/0.055)]',
+                'shadow-[0_8px_28px_rgb(0_0_0/0.08)]',
 
-                'dark:shadow-[0_8px_30px_rgb(0_0_0/0.22)]'
-              ].join(' '),
+                'dark:shadow-[0_8px_28px_rgb(0_0_0/0.30)]',
 
-          mobileOpen ? 'rounded-[28px]' : 'rounded-full'
+                /* desktop */
+
+                'md:top-[10px]',
+
+                'md:border-border/65',
+
+                'md:bg-background/38',
+
+                'md:shadow-[0_8px_30px_rgb(0_0_0/0.055)]',
+
+                'md:dark:shadow-[0_8px_30px_rgb(0_0_0/0.22)]'
+              ].join(' ')
         ].join(' ')}>
         {/* ===================================================
             AMBIENT HEADER SURFACE
@@ -222,7 +245,7 @@ export function RcentzHeader() {
             ].join(' ')}
           />
 
-          {/* AMBIENT ACCENT */}
+          {/* ACCENT GLOW */}
 
           <div
             className={[
@@ -253,7 +276,7 @@ export function RcentzHeader() {
         </div>
 
         {/* ===================================================
-            INNER HEADER AXIS
+            INNER AXIS
             =================================================== */}
 
         <div
@@ -289,11 +312,9 @@ export function RcentzHeader() {
 
               'ease-[cubic-bezier(0.22,1,0.36,1)]',
 
-              scrolled ? 'h-[48px]' : 'h-[56px]'
+              scrolled ? 'h-[48px]' : 'h-[52px] sm:h-[56px]'
             ].join(' ')}>
-            {/* =============================================
-                BRAND
-                ============================================= */}
+            {/* BRAND */}
 
             <Link
               href="/"
@@ -324,19 +345,15 @@ export function RcentzHeader() {
               </span>
             </Link>
 
-            {/* =============================================
-                DESKTOP NAVIGATION
-
-                Navigation now owns its own visual contract.
-                ============================================= */}
+            {/* DESKTOP NAVIGATION */}
 
             <RcentzNavigation />
 
-            {/* =============================================
-                DESKTOP ACTIONS
-                ============================================= */}
+            {/* DESKTOP ACTIONS */}
 
             <div className={['hidden', 'items-center', 'gap-1.5', 'md:flex'].join(' ')}>
+              <RcentzLanguageControl />
+
               <RcentzThemeControl />
 
               <RcentzAuthActions />
@@ -369,13 +386,11 @@ export function RcentzHeader() {
                     ? ['px-3.5', 'py-1.5', 'text-xs'].join(' ')
                     : ['px-4', 'py-1.5', 'text-[13px]'].join(' ')
                 ].join(' ')}>
-                Start a project
+                {t('startProject')}
               </Link>
             </div>
 
-            {/* =============================================
-                MOBILE MENU BUTTON
-                ============================================= */}
+            {/* MOBILE MENU */}
 
             <button
               type="button"
@@ -398,7 +413,7 @@ export function RcentzHeader() {
 
                 'border-border/55',
 
-                'bg-background/28',
+                'bg-background/38',
 
                 'text-foreground',
 
@@ -410,7 +425,7 @@ export function RcentzHeader() {
 
                 'hover:border-border-strong/70',
 
-                'hover:bg-background/48',
+                'hover:bg-background/58',
 
                 'active:scale-[0.96]',
 
@@ -456,19 +471,11 @@ export function RcentzHeader() {
                 {/* MOBILE ACTIONS */}
 
                 <div
-                  className={[
-                    'grid',
+                  className={['grid', 'grid-cols-2', 'gap-2', 'border-t', 'border-border/60', 'pt-3'].join(
+                    ' '
+                  )}>
+                  <RcentzLanguageControl mobile />
 
-                    'grid-cols-[auto_1fr_1fr]',
-
-                    'gap-2',
-
-                    'border-t',
-
-                    'border-border/60',
-
-                    'pt-3'
-                  ].join(' ')}>
                   <RcentzThemeControl mobile />
 
                   <RcentzAuthActions mobile onNavigate={closeMobileNavigation} />
@@ -506,7 +513,7 @@ export function RcentzHeader() {
 
                       'active:scale-[0.98]'
                     ].join(' ')}>
-                    Start project
+                    {t('startProject')}
                   </Link>
                 </div>
               </div>

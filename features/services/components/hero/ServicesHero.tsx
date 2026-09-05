@@ -1,20 +1,19 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-
-import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { HomeHeroEnvironment } from '@/features/home/components/hero/HomeHeroEnvironment';
 
-import { MobileAdaptiveStory } from '../MobileAdaptiveStory';
-import { WebDevelopmentStory } from '../WebDevelopmentStory';
-import { WordPressStory } from '../WordPressStory';
 import { BusinessSystemsStory } from '../BusinessSystemsStory';
 import { EcommerceStory } from '../EcommerceStory';
 import { MaintenanceModernizationStory } from '../MaintenanceModernizationStory';
+import { MobileAdaptiveStory } from '../MobileAdaptiveStory';
 import { TechnicalConsultingStory } from '../TechnicalConsultingStory';
+import { WebDevelopmentStory } from '../WebDevelopmentStory';
+import { WordPressStory } from '../WordPressStory';
 
 const AUTO_ADVANCE_MS = 18000;
 
@@ -24,49 +23,50 @@ const SERVICE_SLIDES = [
   {
     id: 'web-development',
     number: '01',
-    label: 'Web Development',
+    labelKey: 'webDevelopment',
     component: WebDevelopmentStory
   },
   {
     id: 'wordpress',
     number: '02',
-    label: 'WordPress',
+    labelKey: 'wordpress',
     component: WordPressStory
   },
   {
     id: 'mobile-adaptive-experiences',
     number: '03',
-    label: 'Mobile & Adaptive',
+    labelKey: 'mobileAdaptive',
     component: MobileAdaptiveStory
   },
   {
     id: 'business-systems',
     number: '04',
-    label: 'Business Systems',
+    labelKey: 'businessSystems',
     component: BusinessSystemsStory
   },
-
   {
     id: 'ecommerce',
     number: '05',
-    label: 'E-commerce',
+    labelKey: 'ecommerce',
     component: EcommerceStory
   },
   {
     id: 'maintenance-modernization',
     number: '06',
-    label: 'Maintenance & Modernization',
+    labelKey: 'maintenanceModernization',
     component: MaintenanceModernizationStory
   },
   {
     id: 'technical-consulting',
     number: '07',
-    label: 'Technical Consulting',
+    labelKey: 'technicalConsulting',
     component: TechnicalConsultingStory
   }
 ] as const;
 
 export function ServicesHero() {
+  const t = useTranslations('ServicesHero');
+
   const reduceMotion = Boolean(useReducedMotion());
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -74,7 +74,17 @@ export function ServicesHero() {
   const [isPaused, setIsPaused] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
 
-  const activeSlide = SERVICE_SLIDES[activeIndex];
+  const slides = useMemo(
+    () =>
+      SERVICE_SLIDES.map(slide => ({
+        ...slide,
+        label: t(`slides.${slide.labelKey}`)
+      })),
+    [t]
+  );
+
+  const activeSlide = slides[activeIndex];
+
   const ActiveStory = activeSlide.component;
 
   const restartTimer = useCallback(() => {
@@ -97,21 +107,21 @@ export function ServicesHero() {
   const goNext = useCallback(() => {
     setDirection(1);
 
-    setActiveIndex(current => (current === SERVICE_SLIDES.length - 1 ? 0 : current + 1));
+    setActiveIndex(current => (current === slides.length - 1 ? 0 : current + 1));
 
     restartTimer();
-  }, [restartTimer]);
+  }, [restartTimer, slides.length]);
 
   const goPrevious = useCallback(() => {
     setDirection(-1);
 
-    setActiveIndex(current => (current === 0 ? SERVICE_SLIDES.length - 1 : current - 1));
+    setActiveIndex(current => (current === 0 ? slides.length - 1 : current - 1));
 
     restartTimer();
-  }, [restartTimer]);
+  }, [restartTimer, slides.length]);
 
   useEffect(() => {
-    if (isPaused || reduceMotion || SERVICE_SLIDES.length <= 1) {
+    if (isPaused || reduceMotion || slides.length <= 1) {
       return;
     }
 
@@ -122,7 +132,7 @@ export function ServicesHero() {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [activeIndex, goNext, isPaused, reduceMotion, timerKey]);
+  }, [activeIndex, goNext, isPaused, reduceMotion, slides.length, timerKey]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -151,10 +161,6 @@ export function ServicesHero() {
 
       <div className="rcentz-section relative z-10 py-10 sm:py-14 lg:py-16">
         <div className="mx-auto w-full max-w-[1140px]">
-          {/* =========================================
-              ACTIVE STORY
-              ========================================= */}
-
           <div className="relative">
             <AnimatePresence initial={false} mode="wait" custom={direction}>
               <motion.div
@@ -194,15 +200,11 @@ export function ServicesHero() {
             </AnimatePresence>
           </div>
 
-          {/* =========================================
-              SLIDER CONTROLS
-              ========================================= */}
-
           <div className="mt-9 sm:mt-10">
             <div className="flex items-center justify-between gap-4">
               <button
                 type="button"
-                aria-label="Previous service"
+                aria-label={t('previousService')}
                 onClick={goPrevious}
                 className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/75 text-muted shadow-sm backdrop-blur-xl transition-[border-color,color,transform] hover:border-theme-accent/30 hover:text-theme-accent active:scale-95">
                 <ChevronLeft className="size-3.5" />
@@ -211,7 +213,6 @@ export function ServicesHero() {
               <div className="min-w-0 flex-1">
                 <div className="mx-auto max-w-[430px]">
                   <div className="flex items-center justify-between gap-4">
-                    {/* Active category */}
                     <div className="flex min-w-0 items-center gap-2">
                       <span className="size-1.5 shrink-0 rounded-full bg-theme-accent" />
 
@@ -228,16 +229,17 @@ export function ServicesHero() {
                       <span className="truncate text-[8px] font-medium text-muted">{activeSlide.label}</span>
                     </div>
 
-                    {/* Slide dots */}
-                    <div className="flex shrink-0 items-center gap-1.5" aria-label="Service slides">
-                      {SERVICE_SLIDES.map((slide, index) => {
+                    <div className="flex shrink-0 items-center gap-1.5" aria-label={t('serviceSlides')}>
+                      {slides.map((slide, index) => {
                         const isActive = index === activeIndex;
 
                         return (
                           <button
                             key={slide.id}
                             type="button"
-                            aria-label={`Show ${slide.label}`}
+                            aria-label={t('showService', {
+                              service: slide.label
+                            })}
                             aria-current={isActive ? 'true' : undefined}
                             onClick={() => goToSlide(index)}
                             className={[
@@ -259,7 +261,7 @@ export function ServicesHero() {
 
               <button
                 type="button"
-                aria-label="Next service"
+                aria-label={t('nextService')}
                 onClick={goNext}
                 className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/75 text-muted shadow-sm backdrop-blur-xl transition-[border-color,color,transform] hover:border-theme-accent/30 hover:text-theme-accent active:scale-95">
                 <ChevronRight className="size-3.5" />

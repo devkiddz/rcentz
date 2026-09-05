@@ -150,6 +150,7 @@ enum ServiceStatus {
 }
 
 enum ServiceRequestStatus {
+  DRAFT
   PENDING
   REVIEWING
   QUOTED
@@ -157,6 +158,24 @@ enum ServiceRequestStatus {
   REJECTED
   CANCELLED
   CONVERTED
+}
+
+enum ServiceRequestKind {
+  STANDARD
+  CUSTOM_OFFER
+}
+
+enum ServiceQuestionType {
+  SHORT_TEXT
+  LONG_TEXT
+  NUMBER
+  URL
+  EMAIL
+  PHONE
+  BOOLEAN
+  SINGLE_SELECT
+  MULTI_SELECT
+  DATE
 }
 
 enum QuoteStatus {
@@ -524,7 +543,7 @@ model User {
   uploadedProjectFiles  ProjectFile[]     @relation("ProjectFileUploader")
 
   serviceRequests ServiceRequest[]
-  quotes          Quote[]          @relation("QuoteClient")
+  quotes          Quote[] @relation("QuoteClient")
 
   createdServicePlans  ServicePlan[]        @relation("ServicePlanCreator")
   customServicePlans   ServicePlan[]        @relation("ServicePlanClient")
@@ -542,7 +561,7 @@ model User {
   reactions Reaction[]
 
   conversations ConversationParticipant[]
-  sentMessages  Message[]                 @relation("MessageSender")
+  sentMessages  Message[] @relation("MessageSender")
 
   notifications          Notification[]
   notificationPreference NotificationPreference?
@@ -660,7 +679,10 @@ model StaffProfile {
 }
 
 // =========================================================
-// SERVICES
+// SERVICES — CATALOGUE, INTELLIGENCE, ONBOARDING & REQUESTS
+// Service records describe reusable commercial offerings.
+// Service milestone templates describe a typical delivery path.
+// Real execution lives in Project -> ProjectMilestone after conversion.
 // =========================================================
 
 model ServiceCategory {
@@ -669,29 +691,48 @@ model ServiceCategory {
   slug        String   @unique
   description String?
   image       String?
+  sortOrder   Int      @default(0)
+  featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   services Service[]
+
+  @@index([sortOrder])
+  @@index([featured])
 }
 
 model Service {
-  id               String         @id @default(cuid())
+  id               String        @id @default(cuid())
   categoryId       String?
   createdById      String
   name             String
-  slug             String         @unique
+  slug             String        @unique
   shortDescription String?
   description      String?
   type             ProjectType
-  status           ServiceStatus  @default(DRAFT)
-  prices           ServicePrice[]
-  featured         Boolean        @default(false)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  status           ServiceStatus @default(DRAFT)
+  featured         Boolean       @default(false)
+  sortOrder        Int           @default(0)
+
+  deliveryMinDays Int?
+  deliveryMaxDays Int?
+  deliveryNote    String?
+  publishedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   category  ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdBy User             @relation("ServiceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  prices              ServicePrice[]
+  technologies        ServiceTechnology[]
+  features            ServiceFeature[]
+  outcomes            ServiceOutcome[]
+  milestoneTemplates  ServiceMilestoneTemplate[]
+  faqs                ServiceFaq[]
+  onboardingQuestions ServiceOnboardingQuestion[]
 
   requests     ServiceRequest[]
   planLinks    ServicePlanService[]
@@ -705,6 +746,8 @@ model Service {
   @@index([createdById])
   @@index([status])
   @@index([featured])
+  @@index([sortOrder])
+  @@index([publishedAt])
 }
 
 model ServicePrice {
@@ -725,17 +768,175 @@ model ServicePrice {
   @@index([currency])
 }
 
+model ServiceTechnology {
+  id        String @id @default(cuid())
+  serviceId String
+
+  name        String
+  slug        String
+  icon        String?
+  category    String?
+  description String?
+  purpose     String?
+  rationale   String?
+  sortOrder   Int     @default(0)
+  featured    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+  @@index([serviceId, sortOrder])
+  @@index([slug])
+  @@index([featured])
+}
+
+model ServiceFeature {
+  id        String @id @default(cuid())
+  serviceId String
+
+  name            String
+  slug            String
+  description     String?
+  expectedOutcome String?
+  sortOrder       Int     @default(0)
+  featured        Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+  @@index([serviceId, sortOrder])
+  @@index([featured])
+}
+
+model ServiceOutcome {
+  id        String @id @default(cuid())
+  serviceId String
+
+  title       String
+  slug        String
+  description String?
+  sortOrder   Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+  @@index([serviceId, sortOrder])
+}
+
+model ServiceMilestoneTemplate {
+  id        String @id @default(cuid())
+  serviceId String
+
+  title           String
+  slug            String
+  description     String?
+  purpose         String?
+  expectedOutcome String?
+  minDays         Int?
+  maxDays         Int?
+  sortOrder       Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+  @@index([serviceId, sortOrder])
+}
+
+model ServiceFaq {
+  id        String @id @default(cuid())
+  serviceId String
+
+  slug      String
+  question  String
+  answer    String
+  sortOrder Int     @default(0)
+  featured  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, slug])
+  @@index([serviceId, sortOrder])
+  @@index([featured])
+}
+
+model ServiceOnboardingQuestion {
+  id        String @id @default(cuid())
+  serviceId String
+
+  key         String
+  label       String
+  helpText    String?
+  placeholder String?
+  type        ServiceQuestionType
+  required    Boolean             @default(false)
+  active      Boolean             @default(true)
+  sortOrder   Int                 @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  options ServiceOnboardingOption[]
+  answers ServiceRequestAnswer[]
+
+  @@unique([serviceId, key])
+  @@index([serviceId, sortOrder])
+  @@index([active])
+}
+
+model ServiceOnboardingOption {
+  id         String @id @default(cuid())
+  questionId String
+
+  value       String
+  label       String
+  description String?
+  active      Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question       ServiceOnboardingQuestion   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answerLinks    ServiceRequestAnswerOption[]
+
+  @@unique([questionId, value])
+  @@index([questionId, sortOrder])
+  @@index([active])
+}
+
 model ServiceRequest {
   id             String  @id @default(cuid())
   userId         String
   serviceId      String
   subscriptionId String?
 
+  kind        ServiceRequestKind   @default(STANDARD)
   title       String
   description String
   budget      Decimal?             @db.Decimal(14, 2)
   currency    String               @default("NGN")
-  status      ServiceRequestStatus @default(PENDING)
+  status      ServiceRequestStatus @default(DRAFT)
+
+  preferredStartAt    DateTime?
+  preferredDeadlineAt DateTime?
+  onboardingCompletedAt DateTime?
+  submittedAt           DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -744,18 +945,98 @@ model ServiceRequest {
   service      Service             @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   subscription ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
+  answers ServiceRequestAnswer[]
+
   quote        Quote?
   project      Project?
   invoices     Invoice[]
   usageRecords SubscriptionUsageRecord[]
-
   conversations Conversation[]
 
   @@index([userId])
   @@index([serviceId])
   @@index([subscriptionId])
+  @@index([kind])
   @@index([status])
+  @@index([submittedAt])
   @@index([createdAt])
+}
+
+model ServiceRequestAnswer {
+  id               String @id @default(cuid())
+  serviceRequestId String
+  questionId       String
+
+  questionLabel String
+  questionType  ServiceQuestionType
+
+  textValue    String?
+  numberValue  Decimal? @db.Decimal(20, 4)
+  booleanValue Boolean?
+  dateValue    DateTime?
+  metadata     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serviceRequest ServiceRequest             @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  question       ServiceOnboardingQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  selectedOptions ServiceRequestAnswerOption[]
+
+  @@unique([serviceRequestId, questionId])
+  @@index([serviceRequestId])
+  @@index([questionId])
+}
+
+model ServiceRequestAnswerOption {
+  answerId String
+  optionId String
+
+  answer ServiceRequestAnswer     @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  option ServiceOnboardingOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@id([answerId, optionId])
+  @@index([optionId])
+}
+
+
+// =========================================================
+// LOCALIZED CONTENT
+// Lazy, persistent translations for dynamic database content.
+//
+// English remains the canonical source.
+// Translations are generated only when requested, then stored.
+// sourceHash allows stale translations to be detected when the
+// canonical source text changes.
+//
+// entityType and entityId deliberately use no Prisma relation.
+// This keeps the translation engine reusable across Services,
+// Products, Portfolio, Blog and future Rcentz content models.
+// =========================================================
+
+model LocalizedContent {
+  id String @id @default(cuid())
+
+  entityType String
+  entityId   String
+  fieldName  String
+
+  locale       String
+  sourceLocale String @default("en")
+
+  value      String @db.Text
+  sourceHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entityType, entityId, fieldName, locale])
+
+  @@index([entityType, entityId, locale])
+  @@index([entityType, entityId])
+  @@index([locale])
+  @@index([sourceHash])
+  @@index([updatedAt])
 }
 
 model Quote {
@@ -777,8 +1058,8 @@ model Quote {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
-  serviceRequest ServiceRequest      @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
-  client         User                @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
+  serviceRequest ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
+  client         User           @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
   items          QuoteItem[]
   invoices       Invoice[]
   subscription   ClientSubscription?
@@ -929,7 +1210,6 @@ model ClientSubscription {
   subscriptionNumber String                   @unique
   status             ClientSubscriptionStatus @default(PENDING)
 
-  // Contract snapshot. These remain stable even if the reusable plan price changes.
   priceAmount   Decimal             @db.Decimal(14, 2)
   currency      String              @default("NGN")
   intervalUnit  BillingIntervalUnit
@@ -985,18 +1265,18 @@ model SubscriptionEntitlement {
   key          String
   name         String
   description  String?
-  limitValue   Decimal?  @db.Decimal(14, 2)
-  usedValue    Decimal   @default(0) @db.Decimal(14, 2)
+  limitValue   Decimal? @db.Decimal(14, 2)
+  usedValue    Decimal  @default(0) @db.Decimal(14, 2)
   unit         String?
-  unlimited    Boolean   @default(false)
+  unlimited    Boolean  @default(false)
   metadata     Json?
   usageResetAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  subscription    ClientSubscription        @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  planEntitlement ServicePlanEntitlement?   @relation(fields: [planEntitlementId], references: [id], onDelete: SetNull)
+  subscription    ClientSubscription       @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planEntitlement ServicePlanEntitlement?  @relation(fields: [planEntitlementId], references: [id], onDelete: SetNull)
   usageRecords    SubscriptionUsageRecord[]
 
   @@unique([subscriptionId, key])
@@ -1051,7 +1331,6 @@ model Project {
   status     ProjectStatus     @default(PLANNING)
   visibility ProjectVisibility @default(PRIVATE)
 
-  // Server-maintained aggregate derived from milestone execution state.
   progress Int      @default(0)
   budget   Decimal? @db.Decimal(14, 2)
   currency String   @default("NGN")
@@ -1127,18 +1406,15 @@ model ProjectTechnology {
   id        String @id @default(cuid())
   projectId String
 
-  // Technology identity
   name String
   slug String
   icon String?
 
-  // Portfolio / engineering context
   category    String?
   description String?
   purpose     String?
   rationale   String?
 
-  // Presentation
   sortOrder Int     @default(0)
   featured  Boolean @default(false)
 
@@ -1164,9 +1440,7 @@ model ProjectMilestone {
   priority   ProjectMilestonePriority @default(NORMAL)
   visibility ProjectUpdateVisibility  @default(CLIENT)
   sortOrder  Int                      @default(0)
-
-  // Server-maintained aggregate derived from feature/task state.
-  progress Int @default(0)
+  progress   Int                      @default(0)
 
   startedAt   DateTime?
   dueDate     DateTime?
@@ -1204,7 +1478,7 @@ model ProjectMilestoneAssignment {
   milestoneId String
   userId      String
   role        String?
-  assignedAt  DateTime  @default(now())
+  assignedAt  DateTime @default(now())
   removedAt   DateTime?
 
   milestone ProjectMilestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
@@ -1340,11 +1614,11 @@ model ProjectTask {
 }
 
 model ProjectAssignment {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   projectId  String
   userId     String
   role       String?
-  assignedAt DateTime  @default(now())
+  assignedAt DateTime @default(now())
   removedAt  DateTime?
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -1637,8 +1911,8 @@ model Order {
 
   completedAt DateTime?
   cancelledAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
@@ -1699,7 +1973,7 @@ model DigitalDelivery {
   token  String                @unique
   status DigitalDeliveryStatus @default(PENDING)
 
-  downloadCount    Int       @default(0)
+  downloadCount    Int      @default(0)
   expiresAt        DateTime?
   lastDownloadedAt DateTime?
 
@@ -1716,8 +1990,6 @@ model DigitalDelivery {
 // =========================================================
 // BILLING / INVOICES / PAYMENTS
 // All payable business flows converge on Invoice -> Payment.
-// sourceType identifies the primary invoice source; server validation must ensure
-// the matching source relation is present and financial totals remain consistent.
 // =========================================================
 
 model Invoice {
@@ -1834,12 +2106,12 @@ model Payment {
   netAmount         Decimal? @db.Decimal(14, 2)
   metadata          Json?
 
-  initiatedAt DateTime  @default(now())
+  initiatedAt DateTime @default(now())
   paidAt      DateTime?
   failedAt    DateTime?
   expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
   payer   User?   @relation("PaymentPayer", fields: [payerId], references: [id], onDelete: SetNull)
@@ -1863,8 +2135,8 @@ model PaymentRefund {
   currency String       @default("NGN")
   status   RefundStatus @default(PENDING)
 
-  reference         String?   @unique
-  providerReference String?   @unique
+  reference         String? @unique
+  providerReference String? @unique
   reason            String?
   metadata          Json?
   processedAt       DateTime?
@@ -1923,10 +2195,10 @@ model CryptoTransaction {
   status        CryptoTransactionStatus @default(DETECTED)
   rawData       Json?
 
-  detectedAt  DateTime  @default(now())
+  detectedAt  DateTime @default(now())
   confirmedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   cryptoPayment CryptoPayment @relation(fields: [cryptoPaymentId], references: [id], onDelete: Cascade)
 
@@ -2006,8 +2278,7 @@ model BlogPostTag {
 
 // =========================================================
 // COMMENTS / REACTIONS
-// Runtime validation must enforce exactly one target:
-// either postId OR projectId.
+// Runtime validation must enforce exactly one target.
 // =========================================================
 
 model Comment {
@@ -2062,7 +2333,6 @@ model Reaction {
 
 // =========================================================
 // MESSAGING
-// Runtime validation must enforce contextual ownership based on type, including subscriptions.
 // =========================================================
 
 model Conversation {
@@ -2104,7 +2374,7 @@ model ConversationParticipant {
   conversationId String
   userId         String
 
-  joinedAt   DateTime  @default(now())
+  joinedAt   DateTime @default(now())
   leftAt     DateTime?
   lastReadAt DateTime?
   mutedAt    DateTime?
@@ -2159,7 +2429,7 @@ model MessageAttachment {
   height    Int?
   duration  Int?
   caption   String?
-  sortOrder Int     @default(0)
+  sortOrder Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2204,8 +2474,8 @@ model SupportTicket {
   status   TicketStatus   @default(OPEN)
   priority TicketPriority @default(NORMAL)
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   resolvedAt DateTime?
   closedAt   DateTime?
 
@@ -2239,7 +2509,7 @@ model Notification {
   metadata   Json?
 
   readAt    DateTime?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2379,7 +2649,7 @@ model MediaAsset {
 
   alt       String?
   caption   String?
-  sortOrder Int     @default(0)
+  sortOrder Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
