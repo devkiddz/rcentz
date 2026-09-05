@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
-  Check,
   Database,
   FileText,
   PackageCheck,
@@ -45,6 +45,78 @@ const COMMERCE_VIEWS = [
     src: '/portfolio/screenshots/shelsea-commerce/03-orders-desktop.webp'
   }
 ] as const;
+
+const MARKETING_BLOCKS = [
+  'Grow your business with a professional website built to make a strong first impression. Present your services clearly, build trust with customers, and make it easier for people to take action.',
+  'Turn your website into a reliable part of your business. Showcase your products, answer customer questions, and create a smoother path from discovery to enquiry or purchase.',
+  'Reach more customers with a website designed for modern devices and real user behaviour. Keep your content clear, your message focused, and your business accessible wherever people find you.'
+] as const;
+
+function MarketingTypewriter() {
+  const [blockIndex, setBlockIndex] = useState(0);
+  const [characterIndex, setCharacterIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const currentBlock = MARKETING_BLOCKS[blockIndex];
+
+  useEffect(() => {
+    const complete = characterIndex === currentBlock.length;
+
+    const empty = characterIndex === 0;
+
+    let delay = isDeleting ? 10 : 18;
+
+    if (complete && !isDeleting) {
+      delay = 2600;
+    }
+
+    if (empty && isDeleting) {
+      delay = 500;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (complete && !isDeleting) {
+        setIsDeleting(true);
+        return;
+      }
+
+      if (empty && isDeleting) {
+        setIsDeleting(false);
+
+        setBlockIndex(current => (current === MARKETING_BLOCKS.length - 1 ? 0 : current + 1));
+
+        return;
+      }
+
+      setCharacterIndex(current =>
+        isDeleting ? Math.max(0, current - 1) : Math.min(currentBlock.length, current + 1)
+      );
+    }, delay);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [characterIndex, currentBlock, isDeleting]);
+
+  return (
+    <div className="min-h-[92px]">
+      <p className="text-[6.5px] leading-[1.7] text-muted sm:text-[7px]">
+        {currentBlock.slice(0, characterIndex)}
+
+        <motion.span
+          animate={{
+            opacity: [1, 0, 1]
+          }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity
+          }}
+          className="ml-0.5 inline-block h-2.5 w-px bg-theme-accent align-middle"
+        />
+      </p>
+    </div>
+  );
+}
 
 export function WordPressIllustration() {
   const reduceMotion = Boolean(useReducedMotion());
@@ -134,13 +206,11 @@ export function WordPressIllustration() {
                 <div className="flex items-center gap-2">
                   <FileText className="size-3 text-theme-accent" />
 
-                  <span className="text-[6px] text-muted">Pages & content</span>
+                  <span className="text-[6px] text-muted">Marketing content</span>
                 </div>
 
-                <div className="mt-2 space-y-1.5">
-                  <div className="h-1.5 w-full rounded-full bg-foreground/10" />
-                  <div className="h-1.5 w-[86%] rounded-full bg-foreground/10" />
-                  <div className="h-1.5 w-[68%] rounded-full bg-foreground/10" />
+                <div className="mt-2 rounded-[8px] border border-border/70 bg-surface-muted/35 p-2.5">
+                  <MarketingTypewriter />
                 </div>
               </div>
 
@@ -216,7 +286,7 @@ export function WordPressIllustration() {
 
             {/* Real commerce content */}
             <div className="relative p-3 sm:p-4">
-              <div className="relative min-h-[205px]">
+              <div className="relative min-h-[215px] sm:min-h-[230px]">
                 {COMMERCE_VIEWS.map((view, index) => (
                   <motion.div
                     key={view.label}
@@ -247,10 +317,10 @@ export function WordPressIllustration() {
                       'bg-background',
                       'shadow-lg',
                       index === 0
-                        ? 'left-0 top-4 z-10 w-[58%]'
+                        ? 'left-0 top-5 z-10 w-[68%]'
                         : index === 1
-                          ? 'right-0 top-0 z-20 w-[59%]'
-                          : 'bottom-0 left-[18%] z-30 w-[62%]'
+                          ? 'right-0 top-0 z-20 w-[70%]'
+                          : 'bottom-0 left-[12%] z-30 w-[74%]'
                     ].join(' ')}>
                     <div className="relative aspect-[16/9] overflow-hidden bg-surface-muted">
                       <Image

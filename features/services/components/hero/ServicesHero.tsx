@@ -8,10 +8,15 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { HomeHeroEnvironment } from '@/features/home/components/hero/HomeHeroEnvironment';
 
+import { MobileAdaptiveStory } from '../MobileAdaptiveStory';
 import { WebDevelopmentStory } from '../WebDevelopmentStory';
 import { WordPressStory } from '../WordPressStory';
+import { BusinessSystemsStory } from '../BusinessSystemsStory';
+import { EcommerceStory } from '../EcommerceStory';
+import { MaintenanceModernizationStory } from '../MaintenanceModernizationStory';
+import { TechnicalConsultingStory } from '../TechnicalConsultingStory';
 
-const AUTO_ADVANCE_MS = 12000;
+const AUTO_ADVANCE_MS = 18000;
 
 const TOTAL_SERVICE_CATEGORIES = 7;
 
@@ -27,6 +32,37 @@ const SERVICE_SLIDES = [
     number: '02',
     label: 'WordPress',
     component: WordPressStory
+  },
+  {
+    id: 'mobile-adaptive-experiences',
+    number: '03',
+    label: 'Mobile & Adaptive',
+    component: MobileAdaptiveStory
+  },
+  {
+    id: 'business-systems',
+    number: '04',
+    label: 'Business Systems',
+    component: BusinessSystemsStory
+  },
+
+  {
+    id: 'ecommerce',
+    number: '05',
+    label: 'E-commerce',
+    component: EcommerceStory
+  },
+  {
+    id: 'maintenance-modernization',
+    number: '06',
+    label: 'Maintenance & Modernization',
+    component: MaintenanceModernizationStory
+  },
+  {
+    id: 'technical-consulting',
+    number: '07',
+    label: 'Technical Consulting',
+    component: TechnicalConsultingStory
   }
 ] as const;
 
@@ -74,9 +110,6 @@ export function ServicesHero() {
     restartTimer();
   }, [restartTimer]);
 
-  /*
-   * Automatic slide progression.
-   */
   useEffect(() => {
     if (isPaused || reduceMotion || SERVICE_SLIDES.length <= 1) {
       return;
@@ -91,9 +124,6 @@ export function ServicesHero() {
     };
   }, [activeIndex, goNext, isPaused, reduceMotion, timerKey]);
 
-  /*
-   * Keyboard navigation.
-   */
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'ArrowRight') {
@@ -170,7 +200,6 @@ export function ServicesHero() {
 
           <div className="mt-9 sm:mt-10">
             <div className="flex items-center justify-between gap-4">
-              {/* Previous */}
               <button
                 type="button"
                 aria-label="Previous service"
@@ -179,31 +208,9 @@ export function ServicesHero() {
                 <ChevronLeft className="size-3.5" />
               </button>
 
-              {/* =====================================
-                  CENTER STATUS
-                  ===================================== */}
-
               <div className="min-w-0 flex-1">
                 <div className="mx-auto max-w-[430px]">
-                  {/* Auto progress */}
-                  <div className="h-px overflow-hidden bg-border">
-                    <motion.div
-                      key={`${activeSlide.id}-${timerKey}`}
-                      initial={{
-                        width: reduceMotion ? '100%' : '0%'
-                      }}
-                      animate={{
-                        width: '100%'
-                      }}
-                      transition={{
-                        duration: reduceMotion || isPaused ? 0 : AUTO_ADVANCE_MS / 1000,
-                        ease: 'linear'
-                      }}
-                      className="h-full bg-theme-accent"
-                    />
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-4">
                     {/* Active category */}
                     <div className="flex min-w-0 items-center gap-2">
                       <span className="size-1.5 shrink-0 rounded-full bg-theme-accent" />
@@ -250,7 +257,6 @@ export function ServicesHero() {
                 </div>
               </div>
 
-              {/* Next */}
               <button
                 type="button"
                 aria-label="Next service"

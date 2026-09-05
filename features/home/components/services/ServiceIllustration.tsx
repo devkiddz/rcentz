@@ -149,7 +149,7 @@ function DashboardScene() {
   );
 }
 
-function CommerceScene() {
+export function CommerceScene() {
   const reduceMotion = useReducedMotion();
 
   return (
