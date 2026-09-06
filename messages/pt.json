@@ -886,5 +886,9 @@
       "development": "Desenvolvimento",
       "infrastructure": "Infraestrutura"
     }
+  },
+    "PopularServicesHome": {
+    "title": "Serviços mais explorados",
+    "description": "Explore alguns dos serviços da Rcentz que estão recebendo maior interesse em sistemas empresariais, plataformas financeiras, comércio e experiências web modernas."
   }
 }

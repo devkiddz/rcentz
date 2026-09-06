@@ -886,5 +886,10 @@
       "development": "Development",
       "infrastructure": "Infrastructure"
     }
+  },
+
+    "PopularServicesHome": {
+    "title": "Most Popularly Explored Services",
+    "description": "Explore some of the Rcentz services receiving the strongest attention across business systems, financial platforms, commerce and modern web experiences."
   }
 }
