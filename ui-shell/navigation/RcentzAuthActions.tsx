@@ -1,10 +1,24 @@
 'use client';
 
-import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
-import { CircleUserRound, LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { LayoutDashboard, LoaderCircle, LogOut, UserRound } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 import { authClient } from '@/lib/auth-client';
 
@@ -13,68 +27,174 @@ type RcentzAuthActionsProps = {
   onNavigate?: () => void;
 };
 
+function getInitials(name: string) {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join('');
+
+  return initials || 'R';
+}
+
 export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActionsProps) {
+  const router = useRouter();
+
   const t = useTranslations('Header');
 
   const { data: session, isPending } = authClient.useSession();
+
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const user = session?.user;
+
+  const initials = useMemo(() => getInitials(user?.name ?? 'Rcentz User'), [user?.name]);
 
   if (isPending) {
     return (
       <div
         aria-label={t('checkingAccount')}
-        className={['flex items-center', mobile ? 'h-9 w-full px-3' : 'h-8 justify-center px-2'].join(' ')}>
+        className={['flex items-center', mobile ? 'h-11 w-full px-3' : 'h-9 justify-center px-2'].join(' ')}>
         <LoaderCircle aria-hidden="true" className="size-3.5 animate-spin text-muted" />
       </div>
     );
   }
 
-  if (session?.user) {
+  if (!user) {
     return (
-      <Link
-        href="/dashboard"
-        onClick={onNavigate}
+      <button
+        type="button"
+        onClick={() => {
+          onNavigate?.();
+          router.push('/login');
+        }}
         className={[
-          'inline-flex items-center gap-2 rounded-full',
-
-          'border border-border',
-          'bg-surface-muted',
-
-          'font-medium text-foreground',
-
-          'transition-[background-color,border-color,color] duration-200',
-
-          'hover:border-border-strong',
-          'hover:bg-secondary',
-
-          mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]'
+          'inline-flex items-center justify-center',
+          'rounded-full',
+          'border border-transparent',
+          'font-medium text-muted',
+          'transition-[color,background-color,border-color]',
+          'duration-200',
+          'hover:border-border',
+          'hover:bg-surface-muted',
+          'hover:text-foreground',
+          mobile ? 'h-10 w-full px-3 text-[13px]' : 'h-9 px-3 text-[12px]'
         ].join(' ')}>
-        <CircleUserRound aria-hidden="true" className="size-3.5" />
-
-        <span>{t('dashboard')}</span>
-      </Link>
+        {t('signIn')}
+      </button>
     );
   }
 
+  async function handleSignOut() {
+    if (isSigningOut) {
+      return;
+    }
+
+    setIsSigningOut(true);
+
+    await authClient.signOut();
+
+    onNavigate?.();
+
+    router.push('/');
+    router.refresh();
+  }
+
+  function handleDashboard() {
+    onNavigate?.();
+
+    router.push('/dashboard');
+  }
+
+  function handleProfile() {
+    onNavigate?.();
+
+    router.push('/dashboard/profile');
+  }
+
   return (
-    <Link
-      href="/login"
-      onClick={onNavigate}
-      className={[
-        'inline-flex items-center justify-center rounded-full',
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={[
+              'flex min-w-0 items-center',
+              'rounded-full',
+              'border border-border/70',
+              'bg-background/45',
+              'backdrop-blur-xl',
+              'transition-[background-color,border-color]',
+              'hover:border-border-strong',
+              'hover:bg-surface-muted',
+              mobile ? 'h-11 w-full gap-3 px-3' : 'h-9 gap-2 px-2'
+            ].join(' ')}
+            aria-label={t('accountMenu')}
+          />
+        }>
+        <Avatar size={mobile ? 'default' : 'sm'}>
+          {user.image ? <AvatarImage src={user.image} alt="" /> : null}
 
-        'border border-transparent',
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
 
-        'font-medium text-muted',
+        <div className={['min-w-0 text-left', mobile ? 'block flex-1' : 'hidden lg:block'].join(' ')}>
+          <p className="max-w-32 truncate text-[11px] font-semibold leading-4 text-foreground">{user.name}</p>
 
-        'transition-[color,background-color,border-color] duration-200',
+          <p className="max-w-36 truncate text-[9px] leading-3 text-muted">{user.email}</p>
+        </div>
+      </DropdownMenuTrigger>
 
-        'hover:border-border',
-        'hover:bg-surface-muted',
-        'hover:text-foreground',
+      <DropdownMenuContent align="end" sideOffset={8} className="w-64">
+        <DropdownMenuLabel className="px-2 py-2">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              {user.image ? <AvatarImage src={user.image} alt="" /> : null}
 
-        mobile ? 'h-9 w-full px-3 text-[13px]' : 'h-8 px-2.5 text-[12px]'
-      ].join(' ')}>
-      {t('signIn')}
-    </Link>
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
+
+              <p className="mt-0.5 truncate text-[11px] font-normal text-muted">{user.email}</p>
+            </div>
+          </div>
+        </DropdownMenuLabel>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="px-2 py-2" onClick={handleDashboard}>
+            <LayoutDashboard aria-hidden="true" />
+
+            <span>{t('dashboard')}</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="px-2 py-2" onClick={handleProfile}>
+            <UserRound aria-hidden="true" />
+
+            <span>{t('profile')}</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          variant="destructive"
+          className="px-2 py-2"
+          disabled={isSigningOut}
+          onClick={handleSignOut}>
+          {isSigningOut ? (
+            <LoaderCircle aria-hidden="true" className="animate-spin" />
+          ) : (
+            <LogOut aria-hidden="true" />
+          )}
+
+          <span>{isSigningOut ? t('signingOut') : t('signOut')}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -12,8 +12,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 
 import { Toaster } from '@/components/ui/toast';
-
-import { RcentzShell } from '@/ui-shell/RcentzShell';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,7 +55,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             themes={['light', 'dark']}
             storageKey="rcentz-theme"
             disableTransitionOnChange>
-            <RcentzShell>{children}</RcentzShell>
+            <TooltipProvider>{children}</TooltipProvider>
 
             <Toaster />
           </ThemeProvider>

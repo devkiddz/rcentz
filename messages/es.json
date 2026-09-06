@@ -888,7 +888,110 @@
     }
   },
   "PopularServicesHome": {
-  "title": "Servicios más explorados",
-  "description": "Explora algunos de los servicios de Rcentz que generan mayor interés en sistemas empresariales, plataformas financieras, comercio y experiencias web modernas."
+    "title": "Servicios más explorados",
+    "description": "Explora algunos de los servicios de Rcentz que generan mayor interés en sistemas empresariales, plataformas financieras, comercio y experiencias web modernas."
+  },
+  "AdminOverview": {
+    "eyebrow": "Centro de control administrativo",
+    "welcome": "Bienvenido de nuevo, {name}.",
+    "description": "Gestiona las operaciones de Rcentz desde un único espacio de trabajo protegido.",
+    "open": "Abrir",
+    "areas": {
+      "requests": {
+        "title": "Solicitudes de servicio",
+        "description": "Revisa solicitudes entrantes, alcance, presupuestos y aprobaciones."
+      },
+      "projects": {
+        "title": "Proyectos",
+        "description": "Gestiona proyectos activos, hitos, progreso y entrega."
+      },
+      "clients": {
+        "title": "Clientes",
+        "description": "Gestiona registros de clientes, accesos y relaciones con proyectos."
+      },
+      "services": {
+        "title": "Servicios",
+        "description": "Gestiona el catálogo público de servicios y sus datos."
+      }
+    }
+  },
+  "AdminNavigation": {
+    "workspace": "Espacio administrativo",
+    "protected": "Entorno administrativo protegido de Rcentz.",
+    "groups": {
+      "workspace": "Espacio de trabajo",
+      "management": "Gestión"
+    },
+    "items": {
+      "overview": "Resumen",
+      "requests": "Solicitudes de servicio",
+      "projects": "Proyectos",
+      "clients": "Clientes",
+      "services": "Servicios",
+      "settings": "Configuración"
+    },
+    "shell": {
+      "toggle": "Mostrar u ocultar la navegación administrativa",
+      "title": "Administración Rcentz",
+      "subtitle": "Espacio operativo protegido"
+    },
+    "account": {
+      "openMenu": "Abrir el menú de la cuenta administrativa",
+      "viewSite": "Ver sitio público",
+      "signOut": "Cerrar sesión",
+      "signingOut": "Cerrando sesión...",
+      "roles": {
+        "ADMIN": "Administrador",
+        "SUPER_ADMIN": "Superadministrador"
+      }
+    }
+  },
+  "AuthLogin": {
+    "eyebrow": "Acceso seguro",
+    "title": "Iniciar sesión en Rcentz",
+    "description": "Accede a tu espacio de trabajo protegido de Rcentz.",
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña"
+    },
+    "placeholders": {
+      "email": "tu@ejemplo.com",
+      "password": "Introduce tu contraseña"
+    },
+    "actions": {
+      "signIn": "Iniciar sesión",
+      "signingIn": "Iniciando sesión..."
+    },
+    "errors": {
+      "invalid": "No se pudo iniciar sesión con esas credenciales."
+    }
+  },
+  "AdminLogin": {
+    "eyebrow": "Acceso restringido",
+    "title": "Entra al centro de control de Rcentz.",
+    "description": "El acceso administrativo está reservado para operadores autorizados de Rcentz.",
+    "system": {
+      "workspace": "Rcentz Systems",
+      "environment": "Entorno de administración",
+      "status": "Capa de acceso seguro activa",
+      "session": "Verificación de sesión habilitada",
+      "role": "Autorización basada en roles aplicada"
+    },
+    "form": {
+      "title": "Inicio de sesión de administrador",
+      "description": "Usa tus credenciales de administrador autorizadas para continuar.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "emailPlaceholder": "admin@rcentz.cc",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "signIn": "Entrar al centro de control",
+      "signingIn": "Verificando acceso...",
+      "backHome": "Volver a Rcentz"
+    },
+    "errors": {
+      "invalid": "No se pudo verificar el acceso con esas credenciales."
+    }
   }
 }

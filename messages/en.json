@@ -887,9 +887,111 @@
       "infrastructure": "Infrastructure"
     }
   },
-
-    "PopularServicesHome": {
+  "PopularServicesHome": {
     "title": "Most Popularly Explored Services",
     "description": "Explore some of the Rcentz services receiving the strongest attention across business systems, financial platforms, commerce and modern web experiences."
+  },
+  "AdminOverview": {
+    "eyebrow": "Admin Control Center",
+    "welcome": "Welcome back, {name}.",
+    "description": "Manage the operational side of Rcentz from one protected workspace.",
+    "open": "Open",
+    "areas": {
+      "requests": {
+        "title": "Service Requests",
+        "description": "Review incoming requests, scope, quotes and approvals."
+      },
+      "projects": {
+        "title": "Projects",
+        "description": "Manage active projects, milestones, progress and delivery."
+      },
+      "clients": {
+        "title": "Clients",
+        "description": "Manage client records, access and project relationships."
+      },
+      "services": {
+        "title": "Services",
+        "description": "Manage the public service catalogue and service data."
+      }
+    }
+  },
+  "AdminNavigation": {
+    "workspace": "Admin Workspace",
+    "protected": "Protected Rcentz administration environment.",
+    "groups": {
+      "workspace": "Workspace",
+      "management": "Management"
+    },
+    "items": {
+      "overview": "Overview",
+      "requests": "Service Requests",
+      "projects": "Projects",
+      "clients": "Clients",
+      "services": "Services",
+      "settings": "Settings"
+    },
+    "shell": {
+      "toggle": "Toggle admin navigation",
+      "title": "Rcentz Admin",
+      "subtitle": "Protected operations workspace"
+    },
+    "account": {
+      "openMenu": "Open administrator account menu",
+      "viewSite": "View public website",
+      "signOut": "Sign out",
+      "signingOut": "Signing out...",
+      "roles": {
+        "ADMIN": "Administrator",
+        "SUPER_ADMIN": "Super Administrator"
+      }
+    }
+  },
+  "AuthLogin": {
+    "eyebrow": "Secure Access",
+    "title": "Sign in to Rcentz",
+    "description": "Access your protected Rcentz workspace.",
+    "fields": {
+      "email": "Email address",
+      "password": "Password"
+    },
+    "placeholders": {
+      "email": "you@example.com",
+      "password": "Enter your password"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signingIn": "Signing in..."
+    },
+    "errors": {
+      "invalid": "Unable to sign in with those credentials."
+    }
+  },
+  "AdminLogin": {
+    "eyebrow": "Restricted Access",
+    "title": "Enter the Rcentz control center.",
+    "description": "Administrative access is reserved for authorized Rcentz operators.",
+    "system": {
+      "workspace": "Rcentz Systems",
+      "environment": "Administration Environment",
+      "status": "Secure access layer active",
+      "session": "Session verification enabled",
+      "role": "Role-based authorization enforced"
+    },
+    "form": {
+      "title": "Administrator sign in",
+      "description": "Use your authorized administrator credentials to continue.",
+      "email": "Email address",
+      "password": "Password",
+      "emailPlaceholder": "admin@rcentz.cc",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "signIn": "Enter control center",
+      "signingIn": "Verifying access...",
+      "backHome": "Back to Rcentz"
+    },
+    "errors": {
+      "invalid": "Access could not be verified with those credentials."
+    }
   }
 }
