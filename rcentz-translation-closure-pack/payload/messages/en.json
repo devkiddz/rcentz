@@ -1,0 +1,890 @@
+{
+  "Header": {
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "store": "Store",
+    "blog": "Blog",
+    "about": "About",
+    "signIn": "Sign in",
+    "dashboard": "Dashboard",
+    "checkingAccount": "Checking account",
+    "startProject": "Start a project",
+    "translateWebsite": "Translate website",
+    "translationNote": "Choose your preferred language."
+  },
+  "ServiceDetailHero": {
+    "backToServices": "Back to services",
+    "serviceBy": "Service by Rcentz Systems",
+    "requestService": "Request this service",
+    "customOffer": "Custom offer",
+    "featuredService": "Featured Rcentz service"
+  },
+  "ServiceOverview": {
+    "eyebrow": "Service overview",
+    "title": "Built around the real workflow, not a generic template.",
+    "partOf": "Part of",
+    "onboardingNote": "Scope, technology and delivery are refined during onboarding."
+  },
+  "ServiceFeatures": {
+    "eyebrow": "Expected capabilities",
+    "title": "What this service may include.",
+    "description": "These capabilities describe the typical direction of the service. Final scope depends on the project requirements, integrations, workflows and priorities confirmed during onboarding.",
+    "tabsAriaLabel": "Service capabilities",
+    "capabilitiesTab": "Capabilities",
+    "resultsTab": "Expected results",
+    "featured": "Featured",
+    "expectedEffect": "Expected effect",
+    "resultsEyebrow": "Expected results",
+    "resultsTitle": "What the finished solution should move toward.",
+    "resultsDescription": "These are practical outcomes the service is designed to support, not guaranteed performance metrics."
+  },
+  "ServiceTechnology": {
+    "eyebrow": "Technology direction",
+    "title": "Selected tools, with a reason for being there.",
+    "description": "The stack is shaped around the approved scope, integrations, performance needs and long-term maintenance direction. These are typical choices for this service, not fixed requirements for every project.",
+    "coreTechnology": "Core technology",
+    "roleInSolution": "Role in the solution",
+    "whyItFits": "Why it fits"
+  },
+  "ServiceDelivery": {
+    "eyebrow": "Delivery direction",
+    "title": "A clear path from discovery to delivery.",
+    "description": "Every engagement moves through a structured sequence. The public timeline provides planning direction, while the approved project later receives its own real dates, status and execution milestones.",
+    "planningEstimate": "Planning estimate",
+    "typicalDeliveryRange": "Typical delivery range",
+    "important": "Important",
+    "planningDisclaimer": "This is a planning range, not a contractual deadline. The final project timeline is confirmed after scope review and becomes part of the approved quote and project plan.",
+    "milestoneJourney": "Typical milestone journey",
+    "stage": "Stage {number}",
+    "purpose": "Purpose",
+    "stageOutcome": "Stage outcome",
+    "rangeBetween": "{min}–{max} days",
+    "rangeFrom": "From {min} days",
+    "rangeUpTo": "Up to {max} days",
+    "confirmedAfterDiscovery": "Confirmed after discovery"
+  },
+  "ServicePricing": {
+    "planningRange": "Planning range",
+    "pricingGuide": "Pricing guide",
+    "title": "Start with a range. Finalize after scope.",
+    "description": "These figures provide an initial commercial direction for this service. The approved quote is prepared after the project requirements are reviewed.",
+    "typicalStartingPoint": "Typical starting point",
+    "typicalScopeRange": "Typical scope range up to <amount>{value}</amount>",
+    "quoteFactorsTitle": "What shapes the final quote",
+    "quoteFactorsDescription": "Final pricing depends on project scope, integrations, technical complexity, delivery timeline, compliance requirements and ongoing support needs.",
+    "customScopeTitle": "Need something outside this range?",
+    "customScopeDescription": "Larger, unusual or regulated scopes can be reviewed as a custom offer."
+  },
+  "ServiceOnboarding": {
+    "intakePreview": "Intake preview",
+    "beforeScope": "Before we scope it",
+    "title": "A few things we will need from you.",
+    "description": "These questions form part of the service onboarding flow. They help us understand the project direction, requirements and constraints before preparing the final scope or custom offer.",
+    "required": "Required",
+    "optional": "Optional",
+    "moreOptions": "+ {count} more",
+    "remainingQuestions": "{count, plural, one {# more onboarding question will appear in the full request flow.} other {# more onboarding questions will appear in the full request flow.}}",
+    "fullOnboardingTitle": "Full onboarding comes next.",
+    "fullOnboardingDescription": "Once you start the request, these questions become the structured intake that helps us prepare the service review and quote.",
+    "questionTypes": {
+      "text": "Text",
+      "textarea": "Long text",
+      "select": "Select",
+      "multiselect": "Multiple select",
+      "radio": "Single choice",
+      "checkbox": "Checkbox",
+      "date": "Date",
+      "number": "Number",
+      "email": "Email",
+      "phone": "Phone",
+      "url": "URL"
+    }
+  },
+  "ServiceFaq": {
+    "eyebrow": "Frequently asked",
+    "title": "Questions before you request the service.",
+    "description": "These answers provide general guidance. Exact technical, commercial and delivery decisions are confirmed after your project requirements have been reviewed.",
+    "helper": "Still unsure whether this service fits your project? You can begin with a custom request and we will help determine the right direction."
+  },
+  "ServiceDetailCTA": {
+    "eyebrow": "Start the project",
+    "title": "Ready to shape this service around your project?",
+    "description": "Tell us what you are trying to build. We will review the requirements, workflows, integrations and delivery direction before preparing the right scope and offer.",
+    "structuredOnboarding": "Structured onboarding",
+    "scopeReview": "Scope review",
+    "finalQuote": "Final quote",
+    "requestService": "Request this service",
+    "customOffer": "Get a custom offer",
+    "reviewBeforeCommitment": "Review before commitment"
+  },
+  "SuggestedServices": {
+    "eyebrow": "Explore more",
+    "title": "Other services worth exploring.",
+    "description": "Continue through related Rcentz services or explore another direction for your project.",
+    "previousServices": "Previous services",
+    "nextServices": "Next services",
+    "featured": "Featured",
+    "viewService": "View service",
+    "swipeToExplore": "Swipe to explore"
+  },
+  "ServicesHero": {
+    "previousService": "Previous service",
+    "nextService": "Next service",
+    "serviceSlides": "Service slides",
+    "showService": "Show {service}",
+    "slides": {
+      "webDevelopment": "Web Development",
+      "wordpress": "WordPress",
+      "mobileAdaptive": "Mobile & Adaptive",
+      "businessSystems": "Business Systems",
+      "ecommerce": "E-commerce",
+      "maintenanceModernization": "Maintenance & Modernization",
+      "technicalConsulting": "Technical Consulting"
+    }
+  },
+  "ServicesInspiration": {
+    "artworkAlt": "Illustrated Rcentz project workspace showing strategy, development and delivery",
+    "projectActive": "Project active",
+    "structuredDelivery": "Structured delivery",
+    "deliveryFlow": "Strategy → Build → Launch",
+    "eyebrow": "How it works",
+    "title": "Simple steps to move your idea into execution.",
+    "description": "From the first conversation to delivery, every project follows a clear path built around understanding, structure and execution.",
+    "closingLine": "Clear direction. Structured delivery. Better outcomes.",
+    "highlights": {
+      "strategicPlanning": {
+        "title": "Strategic Planning",
+        "description": "Clear direction before development begins."
+      },
+      "collaborativeDelivery": {
+        "title": "Collaborative Delivery",
+        "description": "Transparent workflows and practical communication."
+      },
+      "performanceScale": {
+        "title": "Performance & Scale",
+        "description": "Systems designed for speed, structure and growth."
+      },
+      "secureReliable": {
+        "title": "Secure & Reliable",
+        "description": "Stable architecture and dependable implementation."
+      }
+    },
+    "steps": {
+      "discover": {
+        "title": "Discover the need",
+        "description": "We understand the business goal, audience and project direction."
+      },
+      "design": {
+        "title": "Design the solution",
+        "description": "We define the experience, architecture and implementation path."
+      },
+      "build": {
+        "title": "Build & deliver",
+        "description": "We develop, refine and move the solution into real use."
+      }
+    }
+  },
+  "ServicesCategoryBlocks": {
+    "eyebrow": "Service catalogue",
+    "titleLineOne": "Find the right direction.",
+    "titleLineTwo": "Then explore the service.",
+    "description": "Services are grouped by the kind of problem they solve, making it easier to explore focused solutions without scrolling through one endless catalogue.",
+    "categoryLabel": "Service category",
+    "serviceCount": "{count, plural, one {# service} other {# services}}",
+    "exploreHint": "Swipe or use the arrows to explore"
+  },
+  "ServiceCategorySlider": {
+    "browseCategory": "Browse {category}",
+    "previousServices": "Previous {category} services",
+    "nextServices": "Next {category} services"
+  },
+  "ServiceRichCard": {
+    "serviceIndex": "Service {number}",
+    "featured": "Featured",
+    "categorySystem": "Category system",
+    "typicalTechnology": "Typical technology",
+    "premiumStack": "Premium stack",
+    "serviceType": "Service type",
+    "viewMore": "View more",
+    "visualLabels": {
+      "webExperience": "Web experience",
+      "contentPlatform": "Content platform",
+      "adaptiveExperience": "Adaptive experience",
+      "operationsSystem": "Operations system",
+      "commerceSystem": "Commerce system",
+      "financialPlatform": "Financial platform",
+      "trackingSystem": "Tracking system",
+      "interactivePlatform": "Interactive platform",
+      "modernization": "Modernization",
+      "technicalDirection": "Technical direction",
+      "digitalSolution": "Digital solution"
+    },
+    "serviceTypes": {
+      "website": "Website",
+      "web_app": "Web application",
+      "mobile_app": "Mobile application",
+      "saas": "SaaS",
+      "ecommerce": "E-commerce",
+      "maintenance": "Maintenance",
+      "consulting": "Consulting"
+    }
+  },
+  "WebDevelopmentStory": {
+    "eyebrow": "01 · Web Development",
+    "title": "Websites built to work for your business.",
+    "description": "From focused landing pages and professional business websites to complete custom web applications, Rcentz builds responsive digital experiences around your brand, customers and real business workflows.",
+    "cta": "Explore Web Development",
+    "capabilities": {
+      "businessWebsites": "Business websites",
+      "customWebApplications": "Custom web applications",
+      "landingPages": "Landing pages",
+      "portfolioWebsites": "Portfolio websites"
+    }
+  },
+  "WordPressStory": {
+    "eyebrow": "02 · WordPress",
+    "title": "Keep what works. Modernize what does not.",
+    "description": "Rcentz develops, repairs and modernizes WordPress websites while preserving the content, structure and business value that still matters.",
+    "cta": "Explore WordPress",
+    "capabilities": {
+      "wordpressDevelopment": "WordPress development",
+      "websiteRedesign": "Website redesign",
+      "repairsRecovery": "Repairs & recovery",
+      "nextjsMigration": "Next.js migration"
+    }
+  },
+  "MobileAdaptiveStory": {
+    "eyebrow": "03 · Mobile & Adaptive",
+    "title": "Designed for every screen your customers use.",
+    "description": "Rcentz creates mobile and adaptive experiences intentionally around smaller screens, touch interaction and focused user journeys instead of simply compressing a desktop website.",
+    "cta": "Explore Mobile Experiences",
+    "capabilities": {
+      "mobileRedesign": "Mobile redesign",
+      "appLikeInterfaces": "App-like interfaces",
+      "responsiveOptimization": "Responsive optimization",
+      "adaptiveExperiences": "Adaptive experiences"
+    }
+  },
+  "BusinessSystemsStory": {
+    "eyebrow": "04 · Business Systems",
+    "title": "Put your operations in one system.",
+    "description": "Rcentz builds structured business systems that bring users, records, workflows, reporting and daily operations into one connected application.",
+    "cta": "Explore Business Systems",
+    "capabilities": {
+      "businessManagement": "Business management",
+      "adminDashboards": "Admin dashboards",
+      "clientPortals": "Client portals",
+      "internalOperations": "Internal operations"
+    }
+  },
+  "EcommerceStory": {
+    "eyebrow": "05 · E-commerce",
+    "title": "Commerce built beyond the storefront.",
+    "description": "Rcentz builds commerce experiences where products, customers, checkout, payments and operations work together as one connected system.",
+    "cta": "Explore E-commerce",
+    "capabilities": {
+      "onlineStores": "Online stores",
+      "productCatalogues": "Product catalogues",
+      "checkoutPayments": "Checkout & payments",
+      "marketplaceSystems": "Marketplace systems"
+    }
+  },
+  "MaintenanceModernizationStory": {
+    "eyebrow": "06 · Maintenance & Modernization",
+    "titlePrimary": "Repair what is broken.",
+    "titleSecondary": "Modernize what remains.",
+    "description": "Rcentz repairs, rebuilds and modernizes existing websites and applications while preserving the critical business content, data schema, and core functionality that drive your operations.",
+    "specializationsLabel": "Core Specializations",
+    "cta": "Explore Modernization",
+    "status": "Zero Downtime Migration",
+    "capabilities": {
+      "repairs": {
+        "label": "Website repairs",
+        "detail": "Fix bug backlogs, broken routes & layout issues"
+      },
+      "legacy": {
+        "label": "Legacy modernization",
+        "detail": "Migrate monolithic apps to Next.js App Router"
+      },
+      "rebuild": {
+        "label": "Redesign & rebuild",
+        "detail": "Modernize UI/UX while preserving business data"
+      },
+      "performance": {
+        "label": "Performance upgrades",
+        "detail": "Optimize Core Web Vitals, speed & asset load"
+      }
+    }
+  },
+  "TechnicalConsultingStory": {
+    "eyebrow": "07 · Technical Consulting",
+    "title": "Clarity before development begins.",
+    "description": "Rcentz helps turn business ideas, existing systems and technical uncertainty into practical architecture, modernization plans and clear implementation direction.",
+    "cta": "Explore Consulting",
+    "capabilities": {
+      "architecturePlanning": "Architecture planning",
+      "systemAudits": "System audits",
+      "modernizationStrategy": "Modernization strategy",
+      "technicalDirection": "Technical direction"
+    }
+  },
+  "HomeHeroStories": {
+    "previousStory": "Previous story",
+    "nextStory": "Next story",
+    "showStory": "Show {story} story",
+    "stories": {
+      "rcentz": {
+        "label": "Websites",
+        "eyebrow": "Website Development · E-commerce · Web Applications",
+        "title": "We build websites that power success.",
+        "description": "Rcentz designs and develops professional, high-performance websites that help businesses attract customers, sell online, strengthen their brand and grow — from business websites and e-commerce stores to custom web applications.",
+        "highlights": {
+          "0": "Business websites built to convert",
+          "1": "E-commerce stores built to sell",
+          "2": "Custom web applications",
+          "3": "Redesigns that move you forward"
+        }
+      },
+      "ai": {
+        "label": "Rcentz × AI",
+        "eyebrow": "Rcentz × AI · Faster Thinking · Smarter Execution",
+        "title": "Turn ambitious ideas into working products faster.",
+        "description": "Rcentz combines human direction, engineering judgment and AI-assisted execution to explore faster, solve harder problems and move strong ideas toward production without sacrificing quality.",
+        "highlights": {
+          "0": "Human-led product decisions",
+          "1": "AI-accelerated engineering",
+          "2": "Faster product iteration",
+          "3": "Reviewed before production"
+        }
+      },
+      "system": {
+        "label": "Systems",
+        "eyebrow": "Frontend · Backend · Data · Infrastructure",
+        "title": "Your business deserves more than a beautiful frontend.",
+        "description": "Rcentz builds complete digital systems where interfaces, authentication, databases, APIs, workflows and infrastructure work together to run real business operations.",
+        "highlights": {
+          "0": "Frontend + backend engineering",
+          "1": "Database + authentication",
+          "2": "APIs + business workflows",
+          "3": "Production-ready deployment"
+        }
+      },
+      "data": {
+        "label": "Live Data",
+        "eyebrow": "Business Data · Activity · Decisions",
+        "title": "Stop guessing. Build with data your business can use.",
+        "description": "Rcentz turns important actions, transactions and workflows into structured records that can power dashboards, automation, reporting and better business decisions.",
+        "highlights": {
+          "0": "Structured business records",
+          "1": "Traceable live activity"
+        }
+      },
+      "commerce": {
+        "label": "Commerce",
+        "eyebrow": "Products · Payments · Orders · Fulfilment",
+        "title": "Build an online store designed to keep business moving.",
+        "description": "From product discovery and checkout to payment, orders and fulfilment, Rcentz connects the complete commerce journey into one experience built to sell and operate.",
+        "highlights": {
+          "0": "Product discovery + checkout",
+          "1": "Connected payment systems",
+          "2": "Complete order lifecycle",
+          "3": "Fulfilment + delivery workflows"
+        }
+      },
+      "scale": {
+        "label": "Rcentz Core",
+        "eyebrow": "Build Once · Extend · Operate · Scale",
+        "title": "Build today without rebuilding everything tomorrow.",
+        "description": "Rcentz creates reusable foundations that can grow from one website or application into broader services, commerce platforms and business systems as your needs expand.",
+        "highlights": {
+          "0": "Shared system architecture",
+          "1": "Reusable product engines",
+          "2": "Multiple connected products",
+          "3": "Expand without starting over"
+        }
+      }
+    }
+  },
+  "HomeHeroCapabilities": {
+    "systemLabel": "Rcentz engineering principles",
+    "active": "Active",
+    "items": {
+      "performance": {
+        "label": "Performance",
+        "headline": "Fast by design.",
+        "description": "Interfaces, data loading and application behaviour are structured to keep the experience responsive as the product grows.",
+        "status": "Optimized",
+        "points": {
+          "0": "Efficient rendering",
+          "1": "Responsive interfaces",
+          "2": "Lean application flows"
+        }
+      },
+      "security": {
+        "label": "Security",
+        "headline": "Protection starts in the architecture.",
+        "description": "Authentication, server validation and controlled data access are treated as system responsibilities — not afterthoughts.",
+        "status": "Protected",
+        "points": {
+          "0": "Controlled access",
+          "1": "Server-side validation",
+          "2": "Protected workflows"
+        }
+      },
+      "scalable": {
+        "label": "Scalable",
+        "headline": "Ready for what comes next.",
+        "description": "Modular foundations allow services, features and product areas to grow without forcing the entire system to be rebuilt.",
+        "status": "Expandable",
+        "points": {
+          "0": "Modular architecture",
+          "1": "Reusable engines",
+          "2": "Connected product layers"
+        }
+      },
+      "maintainable": {
+        "label": "Maintainable",
+        "headline": "Built to keep evolving.",
+        "description": "Clear responsibilities, typed contracts and reusable components keep future changes understandable and controlled.",
+        "status": "Structured",
+        "points": {
+          "0": "Feature separation",
+          "1": "Reusable components",
+          "2": "Predictable structure"
+        }
+      }
+    }
+  },
+  "HomeTechnologyEcosystem": {
+    "eyebrow": "Built with",
+    "title": "Modern technology behind every serious system.",
+    "description": "Frameworks, intelligence, payments, data and infrastructure selected around what each product actually needs.",
+    "categories": {
+      "framework": "Framework",
+      "interface": "Interface",
+      "engineering": "Engineering",
+      "orm": "ORM",
+      "database": "Database",
+      "deployment": "Deployment",
+      "ai": "AI",
+      "payments": "Payments",
+      "development": "Development",
+      "infrastructure": "Infrastructure"
+    }
+  },
+  "HomeServices": {
+    "eyebrow": "Services",
+    "titlePrimary": "Flexible digital systems for how modern businesses actually operate.",
+    "titleSecondary": "Build the public experience, connect the workflow and keep the system moving.",
+    "description": "Selected Rcentz capabilities presented through the systems they create — not generic service boxes. Each engagement starts from the business problem and grows into the right digital architecture.",
+    "cta": "Explore all services"
+  },
+  "HomeServiceCard": {
+    "modernization": "Modernization",
+    "modernizationTitle": "Modernization & Transformation",
+    "modernizationDescription": "Upgrade existing websites, stores and business workflows into faster, smarter and more capable systems."
+  },
+  "HomeProjects": {
+    "eyebrow": "Selected work",
+    "titlePrimary": "Built systems, shown as they actually exist.",
+    "titleSecondary": "Real project screens, real architecture and real outcomes.",
+    "description": "Browse selected Rcentz work through actual product screenshots rather than recreated portfolio illustrations.",
+    "cta": "Explore all work"
+  },
+  "HomeProjectCard": {
+    "featuredProject": "Featured project",
+    "currentState": "Current state",
+    "outcome": "Outcome",
+    "fallbackOutcome": "A production system designed around real business use.",
+    "viewCaseStudy": "View case study",
+    "liveProject": "Live project",
+    "fallbackProject": "Rcentz project.",
+    "complete": "{progress}% complete",
+    "viewCaseStudyAria": "View {project} case study"
+  },
+  "HomeCTA": {
+    "eyebrow": "Build with Rcentz",
+    "titlePrimary": "Have a system in mind?",
+    "titleSecondary": "Start with the problem. We can architect the rest.",
+    "description": "Bring the workflow, idea, challenge or existing system. Rcentz can help shape the technical path from there.",
+    "startProject": "Start a project",
+    "exploreServices": "Explore services"
+  },
+  "HomeInspirations": {
+    "eyebrow": "Inspirations",
+    "title": "What shapes the Rcentz build process.",
+    "description": "Product thinking, AI collaboration, commerce behaviour, systems structure and reusable architecture all influence how Rcentz approaches a solution before development begins.",
+    "outputs": {
+      "0": "Reusable",
+      "1": "Scalable",
+      "2": "Maintainable"
+    },
+    "nodes": {
+      "product": {
+        "label": "Product thinking",
+        "shortLabel": "Product",
+        "description": "Useful software starts from user goals, business needs and the real outcome people are trying to reach."
+      },
+      "ai": {
+        "label": "AI collaboration",
+        "shortLabel": "AI collaboration",
+        "description": "Rcentz combines human judgment with intelligent assistance to move faster, explore better and refine ideas with care."
+      },
+      "systems": {
+        "label": "Connected systems",
+        "shortLabel": "Connected systems",
+        "description": "Interfaces, logic, backend flows and real business operations should work together instead of behaving like separate pages."
+      },
+      "workflow": {
+        "label": "Business workflows",
+        "shortLabel": "Business workflows",
+        "description": "Every strong product is backed by clear process design, structured flow and systems that actually support the work behind the scenes."
+      },
+      "commerce": {
+        "label": "Commerce behaviour",
+        "shortLabel": "Commerce",
+        "description": "Discovery, checkout, fulfilment and customer movement all matter when shaping a strong modern commerce experience."
+      },
+      "performance": {
+        "label": "Delivery quality",
+        "shortLabel": "Delivery quality",
+        "description": "Performance, structure, scalability and usability must all hold together for a system to remain valuable over time."
+      },
+      "architecture": {
+        "label": "Reusable architecture",
+        "shortLabel": "Architecture",
+        "description": "A thoughtful core makes it easier to extend products, reuse ideas and grow from one solution into a broader system."
+      }
+    }
+  },
+  "HomePricing": {
+    "eyebrow": "Starting points",
+    "titlePrimary": "Start with the system you need today.",
+    "titleSecondary": "Leave room for what comes next.",
+    "description": "Real entry pricing from the Rcentz service catalogue. Scope expands according to integrations, workflows, content and operational complexity.",
+    "startingFrom": "Starting from",
+    "internationalFrom": "International projects from {amount}",
+    "exploreService": "Explore this service",
+    "architectureEyebrow": "Starting architecture",
+    "architectureTitle": "How the system begins to move.",
+    "livePreview": "Live preview",
+    "modular": "Modular",
+    "measurable": "Measurable",
+    "connected": "Connected",
+    "disclaimer": "Starting prices are guidance, not fixed quotes. Final project cost reflects actual scope, integrations, workflows, data requirements and delivery complexity.",
+    "presentations": {
+      "website": {
+        "label": "Web presence",
+        "headline": "Build a business experience people can trust.",
+        "points": {
+          "0": "Responsive business website",
+          "1": "Service and enquiry journeys",
+          "2": "Performance-ready foundation"
+        },
+        "flow": {
+          "0": {
+            "label": "Business",
+            "description": "Purpose, services and content."
+          },
+          "1": {
+            "label": "Experience",
+            "description": "Responsive pages and navigation."
+          },
+          "2": {
+            "label": "Enquiries",
+            "description": "Visitor actions become opportunities."
+          },
+          "3": {
+            "label": "Growth",
+            "description": "A foundation ready to expand."
+          }
+        }
+      },
+      "ecommerce": {
+        "label": "Commerce",
+        "headline": "Turn products into a connected buying journey.",
+        "points": {
+          "0": "Product discovery and catalogue",
+          "1": "Cart and checkout foundation",
+          "2": "Payment and order workflows"
+        },
+        "flow": {
+          "0": {
+            "label": "Products",
+            "description": "Catalogue and discovery."
+          },
+          "1": {
+            "label": "Cart",
+            "description": "Intent becomes an order."
+          },
+          "2": {
+            "label": "Payment",
+            "description": "Secure payment integration."
+          },
+          "3": {
+            "label": "Fulfilment",
+            "description": "Orders continue into operations."
+          }
+        }
+      },
+      "businessSystem": {
+        "label": "Business system",
+        "headline": "Bring operations into one working environment.",
+        "points": {
+          "0": "Custom operational workflows",
+          "1": "Users, records and permissions",
+          "2": "Dashboards and structured data"
+        },
+        "flow": {
+          "0": {
+            "label": "Users",
+            "description": "People enter through real roles."
+          },
+          "1": {
+            "label": "Workflow",
+            "description": "Operations move through defined steps."
+          },
+          "2": {
+            "label": "Data",
+            "description": "Activity becomes structured records."
+          },
+          "3": {
+            "label": "Dashboard",
+            "description": "Information becomes usable insight."
+          }
+        }
+      }
+    }
+  },
+  "PortfolioHero": {
+    "eyebrow": "Portfolio · Products · Systems",
+    "titlePrimary": "Built systems,",
+    "titleSecondary": "shown as they exist.",
+    "description": "A growing record of real Rcentz work — the products, interfaces, data systems and reusable foundations built across commerce, employment and application infrastructure.",
+    "projectCount": "{count, plural, one {# public project} other {# public projects}}",
+    "screenCount": "{count, plural, one {# real screen} other {# real screens}}",
+    "exploreProjects": "Explore projects",
+    "buildJourney": "Build journey",
+    "mediaSource": "Screens sourced from project media"
+  },
+  "PortfolioAbout": {
+    "eyebrow": "How the work is built",
+    "titlePrimary": "Products are the surface.",
+    "titleSecondary": "Systems are what make them last.",
+    "description": "Rcentz projects are developed around the complete product: interface, data, authentication, workflows, operations and deployment. The portfolio records the results without separating the visible product from the engineering underneath it.",
+    "publishedProjects": "{count} published projects",
+    "recordedTechnologies": "{count} recorded technologies",
+    "principles": {
+      "interfaces": {
+        "label": "Modern application interfaces",
+        "detail": "React, Next.js and TypeScript across published work."
+      },
+      "data": {
+        "label": "Database-backed truth",
+        "detail": "Real project records, workflows and operational data."
+      },
+      "foundations": {
+        "label": "Reusable system foundations",
+        "detail": "Architecture designed to extend instead of restart."
+      },
+      "delivery": {
+        "label": "Production-minded delivery",
+        "detail": "Build, test, deploy, stabilize and continue refining."
+      }
+    }
+  },
+  "PortfolioTechnologyRail": {
+    "eyebrow": "Built with",
+    "title": "Modern technology behind every serious system.",
+    "description": "Frameworks, intelligence, payments, data and infrastructure represented by the published work itself.",
+    "projects": "{count} projects",
+    "categories": {
+      "framework": "Framework",
+      "interface": "Interface",
+      "engineering": "Engineering",
+      "orm": "ORM",
+      "database": "Database",
+      "payments": "Payments",
+      "deployment": "Deployment",
+      "development": "Development",
+      "authentication": "Authentication",
+      "media": "Media",
+      "styling": "Styling",
+      "pwa": "PWA",
+      "ai": "AI",
+      "runtime": "Runtime"
+    }
+  },
+  "PortfolioProjects": {
+    "eyebrow": "Published work",
+    "titlePrimary": "Real project screens.",
+    "titleSecondary": "Real architecture and recorded outcomes.",
+    "description": "Each project below is driven from the same public project records used across Rcentz, including its technologies, state, media and public links."
+  },
+  "PortfolioJourney": {
+    "recorded": "Recorded",
+    "eyebrow": "Build journey",
+    "title": "A record of how the product work has grown.",
+    "description": "This is project history, not a fabricated employment timeline. Dates, states and technologies come from the published Rcentz project records.",
+    "fallback": "Published Rcentz project."
+  },
+  "PortfolioOutcomes": {
+    "eyebrow": "Recorded outcomes",
+    "title": "What the projects actually delivered.",
+    "description": "These are project outcomes stored in the public portfolio records, not invented testimonials or performance claims.",
+    "imageAlt": "{project} project",
+    "previous": "Previous project outcome",
+    "next": "Next project outcome"
+  },
+  "PortfolioCard": {
+    "openPreview": "Open {project} project preview",
+    "goPreview": "Go to preview",
+    "progress": "Progress",
+    "views": "Views",
+    "likes": "Likes",
+    "reactions": "Reactions",
+    "comments": "Comments",
+    "love": "Love",
+    "fire": "Fire",
+    "shares": "Shares",
+    "credits": "Credits",
+    "contributor": "Contributor",
+    "noCredits": "No public credits recorded yet.",
+    "suggestions": "Suggestions",
+    "noSuggestions": "No proposed or nominated features right now.",
+    "featuredProject": "Featured project",
+    "publishedFallback": "Published Rcentz project.",
+    "projectFallback": "Rcentz project.",
+    "viewLive": "View live",
+    "source": "Source",
+    "openLive": "Open {project} live"
+  },
+  "PortfolioDetailHero": {
+    "back": "Back to portfolio",
+    "complete": "{progress}% complete",
+    "featured": "Featured project",
+    "caseStudy": "Project case study",
+    "publishedFallback": "Published Rcentz project.",
+    "viewLive": "View live",
+    "source": "Source"
+  },
+  "PortfolioDetailGallery": {
+    "projectMedia": "Project media",
+    "publishedInterface": "Published project interface.",
+    "expandAria": "Expand {label}",
+    "expand": "Expand preview",
+    "viewLive": "View live",
+    "previewAria": "{label} preview",
+    "close": "Close gallery preview",
+    "previous": "Previous media",
+    "next": "Next media",
+    "viewLiveProject": "View live project",
+    "eyebrow": "Project gallery",
+    "title": "Inside the build.",
+    "description": "Published interface captures and product media from the project.",
+    "itemCount": "{count, plural, one {# item} other {# items}}"
+  },
+  "PortfolioDetailTechnology": {
+    "coreArchitectureFallback": "Core architecture",
+    "responsibility": "Responsibility",
+    "responsibilityFallback": "Project responsibility has not been published.",
+    "whyChoice": "Why this choice",
+    "rationaleFallback": "Selection rationale has not been published.",
+    "supportingTechnology": "Supporting technology",
+    "eyebrow": "System architecture",
+    "titlePrimary": "Technology chosen around",
+    "titleSecondary": "the responsibility of the system.",
+    "description": "Each technology had a defined job: shaping the interface, protecting application boundaries, managing data, handling transactions or supporting the wider product experience.",
+    "technologies": "Technologies",
+    "coreChoices": "Core choices",
+    "supporting": "Supporting",
+    "coreArchitecture": "Core architecture",
+    "coreDescription": "The decisions carrying the principal application responsibilities.",
+    "definingChoices": "{count} defining choices",
+    "supportingSystem": "Supporting system",
+    "supportingDescription": "Libraries and services supporting the core architectural decisions.",
+    "supportingTools": "{count} supporting tools",
+    "builtWith": "Built with",
+    "core": "Core",
+    "technology": "Technology"
+  },
+  "PortfolioMoreProjects": {
+    "deliveryPhases": {
+      "0": "Foundation",
+      "1": "Structure",
+      "2": "Build",
+      "3": "Integrate",
+      "4": "Validate",
+      "5": "Release"
+    },
+    "featured": "Featured",
+    "publishedFallback": "Published Rcentz project.",
+    "deliveryProfile": "Delivery profile",
+    "phaseCompletion": "Phase completion",
+    "progressCurve": "Progress curve",
+    "trajectory": "Trajectory",
+    "readiness": "Readiness",
+    "caseStudy": "Case study",
+    "viewLive": "View live",
+    "eyebrow": "More Rcentz work",
+    "title": "Continue through the systems.",
+    "description": "Explore other published projects, experiments and systems built through Rcentz.",
+    "viewAll": "View all projects",
+    "previous": "Previous projects",
+    "next": "Next projects",
+    "goTo": "Go to {project}"
+  },
+  "PortfolioMetadata": {
+    "notFound": "Project not found | Rcentz Systems",
+    "fallbackDescription": "Explore {project}, a published Rcentz Systems project."
+  },
+  "CommonEnums": {
+    "projectTypes": {
+      "website": "Website",
+      "web_app": "Web application",
+      "mobile_app": "Mobile application",
+      "saas": "SaaS",
+      "ecommerce": "E-commerce",
+      "internal_tool": "Internal tool",
+      "other": "Other"
+    },
+    "projectStatuses": {
+      "planning": "Planning",
+      "in_progress": "In progress",
+      "on_hold": "On hold",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "archived": "Archived"
+    },
+    "featureStatuses": {
+      "proposed": "Proposed",
+      "nominated": "Nominated",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "rejected": "Rejected"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "HomeTechnologyRail": {
+    "eyebrow": "Technology ecosystem",
+    "title": "Technologies and platforms we build with.",
+    "description": "Frameworks, infrastructure, intelligence and payment platforms selected according to what each product needs.",
+    "categories": {
+      "framework": "Framework",
+      "interface": "Interface",
+      "engineering": "Engineering",
+      "orm": "ORM",
+      "database": "Database",
+      "ai": "AI",
+      "payments": "Payments",
+      "deployment": "Deployment",
+      "development": "Development",
+      "infrastructure": "Infrastructure"
+    }
+  }
+}
