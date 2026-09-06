@@ -1,4 +1,0 @@
-# Keep these in your Rcentz .env.local / hosting environment. Do not put the real key in this pack.
-AZURE_TRANSLATOR_KEY=replace-with-your-secret
-AZURE_TRANSLATOR_REGION=eastus
-AZURE_TRANSLATOR_ENDPOINT=https://api.cognitive.microsofttranslator.com/
