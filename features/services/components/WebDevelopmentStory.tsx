@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { WebDevelopmentIllustration } from './hero/WebDevelopmentIllustration';
 
@@ -12,8 +15,8 @@ const CAPABILITIES = [
   'portfolioWebsites'
 ] as const;
 
-export async function WebDevelopmentStory() {
-  const t = await getTranslations('WebDevelopmentStory');
+export function WebDevelopmentStory() {
+  const t = useTranslations('WebDevelopmentStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">

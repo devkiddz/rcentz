@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { MobileAdaptiveIllustration } from './hero/MobileAdaptiveIllustration';
 
@@ -12,8 +15,8 @@ const CAPABILITIES = [
   'adaptiveExperiences'
 ] as const;
 
-export async function MobileAdaptiveStory() {
-  const t = await getTranslations('MobileAdaptiveStory');
+export function MobileAdaptiveStory() {
+  const t = useTranslations('MobileAdaptiveStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.84fr_1.16fr] lg:gap-12">

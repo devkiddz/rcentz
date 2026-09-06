@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { TechnicalConsultingIllustration } from './hero/TechnicalConsultingIllustration';
 
@@ -12,8 +15,8 @@ const CAPABILITIES = [
   'technicalDirection'
 ] as const;
 
-export async function TechnicalConsultingStory() {
-  const t = await getTranslations('TechnicalConsultingStory');
+export function TechnicalConsultingStory() {
+  const t = useTranslations('TechnicalConsultingStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">

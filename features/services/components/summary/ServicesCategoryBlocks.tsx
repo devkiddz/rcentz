@@ -1,4 +1,5 @@
 import { Blocks, ChevronRight } from 'lucide-react';
+
 import { getTranslations } from 'next-intl/server';
 
 import type { ServiceCategorySummary } from '../../server/get-service-categories';
@@ -50,20 +51,18 @@ export async function ServicesCategoryBlocks({ categories }: ServicesCategoryBlo
         <div className="mt-16 space-y-10 sm:mt-20 sm:space-y-12">
           {categories.map((category, categoryIndex) => {
             const even = categoryIndex % 2 === 0;
+
             const serviceCount = category.services.length;
 
             return (
               <section
+                id={category.slug}
                 key={category.id}
                 className={[
-                  'relative overflow-hidden rounded-[32px] border border-border',
+                  'relative scroll-mt-28 overflow-hidden rounded-[32px] border border-border',
                   'px-5 py-8 sm:px-7 sm:py-10 lg:px-9 lg:py-11',
                   even ? 'bg-surface-muted/18' : 'bg-background'
                 ].join(' ')}>
-                {/* =========================================
-                    BACKGROUND IDENTITY
-                    ========================================= */}
-
                 <div
                   aria-hidden="true"
                   className={[
@@ -71,10 +70,6 @@ export async function ServicesCategoryBlocks({ categories }: ServicesCategoryBlo
                     even ? '-right-16 bg-theme-accent/[0.07]' : '-left-16 bg-foreground/[0.04]'
                   ].join(' ')}
                 />
-
-                {/* =========================================
-                    CATEGORY INTRO
-                    ========================================= */}
 
                 <div className="relative grid gap-7 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
                   <div>
@@ -115,10 +110,6 @@ export async function ServicesCategoryBlocks({ categories }: ServicesCategoryBlo
                     </div>
                   </div>
                 </div>
-
-                {/* =========================================
-                    CATEGORY CAROUSEL
-                    ========================================= */}
 
                 <div className="relative mt-8 border-t border-border pt-6">
                   <ServiceCategorySlider category={category} />

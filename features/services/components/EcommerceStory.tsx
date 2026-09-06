@@ -1,14 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { CommerceEvolutionScene } from '@/features/home/components/services/modernization/CommerceEvolutionScene';
 
 const CAPABILITIES = ['onlineStores', 'productCatalogues', 'checkoutPayments', 'marketplaceSystems'] as const;
 
-export async function EcommerceStory() {
-  const t = await getTranslations('EcommerceStory');
+export function EcommerceStory() {
+  const t = useTranslations('EcommerceStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-10">

@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { BusinessSystemsIllustration } from './hero/BusinessSystemsIllustration';
 
@@ -12,8 +15,8 @@ const CAPABILITIES = [
   'internalOperations'
 ] as const;
 
-export async function BusinessSystemsStory() {
-  const t = await getTranslations('BusinessSystemsStory');
+export function BusinessSystemsStory() {
+  const t = useTranslations('BusinessSystemsStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-12">

@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+
+import { useTranslations } from 'next-intl';
 
 import { WordPressIllustration } from './hero/WordPressIllustration';
 
@@ -12,8 +15,8 @@ const CAPABILITIES = [
   'nextjsMigration'
 ] as const;
 
-export async function WordPressStory() {
-  const t = await getTranslations('WordPressStory');
+export function WordPressStory() {
+  const t = useTranslations('WordPressStory');
 
   return (
     <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-10">
