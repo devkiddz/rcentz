@@ -1,0 +1,162 @@
+{
+  "createdAt": "2026-09-06T07:03:55.742Z",
+  "project": "C:\\Users\\DeWealth\\Desktop\\rcentz-systems",
+  "items": [
+    {
+      "path": "app\\page.tsx",
+      "existed": true
+    },
+    {
+      "path": "app\\portfolio\\page.tsx",
+      "existed": true
+    },
+    {
+      "path": "app\\portfolio\\[slug]\\page.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\ecosystem\\HomeTechnologyEcosystem.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\hero\\HeroStoryEngine.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\hero\\HomeHeroCapabilities.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\HomeCTA.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\HomeProjects.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\HomeServices.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\inspirations\\HomeInspirations.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\projects\\HomeProjectCard.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\components\\services\\HomeServiceCard.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\home\\server\\get-homepage-data.ts",
+      "existed": true
+    },
+    {
+      "path": "features\\i18n\\server\\get-resolved-locale.ts",
+      "existed": false
+    },
+    {
+      "path": "features\\portfolio\\components\\detail\\PortfolioDetailGallery.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\detail\\PortfolioDetailHero.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\detail\\PortfolioDetailMoreProjects.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\PortfolioAbout.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\PortfolioHero.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\PortfolioJourney.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\PortfolioOutcomes.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\components\\PortfolioProjects.tsx",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\server\\get-portfolio-project.ts",
+      "existed": true
+    },
+    {
+      "path": "features\\portfolio\\server\\get-portfolio-projects.ts",
+      "existed": true
+    },
+    {
+      "path": "messages\\de.json",
+      "existed": true
+    },
+    {
+      "path": "messages\\en.json",
+      "existed": true
+    },
+    {
+      "path": "messages\\es.json",
+      "existed": true
+    },
+    {
+      "path": "messages\\fr.json",
+      "existed": true
+    },
+    {
+      "path": "messages\\pt.json",
+      "existed": true
+    },
+    {
+      "path": "scripts\\i18n-audit.mjs",
+      "existed": false
+    },
+    {
+      "path": "server\\localization\\localize-fields.ts",
+      "existed": false
+    },
+    {
+      "path": "features/home/components/pricing/HomePricing.tsx",
+      "existed": true
+    },
+    {
+      "path": "features/home/components/HomeTechnologyRail.tsx",
+      "existed": true
+    },
+    {
+      "path": "features/home/components/inspirations/InspirationCapsule.tsx",
+      "existed": true
+    },
+    {
+      "path": "features/home/components/inspirations/InspirationNetwork.tsx",
+      "existed": true
+    },
+    {
+      "path": "features/portfolio/components/PortfolioTechnologyRail.tsx",
+      "existed": true
+    },
+    {
+      "path": "features/portfolio/components/PortfolioProjectCard.tsx",
+      "existed": true
+    },
+    {
+      "path": "package.json",
+      "existed": true
+    },
+    {
+      "path": "app/api/localization-test/route.ts",
+      "existed": true
+    }
+  ]
+}

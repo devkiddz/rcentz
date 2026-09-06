@@ -1,0 +1,331 @@
+{
+  "Header": {
+    "services": "Servicios",
+    "portfolio": "Portafolio",
+    "store": "Tienda",
+    "blog": "Blog",
+    "about": "Acerca de",
+    "signIn": "Iniciar sesión",
+    "dashboard": "Panel",
+    "checkingAccount": "Comprobando cuenta",
+    "startProject": "Iniciar un proyecto",
+    "translateWebsite": "Traducir sitio web",
+    "translationNote": "Elige tu idioma preferido."
+  },
+  "ServiceDetailHero": {
+    "backToServices": "Volver a servicios",
+    "serviceBy": "Servicio de Rcentz Systems",
+    "requestService": "Solicitar este servicio",
+    "customOffer": "Oferta personalizada",
+    "featuredService": "Servicio destacado de Rcentz"
+  },
+  "ServiceOverview": {
+    "eyebrow": "Descripción del servicio",
+    "title": "Diseñado en torno al flujo de trabajo real, no a una plantilla genérica.",
+    "partOf": "Forma parte de",
+    "onboardingNote": "El alcance, la tecnología y la entrega se refinan durante la incorporación."
+  },
+  "ServiceFeatures": {
+    "eyebrow": "Capacidades previstas",
+    "title": "Lo que este servicio puede incluir.",
+    "description": "Estas capacidades describen la dirección habitual del servicio. El alcance final depende de los requisitos del proyecto, integraciones, flujos de trabajo y prioridades confirmadas durante la incorporación.",
+    "tabsAriaLabel": "Capacidades del servicio",
+    "capabilitiesTab": "Capacidades",
+    "resultsTab": "Resultados esperados",
+    "featured": "Destacado",
+    "expectedEffect": "Efecto esperado",
+    "resultsEyebrow": "Resultados esperados",
+    "resultsTitle": "Hacia dónde debería avanzar la solución final.",
+    "resultsDescription": "Estos son resultados prácticos que el servicio está diseñado para apoyar, no métricas de rendimiento garantizadas."
+  },
+  "ServiceTechnology": {
+    "eyebrow": "Dirección tecnológica",
+    "title": "Herramientas seleccionadas con una razón para estar ahí.",
+    "description": "La tecnología se define según el alcance aprobado, las integraciones, las necesidades de rendimiento y la estrategia de mantenimiento a largo plazo. Estas son opciones habituales para este servicio, no requisitos fijos para todos los proyectos.",
+    "coreTechnology": "Tecnología principal",
+    "roleInSolution": "Función en la solución",
+    "whyItFits": "Por qué encaja"
+  },
+  "ServiceDelivery": {
+    "eyebrow": "Dirección de entrega",
+    "title": "Un camino claro desde el descubrimiento hasta la entrega.",
+    "description": "Cada proyecto sigue una secuencia estructurada. El calendario público ofrece una referencia de planificación, mientras que el proyecto aprobado recibe posteriormente sus propias fechas, estados e hitos de ejecución.",
+    "planningEstimate": "Estimación de planificación",
+    "typicalDeliveryRange": "Plazo de entrega habitual",
+    "important": "Importante",
+    "planningDisclaimer": "Este es un rango de planificación, no una fecha límite contractual. El calendario final del proyecto se confirma después de revisar el alcance y pasa a formar parte de la cotización y del plan del proyecto aprobados.",
+    "milestoneJourney": "Recorrido habitual de hitos",
+    "stage": "Etapa {number}",
+    "purpose": "Propósito",
+    "stageOutcome": "Resultado de la etapa",
+    "rangeBetween": "{min}–{max} días",
+    "rangeFrom": "Desde {min} días",
+    "rangeUpTo": "Hasta {max} días",
+    "confirmedAfterDiscovery": "Confirmado después del descubrimiento"
+  },
+  "ServicePricing": {
+    "planningRange": "Rango estimado",
+    "pricingGuide": "Guía de precios",
+    "title": "Empieza con un rango. Finaliza después de definir el alcance.",
+    "description": "Estas cifras ofrecen una orientación comercial inicial para este servicio. La cotización aprobada se prepara después de revisar los requisitos del proyecto.",
+    "typicalStartingPoint": "Punto de partida habitual",
+    "typicalScopeRange": "Rango habitual de alcance hasta <amount>{value}</amount>",
+    "quoteFactorsTitle": "Qué determina la cotización final",
+    "quoteFactorsDescription": "El precio final depende del alcance del proyecto, las integraciones, la complejidad técnica, el plazo de entrega, los requisitos de cumplimiento y las necesidades de soporte continuo.",
+    "customScopeTitle": "¿Necesitas algo fuera de este rango?",
+    "customScopeDescription": "Los proyectos más grandes, inusuales o regulados pueden revisarse como una oferta personalizada."
+  },
+  "ServiceOnboarding": {
+    "intakePreview": "Vista previa del formulario",
+    "beforeScope": "Antes de definir el alcance",
+    "title": "Algunas cosas que necesitaremos de ti.",
+    "description": "Estas preguntas forman parte del proceso de incorporación del servicio. Nos ayudan a comprender la dirección del proyecto, sus requisitos y limitaciones antes de preparar el alcance final o una oferta personalizada.",
+    "required": "Obligatorio",
+    "optional": "Opcional",
+    "moreOptions": "+ {count} más",
+    "remainingQuestions": "{count, plural, one {# pregunta adicional de incorporación aparecerá en el flujo completo de solicitud.} other {# preguntas adicionales de incorporación aparecerán en el flujo completo de solicitud.}}",
+    "fullOnboardingTitle": "La incorporación completa viene después.",
+    "fullOnboardingDescription": "Cuando inicies la solicitud, estas preguntas se convierten en el formulario estructurado que nos ayuda a preparar la revisión del servicio y la cotización.",
+    "questionTypes": {
+      "text": "Texto",
+      "textarea": "Texto largo",
+      "select": "Selección",
+      "multiselect": "Selección múltiple",
+      "radio": "Opción única",
+      "checkbox": "Casilla",
+      "date": "Fecha",
+      "number": "Número",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "url": "URL"
+    }
+  },
+  "ServiceFaq": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Preguntas antes de solicitar el servicio.",
+    "description": "Estas respuestas ofrecen orientación general. Las decisiones técnicas, comerciales y de entrega exactas se confirman después de revisar los requisitos de tu proyecto.",
+    "helper": "¿Todavía no estás seguro de si este servicio encaja con tu proyecto? Puedes comenzar con una solicitud personalizada y te ayudaremos a determinar la dirección adecuada."
+  },
+  "ServiceDetailCTA": {
+    "eyebrow": "Iniciar el proyecto",
+    "title": "¿Listo para adaptar este servicio a tu proyecto?",
+    "description": "Cuéntanos qué estás intentando construir. Revisaremos los requisitos, los flujos de trabajo, las integraciones y la dirección de entrega antes de preparar el alcance y la oferta adecuados.",
+    "structuredOnboarding": "Incorporación estructurada",
+    "scopeReview": "Revisión del alcance",
+    "finalQuote": "Cotización final",
+    "requestService": "Solicitar este servicio",
+    "customOffer": "Obtener una oferta personalizada",
+    "reviewBeforeCommitment": "Revisión antes del compromiso"
+  },
+  "SuggestedServices": {
+    "eyebrow": "Explorar más",
+    "title": "Otros servicios que vale la pena explorar.",
+    "description": "Continúa con servicios relacionados de Rcentz o explora otra dirección para tu proyecto.",
+    "previousServices": "Servicios anteriores",
+    "nextServices": "Servicios siguientes",
+    "featured": "Destacado",
+    "viewService": "Ver servicio",
+    "swipeToExplore": "Desliza para explorar"
+  },
+  "ServicesHero": {
+    "previousService": "Servicio anterior",
+    "nextService": "Servicio siguiente",
+    "serviceSlides": "Diapositivas de servicios",
+    "showService": "Mostrar {service}",
+    "slides": {
+      "webDevelopment": "Desarrollo web",
+      "wordpress": "WordPress",
+      "mobileAdaptive": "Móvil y adaptable",
+      "businessSystems": "Sistemas empresariales",
+      "ecommerce": "Comercio electrónico",
+      "maintenanceModernization": "Mantenimiento y modernización",
+      "technicalConsulting": "Consultoría técnica"
+    }
+  },
+  "ServicesInspiration": {
+    "artworkAlt": "Espacio de trabajo ilustrado de un proyecto Rcentz que muestra estrategia, desarrollo y entrega",
+    "projectActive": "Proyecto activo",
+    "structuredDelivery": "Entrega estructurada",
+    "deliveryFlow": "Estrategia → Desarrollo → Lanzamiento",
+    "eyebrow": "Cómo funciona",
+    "title": "Pasos simples para llevar tu idea a la ejecución.",
+    "description": "Desde la primera conversación hasta la entrega, cada proyecto sigue un camino claro basado en comprensión, estructura y ejecución.",
+    "closingLine": "Dirección clara. Entrega estructurada. Mejores resultados.",
+    "highlights": {
+      "strategicPlanning": {
+        "title": "Planificación estratégica",
+        "description": "Dirección clara antes de que comience el desarrollo."
+      },
+      "collaborativeDelivery": {
+        "title": "Entrega colaborativa",
+        "description": "Flujos de trabajo transparentes y comunicación práctica."
+      },
+      "performanceScale": {
+        "title": "Rendimiento y escala",
+        "description": "Sistemas diseñados para velocidad, estructura y crecimiento."
+      },
+      "secureReliable": {
+        "title": "Seguro y fiable",
+        "description": "Arquitectura estable e implementación fiable."
+      }
+    },
+    "steps": {
+      "discover": {
+        "title": "Descubrir la necesidad",
+        "description": "Entendemos el objetivo del negocio, la audiencia y la dirección del proyecto."
+      },
+      "design": {
+        "title": "Diseñar la solución",
+        "description": "Definimos la experiencia, la arquitectura y el camino de implementación."
+      },
+      "build": {
+        "title": "Construir y entregar",
+        "description": "Desarrollamos, refinamos y llevamos la solución al uso real."
+      }
+    }
+  },
+  "ServicesCategoryBlocks": {
+    "eyebrow": "Catálogo de servicios",
+    "titleLineOne": "Encuentra la dirección adecuada.",
+    "titleLineTwo": "Luego explora el servicio.",
+    "description": "Los servicios se agrupan según el tipo de problema que resuelven, facilitando la exploración de soluciones enfocadas sin recorrer un catálogo interminable.",
+    "categoryLabel": "Categoría de servicio",
+    "serviceCount": "{count, plural, one {# servicio} other {# servicios}}",
+    "exploreHint": "Desliza o usa las flechas para explorar"
+  },
+  "ServiceCategorySlider": {
+    "browseCategory": "Explorar {category}",
+    "previousServices": "Servicios anteriores de {category}",
+    "nextServices": "Servicios siguientes de {category}"
+  },
+  "ServiceRichCard": {
+    "serviceIndex": "Servicio {number}",
+    "featured": "Destacado",
+    "categorySystem": "Sistema de categoría",
+    "typicalTechnology": "Tecnología habitual",
+    "premiumStack": "Stack premium",
+    "serviceType": "Tipo de servicio",
+    "viewMore": "Ver más",
+    "visualLabels": {
+      "webExperience": "Experiencia web",
+      "contentPlatform": "Plataforma de contenidos",
+      "adaptiveExperience": "Experiencia adaptable",
+      "operationsSystem": "Sistema operativo",
+      "commerceSystem": "Sistema de comercio",
+      "financialPlatform": "Plataforma financiera",
+      "trackingSystem": "Sistema de seguimiento",
+      "interactivePlatform": "Plataforma interactiva",
+      "modernization": "Modernización",
+      "technicalDirection": "Dirección técnica",
+      "digitalSolution": "Solución digital"
+    },
+    "serviceTypes": {
+      "website": "Sitio web",
+      "web_app": "Aplicación web",
+      "mobile_app": "Aplicación móvil",
+      "saas": "SaaS",
+      "ecommerce": "Comercio electrónico",
+      "maintenance": "Mantenimiento",
+      "consulting": "Consultoría"
+    }
+  },
+  "WebDevelopmentStory": {
+    "eyebrow": "01 · Desarrollo web",
+    "title": "Sitios web creados para trabajar para tu negocio.",
+    "description": "Desde landing pages enfocadas y sitios web empresariales profesionales hasta aplicaciones web personalizadas completas, Rcentz crea experiencias digitales responsivas alrededor de tu marca, tus clientes y los flujos de trabajo reales del negocio.",
+    "cta": "Explorar desarrollo web",
+    "capabilities": {
+      "businessWebsites": "Sitios web empresariales",
+      "customWebApplications": "Aplicaciones web personalizadas",
+      "landingPages": "Landing pages",
+      "portfolioWebsites": "Sitios web de portafolio"
+    }
+  },
+  "WordPressStory": {
+    "eyebrow": "02 · WordPress",
+    "title": "Conserva lo que funciona. Moderniza lo que no.",
+    "description": "Rcentz desarrolla, repara y moderniza sitios WordPress preservando el contenido, la estructura y el valor empresarial que siguen siendo importantes.",
+    "cta": "Explorar WordPress",
+    "capabilities": {
+      "wordpressDevelopment": "Desarrollo WordPress",
+      "websiteRedesign": "Rediseño de sitios web",
+      "repairsRecovery": "Reparación y recuperación",
+      "nextjsMigration": "Migración a Next.js"
+    }
+  },
+  "MobileAdaptiveStory": {
+    "eyebrow": "03 · Móvil y adaptable",
+    "title": "Diseñado para cada pantalla que usan tus clientes.",
+    "description": "Rcentz crea experiencias móviles y adaptables pensadas para pantallas pequeñas, interacción táctil y recorridos de usuario enfocados, en lugar de simplemente comprimir un sitio web de escritorio.",
+    "cta": "Explorar experiencias móviles",
+    "capabilities": {
+      "mobileRedesign": "Rediseño móvil",
+      "appLikeInterfaces": "Interfaces tipo app",
+      "responsiveOptimization": "Optimización responsiva",
+      "adaptiveExperiences": "Experiencias adaptables"
+    }
+  },
+  "BusinessSystemsStory": {
+    "eyebrow": "04 · Sistemas empresariales",
+    "title": "Pon tus operaciones en un solo sistema.",
+    "description": "Rcentz crea sistemas empresariales estructurados que conectan usuarios, registros, flujos de trabajo, informes y operaciones diarias en una sola aplicación.",
+    "cta": "Explorar sistemas empresariales",
+    "capabilities": {
+      "businessManagement": "Gestión empresarial",
+      "adminDashboards": "Paneles administrativos",
+      "clientPortals": "Portales de clientes",
+      "internalOperations": "Operaciones internas"
+    }
+  },
+  "EcommerceStory": {
+    "eyebrow": "05 · Comercio electrónico",
+    "title": "Comercio creado más allá del escaparate.",
+    "description": "Rcentz crea experiencias de comercio donde productos, clientes, checkout, pagos y operaciones trabajan juntos como un sistema conectado.",
+    "cta": "Explorar comercio electrónico",
+    "capabilities": {
+      "onlineStores": "Tiendas online",
+      "productCatalogues": "Catálogos de productos",
+      "checkoutPayments": "Checkout y pagos",
+      "marketplaceSystems": "Sistemas marketplace"
+    }
+  },
+  "MaintenanceModernizationStory": {
+    "eyebrow": "06 · Mantenimiento y modernización",
+    "titlePrimary": "Repara lo que está roto.",
+    "titleSecondary": "Moderniza lo que permanece.",
+    "description": "Rcentz repara, reconstruye y moderniza sitios web y aplicaciones existentes, preservando el contenido empresarial crítico, el esquema de datos y la funcionalidad principal que sostienen tus operaciones.",
+    "specializationsLabel": "Especializaciones principales",
+    "cta": "Explorar modernización",
+    "status": "Migración sin tiempo de inactividad",
+    "capabilities": {
+      "repairs": {
+        "label": "Reparaciones web",
+        "detail": "Corregir acumulaciones de errores, rutas rotas y problemas de diseño"
+      },
+      "legacy": {
+        "label": "Modernización de sistemas heredados",
+        "detail": "Migrar aplicaciones monolíticas a Next.js App Router"
+      },
+      "rebuild": {
+        "label": "Rediseño y reconstrucción",
+        "detail": "Modernizar UI/UX preservando los datos del negocio"
+      },
+      "performance": {
+        "label": "Mejoras de rendimiento",
+        "detail": "Optimizar Core Web Vitals, velocidad y carga de recursos"
+      }
+    }
+  },
+  "TechnicalConsultingStory": {
+    "eyebrow": "07 · Consultoría técnica",
+    "title": "Claridad antes de que comience el desarrollo.",
+    "description": "Rcentz ayuda a convertir ideas de negocio, sistemas existentes e incertidumbre técnica en arquitectura práctica, planes de modernización y una dirección clara de implementación.",
+    "cta": "Explorar consultoría",
+    "capabilities": {
+      "architecturePlanning": "Planificación de arquitectura",
+      "systemAudits": "Auditorías de sistemas",
+      "modernizationStrategy": "Estrategia de modernización",
+      "technicalDirection": "Dirección técnica"
+    }
+  }
+}
