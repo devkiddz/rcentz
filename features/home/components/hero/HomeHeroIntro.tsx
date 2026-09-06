@@ -1,9 +1,14 @@
 import Link from 'next/link';
+
 import { ArrowRight } from 'lucide-react';
+
+import { getTranslations } from 'next-intl/server';
 
 import { HomeHeroRotator } from '@/features/home/components/hero/HomeHeroRotator';
 
-export function HomeHeroIntro() {
+export async function HomeHeroIntro() {
+  const t = await getTranslations('HomeCTA');
+
   return (
     <div
       className={[
@@ -63,7 +68,7 @@ export function HomeHeroIntro() {
             'hover:bg-surface-muted',
             'active:scale-[0.98]'
           ].join(' ')}>
-          Explore services
+          {t('exploreServices')}
           <ArrowRight aria-hidden="true" className="size-3.5" />
         </Link>
       </div>

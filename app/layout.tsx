@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { NextIntlClientProvider } from 'next-intl';
+
 import { getLocale, getMessages } from 'next-intl/server';
 
 import './globals.css';
 
 import { ThemeProvider } from '@/components/theme-provider';
+
 import { Toaster } from '@/components/ui/toast';
+
 import { RcentzShell } from '@/ui-shell/RcentzShell';
 
 const geistSans = Geist({
@@ -29,8 +33,13 @@ export const metadata: Metadata = {
   description: 'rcentz builds and operates modern software, digital products, and client systems.'
 };
 
-export default async function RootLayout({ children }: LayoutProps<'/'>) {
+type RootLayoutProps = {
+  children: ReactNode;
+};
+
+export default async function RootLayout({ children }: RootLayoutProps) {
   const locale = await getLocale();
+
   const messages = await getMessages();
 
   return (

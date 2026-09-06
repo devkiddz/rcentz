@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import { useTranslations } from 'next-intl';
 
 import type { InspirationNode } from './inspiration-data';
 
@@ -17,6 +18,7 @@ export function InspirationCapsule({
   compact = false,
   onSelect
 }: InspirationCapsuleProps) {
+  const t = useTranslations('HomeInspirations');
   const Icon = node.icon;
 
   const style = {
@@ -75,7 +77,7 @@ export function InspirationCapsule({
           'relative z-10 whitespace-nowrap font-medium tracking-[-0.015em]',
           compact ? 'text-[10.5px]' : 'text-[11px]'
         ].join(' ')}>
-        {node.shortLabel}
+        {t(`nodes.${node.id}.shortLabel`)}
       </span>
 
       {active ? (

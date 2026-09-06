@@ -9,6 +9,8 @@ import {
   siVercel
 } from 'simple-icons';
 
+import { getTranslations } from 'next-intl/server';
+
 import type { PortfolioProjects } from '@/features/portfolio/server/get-portfolio-projects';
 
 type PortfolioTechnologyRailProps = {
@@ -123,7 +125,8 @@ function TechnologyIcon({
   );
 }
 
-export function PortfolioTechnologyRail({ projects }: PortfolioTechnologyRailProps) {
+export async function PortfolioTechnologyRail({ projects }: PortfolioTechnologyRailProps) {
+  const t = await getTranslations('PortfolioTechnologyRail');
   const technologyMap = new Map<
     string,
     {
@@ -169,16 +172,16 @@ export function PortfolioTechnologyRail({ projects }: PortfolioTechnologyRailPro
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-            Built with
+            {t('eyebrow')}
           </p>
 
           <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-            Modern technology behind every serious system.
+            {t('title')}
           </h2>
         </div>
 
         <p className="max-w-md text-sm leading-6 text-muted">
-          Frameworks, intelligence, payments, data and infrastructure represented by the published work itself.
+          {t('description')}
         </p>
       </div>
 
@@ -216,14 +219,14 @@ export function PortfolioTechnologyRail({ projects }: PortfolioTechnologyRailPro
 
                   <div className="mt-0.5 flex items-center gap-2">
                     <p className="font-mono text-[8px] uppercase tracking-[0.15em] text-muted">
-                      {presentation.category}
+                      {t.has(`categories.${presentation.category.toLowerCase()}`) ? t(`categories.${presentation.category.toLowerCase()}`) : presentation.category}
                     </p>
 
                     {technology.usage > 1 ? (
                       <>
                         <span className="size-0.5 rounded-full bg-border-strong" />
                         <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-muted">
-                          {technology.usage} projects
+                          {t('projects', { count: technology.usage })}
                         </p>
                       </>
                     ) : null}

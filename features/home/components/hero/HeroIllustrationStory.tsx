@@ -4,6 +4,8 @@ import Link from 'next/link';
 
 import { ArrowRight, Compass } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { motion, useReducedMotion } from 'motion/react';
 
 import {
@@ -39,23 +41,23 @@ const DEFAULT_PRIMARY_ACTION: HeroStoryAction = {
   href: '/portfolio'
 };
 
-const DEFAULT_SECONDARY_ACTION: HeroStoryAction = {
-  label: 'Explore services',
-  href: '/services'
-};
-
 export function HeroIllustrationStory({
   eyebrow,
   title,
   description,
   highlights,
   variant,
-
   primaryAction = DEFAULT_PRIMARY_ACTION,
-
-  secondaryAction = DEFAULT_SECONDARY_ACTION
+  secondaryAction
 }: HeroIllustrationStoryProps) {
+  const t = useTranslations('HomeCTA');
+
   const reduceMotion = Boolean(useReducedMotion());
+
+  const resolvedSecondaryAction = secondaryAction ?? {
+    label: t('exploreServices'),
+    href: '/services'
+  };
 
   return (
     <div
@@ -131,7 +133,6 @@ export function HeroIllustrationStory({
           }}
           transition={{
             duration: 0.6,
-
             ease: [0.22, 1, 0.36, 1]
           }}
           className={[
@@ -289,8 +290,8 @@ export function HeroIllustrationStory({
           {/* SECONDARY */}
 
           <Link
-            href={secondaryAction.href}
-            aria-label={secondaryAction.label}
+            href={resolvedSecondaryAction.href}
+            aria-label={resolvedSecondaryAction.label}
             className={[
               'relative',
               'isolate',
@@ -346,14 +347,11 @@ export function HeroIllustrationStory({
                 aria-hidden="true"
                 animate={{
                   scale: [0.88, 1.24, 0.88],
-
                   opacity: [0.12, 0.4, 0.12]
                 }}
                 transition={{
                   duration: 3.8,
-
                   repeat: Infinity,
-
                   ease: 'easeInOut'
                 }}
                 className={['absolute', 'inset-0', 'rounded-full', 'bg-theme-accent-soft', 'lg:hidden'].join(
@@ -368,7 +366,7 @@ export function HeroIllustrationStory({
             />
 
             <span className={['relative', 'z-10', 'hidden', 'lg:inline'].join(' ')}>
-              {secondaryAction.label}
+              {resolvedSecondaryAction.label}
             </span>
 
             <ArrowRight

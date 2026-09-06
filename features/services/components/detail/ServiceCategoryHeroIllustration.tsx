@@ -9,6 +9,8 @@ import {
   WalletCards
 } from 'lucide-react';
 
+import { getTranslations } from 'next-intl/server';
+
 import { BusinessSystemsIllustration } from '../hero/BusinessSystemsIllustration';
 import { MaintenanceModernizationIllustration } from '../hero/MaintenanceModernizationIllustration';
 import { MobileAdaptiveIllustration } from '../hero/MobileAdaptiveIllustration';
@@ -19,6 +21,10 @@ import { WordPressIllustration } from '../hero/WordPressIllustration';
 type ServiceCategoryHeroIllustrationProps = {
   categorySlug?: string | null;
   categoryName?: string | null;
+};
+
+type GamingPlatformVisualProps = {
+  platformLabel: string;
 };
 
 function FinancialPlatformVisual() {
@@ -77,7 +83,7 @@ function FinancialPlatformVisual() {
 function LogisticsPlatformVisual() {
   return (
     <div className="relative mx-auto h-[360px] w-full max-w-[720px] sm:h-[430px]">
-      <div className="absolute inset-x-[8%] top-[11%] bottom-[10%] rounded-[30px] border border-border bg-background/90 p-5 shadow-[0_18px_55px_rgba(0,0,0,0.055)] backdrop-blur-xl">
+      <div className="absolute inset-x-[8%] bottom-[10%] top-[11%] rounded-[30px] border border-border bg-background/90 p-5 shadow-[0_18px_55px_rgba(0,0,0,0.055)] backdrop-blur-xl">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">Delivery operations</p>
@@ -140,15 +146,13 @@ function LogisticsPlatformVisual() {
   );
 }
 
-function GamingPlatformVisual() {
+function GamingPlatformVisual({ platformLabel }: GamingPlatformVisualProps) {
   return (
     <div className="relative mx-auto h-[360px] w-full max-w-[720px] sm:h-[430px]">
       <div className="absolute left-[8%] top-[12%] w-[60%] rounded-[30px] border border-border bg-background/90 p-6 shadow-[0_18px_55px_rgba(0,0,0,0.055)] backdrop-blur-xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">
-              Interactive platform
-            </p>
+            <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">{platformLabel}</p>
 
             <p className="mt-2 text-[20px] font-semibold tracking-[-0.045em] text-foreground">
               Player experience
@@ -189,10 +193,12 @@ function GamingPlatformVisual() {
   );
 }
 
-export function ServiceCategoryHeroIllustration({
+export async function ServiceCategoryHeroIllustration({
   categorySlug,
   categoryName
 }: ServiceCategoryHeroIllustrationProps) {
+  const t = await getTranslations('ServiceRichCard');
+
   switch (categorySlug) {
     case 'web-development':
       return <WebDevelopmentIllustration />;
@@ -222,7 +228,7 @@ export function ServiceCategoryHeroIllustration({
       return <LogisticsPlatformVisual />;
 
     case 'gaming-interactive-platforms':
-      return <GamingPlatformVisual />;
+      return <GamingPlatformVisual platformLabel={t('visualLabels.interactivePlatform')} />;
 
     default:
       return (
@@ -233,7 +239,7 @@ export function ServiceCategoryHeroIllustration({
             <Boxes className="size-9 text-theme-accent" />
 
             <p className="mt-5 text-[14px] font-semibold tracking-[-0.03em] text-foreground">
-              {categoryName ?? 'Digital solution'}
+              {categoryName ?? t('visualLabels.digitalSolution')}
             </p>
           </div>
         </div>

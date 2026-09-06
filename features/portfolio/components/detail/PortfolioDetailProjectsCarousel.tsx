@@ -1,8 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
+
+import { useTranslations } from 'next-intl';
 
 import { DeliveryProfileChart, type DeliveryProfileDatum } from '@/components/charts/DeliveryProfileChart';
 
@@ -28,15 +32,14 @@ function clampProgress(value: number) {
   return Math.max(0, Math.min(100, value));
 }
 
-function getDeliveryProfile(progress: number): DeliveryProfileDatum[] {
+function getDeliveryProfile(progress: number, phases: string[]): DeliveryProfileDatum[] {
   const safeProgress = clampProgress(progress);
-
-  const phases = ['Foundation', 'Structure', 'Build', 'Integrate', 'Validate', 'Release'];
 
   const phaseSize = 100 / phases.length;
 
   return phases.map((label, index) => {
     const phaseStart = index * phaseSize;
+
     const phaseEnd = phaseStart + phaseSize;
 
     const completed = clampProgress(((safeProgress - phaseStart) / phaseSize) * 100);
@@ -53,27 +56,47 @@ function getDeliveryProfile(progress: number): DeliveryProfileDatum[] {
 }
 
 function CarouselProjectCard({ project }: { project: PortfolioProject }) {
+  const t = useTranslations('PortfolioMoreProjects');
+
   const safeProgress = clampProgress(project.progress);
 
   const visibleTechnologies = project.technologies.slice(0, 3);
 
   const remainingTechnologies = Math.max(project.technologies.length - visibleTechnologies.length, 0);
 
-  const deliveryProfile = getDeliveryProfile(safeProgress);
+  const deliveryPhases = useMemo(
+    () => [
+      t('deliveryPhases.0'),
+      t('deliveryPhases.1'),
+      t('deliveryPhases.2'),
+      t('deliveryPhases.3'),
+      t('deliveryPhases.4'),
+      t('deliveryPhases.5')
+    ],
+    [t]
+  );
+
+  const deliveryProfile = useMemo(
+    () => getDeliveryProfile(safeProgress, deliveryPhases),
+    [deliveryPhases, safeProgress]
+  );
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-border bg-background/55 transition-[background-color,border-color,box-shadow,transform] duration-500 hover:-translate-y-0.5 hover:border-border-strong hover:bg-background/85 hover:shadow-lg">
       {/* VISUAL */}
+
       <Link
         href={`/portfolio/${project.slug}`}
-        aria-label={`View ${project.name} case study`}
+        aria-label={t('goTo', {
+          project: project.name
+        })}
         className="relative block h-[245px] overflow-hidden sm:h-[255px] lg:h-[235px]">
         <PortfolioProjectVisual project={project} />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-4">
           {project.featured ? (
             <span className="rounded-full border border-white/15 bg-black/45 px-2.5 py-1 font-mono text-[7px] font-medium uppercase tracking-[0.14em] text-white/80 backdrop-blur-xl">
-              Featured
+              {t('featured')}
             </span>
           ) : (
             <span />
@@ -86,8 +109,10 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
       </Link>
 
       {/* CONTENT */}
+
       <div className="flex flex-1 flex-col p-5">
         {/* IDENTITY */}
+
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-mono text-[7px] font-medium uppercase tracking-[0.15em] text-theme-accent-strong">
             {humanize(project.type)}
@@ -105,10 +130,11 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
         </h3>
 
         <p className="mt-3 line-clamp-3 text-[12px] leading-6 text-muted">
-          {project.tagline ?? project.description ?? 'Published Rcentz project.'}
+          {project.tagline ?? project.description ?? t('publishedFallback')}
         </p>
 
         {/* TECHNOLOGIES */}
+
         {visibleTechnologies.length > 0 ? (
           <div className="mt-5 flex flex-wrap items-center gap-1.5">
             {visibleTechnologies.map(technology => (
@@ -128,11 +154,15 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
         ) : null}
 
         {/* PROJECT DELIVERY SIGNALS */}
+
         <div className="mt-6 flex flex-col items-center">
           {/* DELIVERY PROFILE */}
+
           <div className="w-full max-w-[430px]">
             <div className="mb-2 flex items-center justify-between gap-4 px-1">
-              <p className="font-mono text-[7px] uppercase tracking-[0.15em] text-muted">Delivery profile</p>
+              <p className="font-mono text-[7px] uppercase tracking-[0.15em] text-muted">
+                {t('deliveryProfile')}
+              </p>
 
               <span className="font-mono text-[7px] font-medium text-theme-accent-strong">
                 {safeProgress}%
@@ -143,17 +173,20 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
               <DeliveryProfileChart
                 data={deliveryProfile}
                 height={185}
-                completedLabel="Phase completion"
-                remainingLabel="Progress curve"
-                trajectoryLabel="Trajectory"
+                completedLabel={t('phaseCompletion')}
+                remainingLabel={t('progressCurve')}
+                trajectoryLabel={t('trajectory')}
                 showLegend={false}
               />
             </div>
           </div>
 
           {/* READINESS */}
+
           <div className="mt-3 w-full max-w-[220px] text-center">
-            <p className="mb-1 font-mono text-[7px] uppercase tracking-[0.15em] text-muted">Readiness</p>
+            <p className="mb-1 font-mono text-[7px] uppercase tracking-[0.15em] text-muted">
+              {t('readiness')}
+            </p>
 
             <div className="mx-auto w-full overflow-hidden">
               <ReadinessGaugeChart value={safeProgress} height={150} showLegend={false} />
@@ -162,11 +195,13 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
         </div>
 
         {/* ACTIONS */}
+
         <div className={`mt-auto grid gap-2 pt-6 ${project.liveUrl ? 'grid-cols-2' : 'grid-cols-1'}`}>
           <Link
             href={`/portfolio/${project.slug}`}
             className="group/case inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-background px-3 text-[10px] font-medium text-foreground transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-surface-muted active:scale-[0.98] sm:px-4 sm:text-[11px]">
-            Case study
+            {t('caseStudy')}
+
             <ArrowRight
               aria-hidden="true"
               className="size-3.5 transition-transform duration-300 group-hover/case:translate-x-0.5"
@@ -179,7 +214,8 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
               target="_blank"
               rel="noreferrer"
               className="group/live inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-3 text-[10px] font-medium text-primary-foreground transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] sm:px-4 sm:text-[11px]">
-              View live
+              {t('viewLive')}
+
               <ArrowUpRight
                 aria-hidden="true"
                 className="size-3.5 transition-transform duration-300 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5"
@@ -193,10 +229,14 @@ function CarouselProjectCard({ project }: { project: PortfolioProject }) {
 }
 
 export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailProjectsCarouselProps) {
+  const t = useTranslations('PortfolioMoreProjects');
+
   const viewportRef = useRef<HTMLDivElement>(null);
 
   const [activeIndex, setActiveIndex] = useState(0);
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
+
   const [canScrollRight, setCanScrollRight] = useState(projects.length > 1);
 
   const getSlides = useCallback(() => {
@@ -232,10 +272,12 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
       setActiveIndex(0);
       setCanScrollLeft(false);
       setCanScrollRight(false);
+
       return;
     }
 
     let nearestIndex = 0;
+
     let nearestDistance = Number.POSITIVE_INFINITY;
 
     slides.forEach((slide, index) => {
@@ -326,30 +368,30 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
     <section className="py-20 sm:py-24">
       <div className="rcentz-section">
         {/* HEADER */}
+
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-3">
               <span className="h-px w-8 bg-theme-accent" />
 
               <p className="font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-muted">
-                More Rcentz work
+                {t('eyebrow')}
               </p>
             </div>
 
             <h2 className="mt-5 max-w-2xl text-3xl font-semibold leading-[1.04] tracking-[-0.05em] text-foreground sm:text-4xl lg:text-[3rem]">
-              Continue through the systems.
+              {t('title')}
             </h2>
 
-            <p className="mt-4 max-w-xl text-[13px] leading-6 text-muted">
-              Explore other published projects, experiments and systems built through Rcentz.
-            </p>
+            <p className="mt-4 max-w-xl text-[13px] leading-6 text-muted">{t('description')}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/portfolio"
               className="group inline-flex h-10 items-center gap-2 rounded-full border border-border bg-background px-4 text-[11px] font-medium text-foreground transition-[background-color,border-color] hover:border-border-strong hover:bg-surface-muted">
-              View all projects
+              {t('viewAll')}
+
               <ArrowUpRight
                 aria-hidden="true"
                 className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -360,7 +402,7 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
               type="button"
               onClick={showPrevious}
               disabled={!canScrollLeft}
-              aria-label="Previous projects"
+              aria-label={t('previous')}
               className="flex size-10 items-center justify-center rounded-full border border-border bg-background text-foreground transition-[background-color,border-color,opacity] hover:border-border-strong hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-30">
               <ArrowLeft aria-hidden="true" className="size-3.5" />
             </button>
@@ -369,7 +411,7 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
               type="button"
               onClick={showNext}
               disabled={!canScrollRight}
-              aria-label="Next projects"
+              aria-label={t('next')}
               className="flex size-10 items-center justify-center rounded-full border border-border bg-background text-foreground transition-[background-color,border-color,opacity] hover:border-border-strong hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-30">
               <ArrowRight aria-hidden="true" className="size-3.5" />
             </button>
@@ -377,6 +419,7 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
         </div>
 
         {/* CAROUSEL */}
+
         <div
           ref={viewportRef}
           className="mt-10 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -405,6 +448,7 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
         </div>
 
         {/* CAROUSEL FOOTER */}
+
         <div className="mt-5 flex items-center justify-between gap-5">
           <div className="flex items-center gap-2">
             {projects.map((project, index) => (
@@ -412,7 +456,9 @@ export function PortfolioDetailProjectsCarousel({ projects }: PortfolioDetailPro
                 key={project.id}
                 type="button"
                 onClick={() => scrollToIndex(index)}
-                aria-label={`Go to ${project.name}`}
+                aria-label={t('goTo', {
+                  project: project.name
+                })}
                 className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
                   index === activeIndex ? 'w-6 bg-theme-accent' : 'w-1.5 bg-border-strong'
                 }`}

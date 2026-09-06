@@ -1,26 +1,34 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState } from 'react';
 
-const HERO_CONTEXTS = [
-  'Custom SaaS platforms engineered around real business workflows and operations.',
-
-  'Commerce systems connecting products, customers, transactions and administration.',
-
-  'Client platforms keeping projects, communication and business data connected.',
-
-  'Reusable software foundations designed for products that need room to scale.',
-
-  'Digital systems built around how real businesses actually operate.'
-];
+import { useEffect, useMemo, useState } from 'react';
 
 const ROTATION_DELAY = 4200;
 
 export function HomeHeroRotator() {
+  const t = useTranslations('HomeHeroStories');
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const reduceMotion = useReducedMotion();
+
+  const heroContexts = useMemo(
+    () => [
+      'Custom SaaS platforms engineered around real business workflows and operations.',
+
+      t('stories.commerce.description'),
+
+      'Client platforms keeping projects, communication and business data connected.',
+
+      'Reusable software foundations designed for products that need room to scale.',
+
+      'Digital systems built around how real businesses actually operate.'
+    ],
+    [t]
+  );
 
   useEffect(() => {
     if (reduceMotion) {
@@ -28,13 +36,13 @@ export function HomeHeroRotator() {
     }
 
     const interval = window.setInterval(() => {
-      setActiveIndex(current => (current + 1) % HERO_CONTEXTS.length);
+      setActiveIndex(current => (current + 1) % heroContexts.length);
     }, ROTATION_DELAY);
 
     return () => {
       window.clearInterval(interval);
     };
-  }, [reduceMotion]);
+  }, [heroContexts.length, reduceMotion]);
 
   return (
     <div className="mt-6 max-w-[425px]">
@@ -83,13 +91,13 @@ export function HomeHeroRotator() {
               'text-[14px] leading-6 text-muted',
               'sm:text-[15px] sm:leading-7'
             ].join(' ')}>
-            {HERO_CONTEXTS[activeIndex]}
+            {heroContexts[activeIndex]}
           </motion.p>
         </AnimatePresence>
       </div>
 
       <div aria-hidden="true" className="mt-1 flex items-center gap-1.5">
-        {HERO_CONTEXTS.map((_, index) => (
+        {heroContexts.map((_, index) => (
           <motion.span
             key={index}
             animate={{

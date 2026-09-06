@@ -4,6 +4,8 @@ import Image from 'next/image';
 
 import { Check, Code2, FileText, Globe2, ImageIcon, Layers3, Route, Search, Zap } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { motion, useReducedMotion } from 'motion/react';
 
 import { useEffect, useState } from 'react';
@@ -32,6 +34,8 @@ const INITIAL_DELAY = 1700;
 const STEP_PAUSE = 700;
 
 export function WordpressMigrationScene() {
+  const projectT = useTranslations('HomeProjectCard');
+
   const reduceMotion = Boolean(useReducedMotion());
 
   const [started, setStarted] = useState(false);
@@ -194,20 +198,12 @@ export function WordpressMigrationScene() {
           ===================================================== */}
 
       <div className="relative flex min-h-[175px] items-center justify-center overflow-hidden rounded-[20px] border border-border bg-surface-muted/22 p-3">
-        {/* CONNECTION RAIL */}
-
         <div className="absolute inset-y-5 left-1/2 w-px -translate-x-1/2 bg-border" />
 
         <div className="relative z-10 w-full space-y-2">
           {FLOW.map((item, index) => {
             const Icon = item.icon;
 
-            /*
-             * Reduced motion simply renders every
-             * migration step as complete.
-             *
-             * No state mutation required.
-             */
             const completed =
               reduceMotion ||
               index < activeStep ||
@@ -227,7 +223,6 @@ export function WordpressMigrationScene() {
                 key={item.label}
                 animate={{
                   opacity: completed || current ? 1 : 0.3,
-
                   scale: current ? 1.015 : 1
                 }}
                 transition={{
@@ -310,9 +305,7 @@ export function WordpressMigrationScene() {
           <div className="overflow-hidden rounded-2xl border border-border bg-surface-muted/25">
             <div className="flex h-8 items-center gap-1.5 border-b border-border px-3">
               <span className="size-1.5 rounded-full bg-border-strong" />
-
               <span className="size-1.5 rounded-full bg-border-strong" />
-
               <span className="size-1.5 rounded-full bg-border-strong" />
 
               <div className="ml-2 h-4 flex-1 rounded-full border border-border bg-background/70" />
@@ -371,7 +364,7 @@ export function WordpressMigrationScene() {
                       Portfolio
                     </p>
 
-                    <p className="mt-1 text-[7px] text-muted">Live projects</p>
+                    <p className="mt-1 text-[7px] text-muted">{projectT('liveProject')}</p>
                   </div>
                 </div>
               </div>

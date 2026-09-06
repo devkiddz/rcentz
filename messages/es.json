@@ -237,7 +237,7 @@
     "capabilities": {
       "businessWebsites": "Sitios web empresariales",
       "customWebApplications": "Aplicaciones web personalizadas",
-      "landingPages": "Landing pages",
+      "landingPages": "Páginas de destino",
       "portfolioWebsites": "Sitios web de portafolio"
     }
   },
@@ -326,6 +326,565 @@
       "systemAudits": "Auditorías de sistemas",
       "modernizationStrategy": "Estrategia de modernización",
       "technicalDirection": "Dirección técnica"
+    }
+  },
+  "HomeHeroStories": {
+    "previousStory": "Historia anterior",
+    "nextStory": "Siguiente historia",
+    "showStory": "Historia {story} mostrar",
+    "stories": {
+      "rcentz": {
+        "label": "Sitios web",
+        "eyebrow": "Desarrollo web · Comercio electrónico · Aplicaciones web",
+        "title": "Construimos sitios web que impulsan el éxito.",
+        "description": "Rcentz diseña y desarrolla sitios web profesionales y de alto rendimiento que ayudan a las empresas a atraer clientes, vender online, fortalecer su marca y crecer — desde sitios web empresariales y tiendas de comercio electrónico hasta aplicaciones web personalizadas.",
+        "highlights": {
+          "0": "Sitios web empresariales creados para convertir",
+          "1": "Tiendas de comercio electrónico creadas para vender",
+          "2": "Aplicaciones web personalizadas",
+          "3": "Rediseños que te impulsan"
+        }
+      },
+      "ai": {
+        "label": "Rcentz × IA",
+        "eyebrow": "Rcentz × IA · Pensamiento más rápido · Ejecución más inteligente",
+        "title": "Convierte ideas ambiciosas en productos funcionales más rápido.",
+        "description": "Rcentz combina dirección humana, juicio de ingeniería y ejecución asistida por IA para explorar más rápido, resolver problemas más difíciles y llevar ideas sólidas hacia la producción sin sacrificar calidad.",
+        "highlights": {
+          "0": "Decisiones de producto lideradas por humanos",
+          "1": "Ingeniería acelerada por IA",
+          "2": "Iteración más rápida del producto",
+          "3": "Revisado antes de la producción"
+        }
+      },
+      "system": {
+        "label": "Sistemas",
+        "eyebrow": "Frontend · Backend · Datos · Infraestructura",
+        "title": "Tu negocio merece algo más que un frontend bonito.",
+        "description": "Rcentz construye sistemas digitales completos donde interfaces, autenticación, bases de datos, APIs, flujos de trabajo e infraestructura trabajan juntos para llevar a cabo operaciones empresariales reales.",
+        "highlights": {
+          "0": "Ingeniería frontend + backend",
+          "1": "Base de datos + autenticación",
+          "2": "APIs + flujos de trabajo empresariales",
+          "3": "Despliegue listo para producción"
+        }
+      },
+      "data": {
+        "label": "Datos en vivo",
+        "eyebrow": "Datos empresariales · Actividad · Decisiones",
+        "title": "Deja de adivinar. Construye con datos que tu empresa pueda utilizar.",
+        "description": "Rcentz convierte acciones importantes, transacciones y flujos de trabajo en registros estructurados que pueden impulsar paneles de control, automatización, informes y mejores decisiones empresariales.",
+        "highlights": {
+          "0": "Registros empresariales estructurados",
+          "1": "Actividad activa rastreable"
+        }
+      },
+      "commerce": {
+        "label": "Comercio",
+        "eyebrow": "Productos · Pagos · Pedidos · Cumplimiento",
+        "title": "Crea una tienda online diseñada para mantener el negocio en movimiento.",
+        "description": "Desde el descubrimiento y la compra de productos hasta el pago, pedidos y cumplimiento, Rcentz conecta todo el recorrido comercial en una experiencia diseñada para vender y operar.",
+        "highlights": {
+          "0": "Descubrimiento de producto + checkout",
+          "1": "Sistemas de pago conectados",
+          "2": "Ciclo de vida completo de la orden",
+          "3": "Flujos de trabajo de cumplimiento + entrega"
+        }
+      },
+      "scale": {
+        "label": "Rcentz Core",
+        "eyebrow": "Construir una vez · Extender · Operar · Escalar",
+        "title": "Construye hoy sin reconstruir todo mañana.",
+        "description": "Rcentz crea bases reutilizables que pueden crecer desde un solo sitio web o aplicación hacia servicios, plataformas comerciales y sistemas empresariales más amplios a medida que crezcan tus necesidades.",
+        "highlights": {
+          "0": "Arquitectura de sistemas compartidos",
+          "1": "Motores de producto reutilizables",
+          "2": "Productos múltiples conectados",
+          "3": "Expande sin empezar de nuevo"
+        }
+      }
+    }
+  },
+  "HomeHeroCapabilities": {
+    "systemLabel": "Principios de ingeniería Rcentz",
+    "active": "Activo",
+    "items": {
+      "performance": {
+        "label": "Rendimiento",
+        "headline": "Rápido por diseño.",
+        "description": "Las interfaces, la carga de datos y el comportamiento de las aplicaciones están estructurados para mantener la experiencia sensible a medida que el producto crece.",
+        "status": "Optimizado",
+        "points": {
+          "0": "Renderizado eficiente",
+          "1": "Interfaces responsivas",
+          "2": "Flujos de aplicaciones lean"
+        }
+      },
+      "security": {
+        "label": "Seguridad",
+        "headline": "La protección empieza en la arquitectura.",
+        "description": "La autenticación, la validación del servidor y el acceso controlado a los datos se tratan como responsabilidades del sistema — no como pensamientos secundarios.",
+        "status": "Protegido",
+        "points": {
+          "0": "Acceso controlado",
+          "1": "Validación en el lado del servidor",
+          "2": "Flujos de trabajo protegidos"
+        }
+      },
+      "scalable": {
+        "label": "Escalable",
+        "headline": "Preparado para lo que viene después.",
+        "description": "Las cimientos modulares permiten que los servicios, características y áreas de producto crezcan sin obligar a reconstruir todo el sistema.",
+        "status": "Expandible",
+        "points": {
+          "0": "Arquitectura modular",
+          "1": "Motores reutilizables",
+          "2": "Capas de producto conectadas"
+        }
+      },
+      "maintainable": {
+        "label": "Mantenible",
+        "headline": "Construido para seguir evolucionando.",
+        "description": "Responsabilidades claras, contratos mecanografiados y componentes reutilizables mantienen los cambios futuros comprensibles y controlados.",
+        "status": "Estructurado",
+        "points": {
+          "0": "Separación de características",
+          "1": "Componentes reutilizables",
+          "2": "Estructura predecible"
+        }
+      }
+    }
+  },
+  "HomeTechnologyEcosystem": {
+    "eyebrow": "Construido con",
+    "title": "Tecnología moderna detrás de cada sistema serio.",
+    "description": "Frameworks, inteligencia, pagos, datos e infraestructura seleccionados según lo que realmente necesita cada producto.",
+    "categories": {
+      "framework": "Marco",
+      "interface": "Interfaz",
+      "engineering": "Ingeniería",
+      "orm": "ORM",
+      "database": "Base de datos",
+      "deployment": "Despliegue",
+      "ai": "IA",
+      "payments": "Pagos",
+      "development": "Desarrollo",
+      "infrastructure": "Infraestructura"
+    }
+  },
+  "HomeServices": {
+    "eyebrow": "Servicios",
+    "titlePrimary": "Sistemas digitales flexibles para la forma en que operan las empresas modernas.",
+    "titleSecondary": "Construye la experiencia pública, conecta el flujo de trabajo y mantén el sistema en movimiento.",
+    "description": "Capacidades seleccionadas de Rcentz presentadas a través de los sistemas que crean, no como cajas genéricas de servicios. Cada proyecto parte del problema del negocio y crece hacia la arquitectura digital adecuada.",
+    "cta": "Explorar todos los servicios"
+  },
+  "HomeServiceCard": {
+    "modernization": "Modernización",
+    "modernizationTitle": "Modernización y transformación",
+    "modernizationDescription": "Actualiza los sitios web, tiendas y flujos de trabajo empresariales existentes para convertirlos en sistemas más rápidos, inteligentes y capaces."
+  },
+  "HomeProjects": {
+    "eyebrow": "Trabajo seleccionado",
+    "titlePrimary": "Sistemas construidos, mostrados como realmente existen.",
+    "titleSecondary": "Pantallas reales, arquitectura real y resultados registrados.",
+    "description": "Explora trabajos seleccionados de Rcentz mediante capturas reales del producto en lugar de ilustraciones recreadas para el portafolio.",
+    "cta": "Explorar todo el trabajo"
+  },
+  "HomeProjectCard": {
+    "featuredProject": "Proyecto destacado",
+    "currentState": "Estado actual",
+    "outcome": "Resultado",
+    "fallbackOutcome": "Un sistema de producción diseñado para un uso real de negocios.",
+    "viewCaseStudy": "Ver estudio de caso",
+    "liveProject": "Proyecto en directo",
+    "fallbackProject": "Proyecto Rcentz.",
+    "complete": "{progress}% completado",
+    "viewCaseStudyAria": "Ver {project} caso de estudio"
+  },
+  "HomeCTA": {
+    "eyebrow": "Construye con Rcentz",
+    "titlePrimary": "¿Tienes un sistema en mente?",
+    "titleSecondary": "Empieza por el problema. Podemos diseñar el resto.",
+    "description": "Trae el flujo de trabajo, la idea, el reto o el sistema existente. Rcentz puede ayudarte a definir el camino técnico desde ahí.",
+    "startProject": "Iniciar un proyecto",
+    "exploreServices": "Explorar servicios"
+  },
+  "HomeInspirations": {
+    "eyebrow": "Inspiraciones",
+    "title": "Lo que da forma al proceso de construcción de Rcentz.",
+    "description": "El pensamiento de producto, la colaboración con IA, el comportamiento comercial, la estructura de sistemas y la arquitectura reutilizable influyen en cómo Rcentz aborda una solución antes de empezar a desarrollar.",
+    "outputs": {
+      "0": "Reutilizable",
+      "1": "Escalable",
+      "2": "Mantenible"
+    },
+    "nodes": {
+      "product": {
+        "label": "Pensamiento de producto",
+        "shortLabel": "Producto",
+        "description": "El software útil parte de los objetivos del usuario, las necesidades del negocio y el resultado real que la gente intenta alcanzar."
+      },
+      "ai": {
+        "label": "Colaboración con IA",
+        "shortLabel": "Colaboración con IA",
+        "description": "Rcentz combina el juicio humano con la ayuda inteligente para avanzar más rápido, explorar mejor y perfeccionar ideas con cuidado."
+      },
+      "systems": {
+        "label": "Sistemas conectados",
+        "shortLabel": "Sistemas conectados",
+        "description": "Las interfaces, la lógica, los flujos de backend y las operaciones reales del negocio deberían funcionar juntos en lugar de comportarse como páginas separadas."
+      },
+      "workflow": {
+        "label": "Flujos de trabajo empresariales",
+        "shortLabel": "Flujos de trabajo empresariales",
+        "description": "Cada producto sólido está respaldado por un diseño de procesos claro, un flujo estructurado y sistemas que realmente apoyan el trabajo entre bastidores."
+      },
+      "commerce": {
+        "label": "Comportamiento comercial",
+        "shortLabel": "Comercio",
+        "description": "El descubrimiento, el pago, el cumplimiento y el movimiento de clientes son fundamentales a la hora de crear una experiencia de comercio moderna sólida."
+      },
+      "performance": {
+        "label": "Calidad de entrega",
+        "shortLabel": "Calidad de entrega",
+        "description": "El rendimiento, la estructura, la escalabilidad y la usabilidad deben mantenerse unidos para que un sistema siga siendo valioso a lo largo del tiempo."
+      },
+      "architecture": {
+        "label": "Arquitectura reutilizable",
+        "shortLabel": "Arquitectura",
+        "description": "Un núcleo reflexivo facilita ampliar productos, reutilizar ideas y crecer de una solución a un sistema más amplio."
+      }
+    }
+  },
+  "HomePricing": {
+    "eyebrow": "Puntos de partida",
+    "titlePrimary": "Empieza con el sistema que necesitas hoy.",
+    "titleSecondary": "Deja espacio para lo que viene después.",
+    "description": "Precios de entrada real del catálogo de servicios de Rcentz. El alcance se amplía según integraciones, flujos de trabajo, contenido y complejidad operativa.",
+    "startingFrom": "Empezando desde",
+    "internationalFrom": "Proyectos internacionales de {amount}",
+    "exploreService": "Explora este servicio",
+    "architectureEyebrow": "Arquitectura inicial",
+    "architectureTitle": "Cómo empieza a moverse el sistema.",
+    "livePreview": "Vista previa en directo",
+    "modular": "Modular",
+    "measurable": "Medible",
+    "connected": "Conectados",
+    "disclaimer": "Los precios iniciales son guías, no presupuestos fijos. El coste final del proyecto refleja el alcance real, las integraciones, los flujos de trabajo, los requisitos de datos y la complejidad de la entrega.",
+    "presentations": {
+      "website": {
+        "label": "Presencia web",
+        "headline": "Crea una experiencia empresarial en la que la gente pueda confiar.",
+        "points": {
+          "0": "Sitio web empresarial responsivo",
+          "1": "Viajes de servicio e investigación",
+          "2": "Fundación lista para el rendimiento"
+        },
+        "flow": {
+          "0": {
+            "label": "Negocios",
+            "description": "Propósito, servicios y contenido."
+          },
+          "1": {
+            "label": "Experiencia",
+            "description": "Páginas y navegación sensibles."
+          },
+          "2": {
+            "label": "Consultas",
+            "description": "Las acciones para los visitantes se convierten en oportunidades."
+          },
+          "3": {
+            "label": "Crecimiento",
+            "description": "Una base lista para expandirse."
+          }
+        }
+      },
+      "ecommerce": {
+        "label": "Comercio",
+        "headline": "Convierte los productos en un proceso de compra conectado.",
+        "points": {
+          "0": "Descubrimiento de productos y catálogo",
+          "1": "Base de cartucho y caja de pago",
+          "2": "Flujos de trabajo de pago y pedidos"
+        },
+        "flow": {
+          "0": {
+            "label": "Productos",
+            "description": "Catálogo y descubrimiento."
+          },
+          "1": {
+            "label": "Carro",
+            "description": "La intención se convierte en una orden."
+          },
+          "2": {
+            "label": "Pago",
+            "description": "Integración segura de pagos."
+          },
+          "3": {
+            "label": "Cumplimiento",
+            "description": "Las órdenes continúan en operación."
+          }
+        }
+      },
+      "businessSystem": {
+        "label": "Sistema empresarial",
+        "headline": "Reúne las operaciones en un solo entorno de trabajo.",
+        "points": {
+          "0": "Flujos de trabajo operativos personalizados",
+          "1": "Usuarios, registros y permisos",
+          "2": "Paneles de control y datos estructurados"
+        },
+        "flow": {
+          "0": {
+            "label": "Usuarios",
+            "description": "La gente entra a través de roles reales."
+          },
+          "1": {
+            "label": "Flujo de trabajo",
+            "description": "Las operaciones se desarrollan a través de pasos definidos."
+          },
+          "2": {
+            "label": "Datos",
+            "description": "La actividad se convierte en registros estructurados."
+          },
+          "3": {
+            "label": "Salpicadero",
+            "description": "La información se convierte en información útil."
+          }
+        }
+      }
+    }
+  },
+  "PortfolioHero": {
+    "eyebrow": "Portafolio · Productos · Sistemas",
+    "titlePrimary": "Sistemas construidos,",
+    "titleSecondary": "mostrados como existen.",
+    "description": "Un registro creciente del trabajo real de Rcentz: productos, interfaces, sistemas de datos y bases reutilizables creadas para comercio, empleo e infraestructura de aplicaciones.",
+    "projectCount": "{count, plural, one {# proyecto público} other {# proyectos públicos}}",
+    "screenCount": "{count, plural, one {# pantalla real} other {# pantallas reales}}",
+    "exploreProjects": "Explorar proyectos",
+    "buildJourney": "Recorrido de construcción",
+    "mediaSource": "Pantallas obtenidas de los medios del proyecto"
+  },
+  "PortfolioAbout": {
+    "eyebrow": "Cómo se construye la obra",
+    "titlePrimary": "Los productos son la superficie.",
+    "titleSecondary": "Los sistemas son lo que hace que perduren.",
+    "description": "Los proyectos Rcentz se desarrollan en torno al producto completo: interfaz, datos, autenticación, flujos de trabajo, operaciones y despliegue. El portafolio registra los resultados sin separar el producto visible de la ingeniería que hay debajo.",
+    "publishedProjects": "{count} proyectos publicados",
+    "recordedTechnologies": "{count} tecnologías grabadas",
+    "principles": {
+      "interfaces": {
+        "label": "Interfaces de aplicaciones modernas",
+        "detail": "React, Next.js y TypeScript en todo el trabajo publicado."
+      },
+      "data": {
+        "label": "Verdad respaldada por bases de datos",
+        "detail": "Registros reales de proyectos, flujos de trabajo y datos operativos."
+      },
+      "foundations": {
+        "label": "Fundamentos del sistema reutilizable",
+        "detail": "Arquitectura diseñada para extender en lugar de reiniciar."
+      },
+      "delivery": {
+        "label": "Entrega orientada a la producción",
+        "detail": "Construir, probar, desplegar, estabilizar y seguir refinando."
+      }
+    }
+  },
+  "PortfolioTechnologyRail": {
+    "eyebrow": "Construido con",
+    "title": "La tecnología moderna detrás de todo sistema serio.",
+    "description": "Marcos, inteligencia, pagos, datos e infraestructura representados por el propio trabajo publicado.",
+    "projects": "{count} proyectos",
+    "categories": {
+      "framework": "Marco",
+      "interface": "Interfaz",
+      "engineering": "Ingeniería",
+      "orm": "ORM",
+      "database": "Base de datos",
+      "payments": "Pagos",
+      "deployment": "Despliegue",
+      "development": "Desarrollo",
+      "authentication": "Autenticación",
+      "media": "Medios de comunicación",
+      "styling": "Estilo",
+      "pwa": "PWA",
+      "ai": "IA",
+      "runtime": "Duración"
+    }
+  },
+  "PortfolioProjects": {
+    "eyebrow": "Trabajo publicado",
+    "titlePrimary": "Pantallas reales del proyecto.",
+    "titleSecondary": "Arquitectura real y resultados registrados.",
+    "description": "Cada proyecto se alimenta de los mismos registros públicos usados en Rcentz, incluidas sus tecnologías, estado, medios y enlaces públicos."
+  },
+  "PortfolioJourney": {
+    "recorded": "Grabado",
+    "eyebrow": "Viaje de construcción",
+    "title": "Un registro de cómo ha evolucionado el producto funcionalmente.",
+    "description": "Esto es la historia del proyecto, no una cronología de empleo fabricada. Las fechas, estados y tecnologías provienen de los registros publicados del proyecto Rcentz.",
+    "fallback": "Proyecto publicado en Rcentz."
+  },
+  "PortfolioOutcomes": {
+    "eyebrow": "Resultados registrados",
+    "title": "Lo que realmente ofrecieron los proyectos.",
+    "description": "Estos son resultados de proyectos almacenados en los registros públicos de la cartera, no testimonios inventados ni afirmaciones de desempeño.",
+    "imageAlt": "{project} proyecto",
+    "previous": "Resultados del proyecto anterior",
+    "next": "Resultado del próximo proyecto"
+  },
+  "PortfolioCard": {
+    "openPreview": "Vista previa {project} proyecto abierta",
+    "goPreview": "Ir a la vista previa",
+    "progress": "Progreso",
+    "views": "Opiniones",
+    "likes": "Me gusta",
+    "reactions": "Reacciones",
+    "comments": "Comentarios",
+    "love": "Con cariño",
+    "fire": "Incendio",
+    "shares": "Acciones",
+    "credits": "Créditos",
+    "contributor": "Colaborador",
+    "noCredits": "Aún no se han registrado créditos públicos.",
+    "suggestions": "Sugerencias",
+    "noSuggestions": "No hay propuestas ni nominaciones por ahora.",
+    "featuredProject": "Proyecto destacado",
+    "publishedFallback": "Proyecto publicado en Rcentz.",
+    "projectFallback": "Proyecto Rcentz.",
+    "viewLive": "Ver en directo",
+    "source": "Fuente",
+    "openLive": "Open {project} en directo"
+  },
+  "PortfolioDetailHero": {
+    "back": "Volver al portafolio",
+    "complete": "{progress}% completado",
+    "featured": "Proyecto destacado",
+    "caseStudy": "Caso de estudio",
+    "publishedFallback": "Proyecto Rcentz publicado.",
+    "viewLive": "Ver en vivo",
+    "source": "Código fuente"
+  },
+  "PortfolioDetailGallery": {
+    "projectMedia": "Medios del proyecto",
+    "publishedInterface": "Interfaz publicada del proyecto.",
+    "expandAria": "Ampliar {label}",
+    "expand": "Ampliar vista",
+    "viewLive": "Ver en vivo",
+    "previewAria": "Vista previa de {label}",
+    "close": "Cerrar vista previa de la galería",
+    "previous": "Medio anterior",
+    "next": "Medio siguiente",
+    "viewLiveProject": "Ver proyecto en vivo",
+    "eyebrow": "Galería del proyecto",
+    "title": "Dentro de la construcción.",
+    "description": "Capturas de interfaz y medios publicados del proyecto.",
+    "itemCount": "{count, plural, one {# elemento} other {# elementos}}"
+  },
+  "PortfolioDetailTechnology": {
+    "coreArchitectureFallback": "Arquitectura central",
+    "responsibility": "Responsabilidad",
+    "responsibilityFallback": "La responsabilidad del proyecto no ha sido publicada.",
+    "whyChoice": "Por qué esta elección",
+    "rationaleFallback": "No se ha publicado la justificación de la selección.",
+    "supportingTechnology": "Tecnología de apoyo",
+    "eyebrow": "Arquitectura del sistema",
+    "titlePrimary": "Tecnología elegida por ahí",
+    "titleSecondary": "la responsabilidad del sistema.",
+    "description": "Cada tecnología tenía una tarea definida: moldear la interfaz, proteger los límites de las aplicaciones, gestionar datos, gestionar transacciones o apoyar la experiencia más amplia del producto.",
+    "technologies": "Tecnologías",
+    "coreChoices": "Elecciones principales",
+    "supporting": "Secundarios",
+    "coreArchitecture": "Arquitectura central",
+    "coreDescription": "Las decisiones que conllevan las responsabilidades principales de la aplicación.",
+    "definingChoices": "{count} decisiones definitorias",
+    "supportingSystem": "Sistema de apoyo",
+    "supportingDescription": "Bibliotecas y servicios que apoyan las decisiones arquitectónicas principales.",
+    "supportingTools": "{count} herramientas de soporte",
+    "builtWith": "Construido con",
+    "core": "Núcleo",
+    "technology": "Tecnología"
+  },
+  "PortfolioMoreProjects": {
+    "deliveryPhases": {
+      "0": "Fundación",
+      "1": "Estructura",
+      "2": "Construcción",
+      "3": "Integrar",
+      "4": "Validar",
+      "5": "Lanzamiento"
+    },
+    "featured": "Destacados",
+    "publishedFallback": "Proyecto publicado en Rcentz.",
+    "deliveryProfile": "Perfil de entrega",
+    "phaseCompletion": "Finalización de fases",
+    "progressCurve": "Curva de progreso",
+    "trajectory": "Trayectoria",
+    "readiness": "Preparación",
+    "caseStudy": "Estudio de caso",
+    "viewLive": "Ver en directo",
+    "eyebrow": "Más trabajo de Rcentz",
+    "title": "Continúa por los sistemas.",
+    "description": "Explora otros proyectos, experimentos y sistemas publicados construidos a través de Rcentz.",
+    "viewAll": "Ver todos los proyectos",
+    "previous": "Proyectos anteriores",
+    "next": "Próximos proyectos",
+    "goTo": "Ve a {project}"
+  },
+  "PortfolioMetadata": {
+    "notFound": "Proyecto no encontrado | Rcentz Systems",
+    "fallbackDescription": "Explora {project}, un proyecto publicado de Rcentz Systems."
+  },
+  "CommonEnums": {
+    "projectTypes": {
+      "website": "Sitio web",
+      "web_app": "Aplicación web",
+      "mobile_app": "Aplicación móvil",
+      "saas": "SaaS",
+      "ecommerce": "Comercio electrónico",
+      "internal_tool": "Herramienta interna",
+      "other": "Otros"
+    },
+    "projectStatuses": {
+      "planning": "Planificación",
+      "in_progress": "En progreso",
+      "on_hold": "En espera",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "archived": "Archivado"
+    },
+    "featureStatuses": {
+      "proposed": "Propuesta",
+      "nominated": "Nominado",
+      "in_progress": "En progreso",
+      "completed": "Completado",
+      "rejected": "Rechazado"
+    },
+    "priorities": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "critical": "Crítica"
+    }
+  },
+  "HomeTechnologyRail": {
+    "eyebrow": "Ecosistema tecnológico",
+    "title": "Tecnologías y plataformas con las que construimos.",
+    "description": "Marcos, infraestructuras, inteligencia y plataformas de pago seleccionados según lo que cada producto necesita.",
+    "categories": {
+      "framework": "Marco",
+      "interface": "Interfaz",
+      "engineering": "Ingeniería",
+      "orm": "ORM",
+      "database": "Base de datos",
+      "ai": "IA",
+      "payments": "Pagos",
+      "deployment": "Despliegue",
+      "development": "Desarrollo",
+      "infrastructure": "Infraestructura"
     }
   }
 }

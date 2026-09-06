@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import { motion, useReducedMotion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 import type { PortfolioProject } from '@/features/portfolio/server/get-portfolio-projects';
 
@@ -59,10 +60,11 @@ function PortfolioPreviewOverlay({
   project: PortfolioProject;
   featured?: boolean;
 }) {
+  const t = useTranslations('PortfolioCard');
   return (
     <Link
       href={`/portfolio/${project.slug}`}
-      aria-label={`Open ${project.name} project preview`}
+      aria-label={t('openPreview', { project: project.name })}
       className={[
         'absolute inset-0 z-10',
         featured ? 'rounded-[30px]' : 'rounded-[26px]',
@@ -83,6 +85,7 @@ function PortfolioPreviewButton({
   project: PortfolioProject;
   compact?: boolean;
 }) {
+  const t = useTranslations('PortfolioCard');
   return (
     <Link
       href={`/portfolio/${project.slug}`}
@@ -93,7 +96,7 @@ function PortfolioPreviewButton({
         'hover:opacity-85 active:scale-[0.98]',
         compact ? 'h-9 px-3.5 text-[10px]' : 'h-10 px-4 text-[11px]'
       ].join(' ')}>
-      Go to preview
+      {t('goPreview')}
       <ArrowRight
         aria-hidden="true"
         className={[
@@ -119,6 +122,8 @@ function PortfolioProgressChart({
   status: string;
   compact?: boolean;
 }) {
+  const t = useTranslations('PortfolioCard');
+  const enumT = useTranslations('CommonEnums');
   const reduceMotion = Boolean(useReducedMotion());
 
   const safeProgress = Math.max(0, Math.min(100, progress));
@@ -155,7 +160,7 @@ function PortfolioProgressChart({
       ].join(' ')}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-muted">Progress</p>
+          <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-muted">{t('progress')}</p>
 
           <p
             className={[
@@ -167,8 +172,8 @@ function PortfolioProgressChart({
         </div>
 
         <motion.span
-          aria-label={humanize(status)}
-          title={humanize(status)}
+          aria-label={enumT.has(`projectStatuses.${status.toLowerCase()}`) ? enumT(`projectStatuses.${status.toLowerCase()}`) : humanize(status)}
+          title={enumT.has(`projectStatuses.${status.toLowerCase()}`) ? enumT(`projectStatuses.${status.toLowerCase()}`) : humanize(status)}
           initial={
             reduceMotion
               ? false
@@ -241,26 +246,27 @@ function PortfolioProgressChart({
    ========================================================= */
 
 function PortfolioEngagementMeta({ project }: { project: PortfolioProject }) {
+  const t = useTranslations('PortfolioCard');
   const reduceMotion = Boolean(useReducedMotion());
 
   const metrics = [
     {
-      label: 'Views',
+      label: t('views'),
       value: project.analytics.views,
       icon: Eye
     },
     {
-      label: 'Likes',
+      label: t('likes'),
       value: project.reactions.like,
       icon: ThumbsUp
     },
     {
-      label: 'Reactions',
+      label: t('reactions'),
       value: project.analytics.reactions,
       icon: Heart
     },
     {
-      label: 'Comments',
+      label: t('comments'),
       value: project.analytics.comments,
       icon: MessageCircle
     }
@@ -321,21 +327,23 @@ function PortfolioProjectSignals({
   project: PortfolioProject;
   compact?: boolean;
 }) {
+  const t = useTranslations('PortfolioCard');
+  const enumT = useTranslations('CommonEnums');
   const reduceMotion = Boolean(useReducedMotion());
 
   const activeReactionTypes = [
     {
-      label: 'Love',
+      label: t('love'),
       value: project.reactions.love,
       icon: Heart
     },
     {
-      label: 'Fire',
+      label: t('fire'),
       value: project.reactions.fire,
       icon: Flame
     },
     {
-      label: 'Shares',
+      label: t('shares'),
       value: project.analytics.shares,
       icon: Share2
     }
@@ -414,7 +422,7 @@ function PortfolioProjectSignals({
             <div className="flex items-center gap-2">
               <User aria-hidden="true" className="size-3.5 text-theme-accent" />
 
-              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">Credits</p>
+              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">{t('credits')}</p>
             </div>
 
             <span className="font-mono text-[7px] text-muted">{project.credits.length}</span>
@@ -451,7 +459,7 @@ function PortfolioProjectSignals({
                   </div>
 
                   <div className="min-w-0">
-                    <p className="truncate text-[9px] font-medium">{credit.name ?? 'Contributor'}</p>
+                    <p className="truncate text-[9px] font-medium">{credit.name ?? t('contributor')}</p>
 
                     {credit.role ? <p className="truncate text-[7px] text-muted">{credit.role}</p> : null}
                   </div>
@@ -459,7 +467,7 @@ function PortfolioProjectSignals({
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-[9px] leading-4 text-muted">No public credits recorded yet.</p>
+            <p className="mt-3 text-[9px] leading-4 text-muted">{t('noCredits')}</p>
           )}
         </motion.div>
 
@@ -492,7 +500,7 @@ function PortfolioProjectSignals({
             <div className="flex items-center gap-2">
               <Lightbulb aria-hidden="true" className="size-3.5 text-theme-accent" />
 
-              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">Suggestions</p>
+              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">{t('suggestions')}</p>
             </div>
 
             <span className="font-mono text-[7px] text-muted">{project.suggestions.length}</span>
@@ -528,7 +536,7 @@ function PortfolioProjectSignals({
                     <p className="truncate text-[9px] font-medium">{suggestion.name}</p>
 
                     <p className="mt-0.5 font-mono text-[6px] uppercase tracking-[0.12em] text-muted">
-                      {humanize(suggestion.status)} · {humanize(suggestion.priority)}
+                      {enumT.has(`featureStatuses.${suggestion.status.toLowerCase()}`) ? enumT(`featureStatuses.${suggestion.status.toLowerCase()}`) : humanize(suggestion.status)} · {enumT.has(`priorities.${suggestion.priority.toLowerCase()}`) ? enumT(`priorities.${suggestion.priority.toLowerCase()}`) : humanize(suggestion.priority)}
                     </p>
                   </div>
 
@@ -540,7 +548,7 @@ function PortfolioProjectSignals({
             </div>
           ) : (
             <p className="mt-3 text-[9px] leading-4 text-muted">
-              No proposed or nominated features right now.
+              {t('noSuggestions')}
             </p>
           )}
         </motion.div>
@@ -554,6 +562,8 @@ function PortfolioProjectSignals({
    ========================================================= */
 
 export function PortfolioProjectCard({ project, index, featured = false }: PortfolioProjectCardProps) {
+  const t = useTranslations('PortfolioCard');
+  const enumT = useTranslations('CommonEnums');
   const reduceMotion = Boolean(useReducedMotion());
 
   const introDelay = Math.min(index * 0.055, 0.28);
@@ -627,19 +637,19 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
               }}
               className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-theme-accent">
-                Featured project
+                {t('featuredProject')}
               </span>
 
               <span className="size-1 rounded-full bg-border-strong" />
 
               <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                {humanize(project.type)}
+                {enumT.has(`projectTypes.${project.type.toLowerCase()}`) ? enumT(`projectTypes.${project.type.toLowerCase()}`) : humanize(project.type)}
               </span>
 
               <span className="size-1 rounded-full bg-border-strong" />
 
               <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                {humanize(project.status)}
+                {enumT.has(`projectStatuses.${project.status.toLowerCase()}`) ? enumT(`projectStatuses.${project.status.toLowerCase()}`) : humanize(project.status)}
               </span>
             </motion.div>
 
@@ -690,7 +700,7 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
                 delay: reduceMotion ? 0 : 0.16
               }}
               className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              {project.tagline ?? project.description ?? 'Published Rcentz project.'}
+              {project.tagline ?? project.description ?? t('publishedFallback')}
             </motion.p>
 
             {project.summary ? (
@@ -787,7 +797,7 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface-muted px-4 text-[11px] font-medium text-foreground transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-secondary active:scale-[0.98]">
-                  View live
+                  {t('viewLive')}
                   <ArrowUpRight aria-hidden="true" className="size-3.5" />
                 </a>
               ) : null}
@@ -798,7 +808,7 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface-muted px-4 text-[11px] font-medium text-foreground transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-secondary active:scale-[0.98]">
-                  Source
+                  {t('source')}
                   <ArrowRight aria-hidden="true" className="size-3.5" />
                 </a>
               ) : null}
@@ -943,7 +953,7 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
           }}
           className="flex items-center justify-between gap-4">
           <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-muted">
-            {humanize(project.type)} · {humanize(project.status)}
+            {enumT.has(`projectTypes.${project.type.toLowerCase()}`) ? enumT(`projectTypes.${project.type.toLowerCase()}`) : humanize(project.type)} · {enumT.has(`projectStatuses.${project.status.toLowerCase()}`) ? enumT(`projectStatuses.${project.status.toLowerCase()}`) : humanize(project.status)}
           </span>
 
           <span className="font-mono text-[8px] text-muted">{String(index + 1).padStart(2, '0')}</span>
@@ -994,7 +1004,7 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
             delay: reduceMotion ? 0 : introDelay + 0.15
           }}
           className="mt-3 line-clamp-3 text-[11px] leading-5 text-muted">
-          {project.tagline ?? project.summary ?? project.description ?? 'Rcentz project.'}
+          {project.tagline ?? project.summary ?? project.description ?? t('projectFallback')}
         </motion.p>
 
         <motion.div
@@ -1066,8 +1076,8 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
                     href={project.liveUrl}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Open ${project.name} live`}
-                    title="View live"
+                    aria-label={t('openLive', { project: project.name })}
+                    title={t('viewLive')}
                     className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-surface-muted text-muted transition-[background-color,border-color,color,transform] hover:border-border-strong hover:bg-secondary hover:text-foreground active:scale-[0.97]">
                     <ArrowUpRight aria-hidden="true" className="size-3.5" />
                   </a>

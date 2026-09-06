@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import type { HomepageData } from '@/features/home/server/get-homepage-data';
 
@@ -46,101 +47,101 @@ type PricingPresentation = {
 
 const presentation: Record<string, PricingPresentation> = {
   'business-website-development': {
-    label: 'Web presence',
+    label: 'presentations.website.label',
 
-    headline: 'Build a business experience people can trust.',
+    headline: 'presentations.website.headline',
 
-    points: ['Responsive business website', 'Service and enquiry journeys', 'Performance-ready foundation'],
+    points: ['presentations.website.points.0', 'presentations.website.points.1', 'presentations.website.points.2'],
 
     flow: [
       {
-        label: 'Business',
-        description: 'Purpose, services and content.',
+        label: 'presentations.website.flow.0.label',
+        description: 'presentations.website.flow.0.description',
         icon: FileText
       },
       {
-        label: 'Experience',
-        description: 'Responsive pages and navigation.',
+        label: 'presentations.website.flow.1.label',
+        description: 'presentations.website.flow.1.description',
         icon: PanelsTopLeft
       },
       {
-        label: 'Enquiries',
-        description: 'Visitor actions become opportunities.',
+        label: 'presentations.website.flow.2.label',
+        description: 'presentations.website.flow.2.description',
         icon: MessageSquare
       },
       {
-        label: 'Growth',
-        description: 'A foundation ready to expand.',
+        label: 'presentations.website.flow.3.label',
+        description: 'presentations.website.flow.3.description',
         icon: Globe2
       }
     ]
   },
 
   'ecommerce-store-development': {
-    label: 'Commerce',
+    label: 'presentations.ecommerce.label',
 
-    headline: 'Turn products into a connected buying journey.',
+    headline: 'presentations.ecommerce.headline',
 
     points: [
-      'Product discovery and catalogue',
-      'Cart and checkout foundation',
-      'Payment and order workflows'
+      'presentations.ecommerce.points.0',
+      'presentations.ecommerce.points.1',
+      'presentations.ecommerce.points.2'
     ],
 
     flow: [
       {
-        label: 'Products',
-        description: 'Catalogue and discovery.',
+        label: 'presentations.ecommerce.flow.0.label',
+        description: 'presentations.ecommerce.flow.0.description',
         icon: ShoppingBag
       },
       {
-        label: 'Cart',
-        description: 'Intent becomes an order.',
+        label: 'presentations.ecommerce.flow.1.label',
+        description: 'presentations.ecommerce.flow.1.description',
         icon: ShoppingCart
       },
       {
-        label: 'Payment',
-        description: 'Secure payment integration.',
+        label: 'presentations.ecommerce.flow.2.label',
+        description: 'presentations.ecommerce.flow.2.description',
         icon: CreditCard
       },
       {
-        label: 'Fulfilment',
-        description: 'Orders continue into operations.',
+        label: 'presentations.ecommerce.flow.3.label',
+        description: 'presentations.ecommerce.flow.3.description',
         icon: PackageCheck
       }
     ]
   },
 
   'business-management-system': {
-    label: 'Business system',
+    label: 'presentations.businessSystem.label',
 
-    headline: 'Bring operations into one working environment.',
+    headline: 'presentations.businessSystem.headline',
 
     points: [
-      'Custom operational workflows',
-      'Users, records and permissions',
-      'Dashboards and structured data'
+      'presentations.businessSystem.points.0',
+      'presentations.businessSystem.points.1',
+      'presentations.businessSystem.points.2'
     ],
 
     flow: [
       {
-        label: 'Users',
-        description: 'People enter through real roles.',
+        label: 'presentations.businessSystem.flow.0.label',
+        description: 'presentations.businessSystem.flow.0.description',
         icon: Users
       },
       {
-        label: 'Workflow',
-        description: 'Operations move through defined steps.',
+        label: 'presentations.businessSystem.flow.1.label',
+        description: 'presentations.businessSystem.flow.1.description',
         icon: Workflow
       },
       {
-        label: 'Data',
-        description: 'Activity becomes structured records.',
+        label: 'presentations.businessSystem.flow.2.label',
+        description: 'presentations.businessSystem.flow.2.description',
         icon: Database
       },
       {
-        label: 'Dashboard',
-        description: 'Information becomes usable insight.',
+        label: 'presentations.businessSystem.flow.3.label',
+        description: 'presentations.businessSystem.flow.3.description',
         icon: LayoutDashboard
       }
     ]
@@ -164,6 +165,8 @@ function formatUsd(value: number) {
 }
 
 export function HomePricing({ services }: HomePricingProps) {
+  const t = useTranslations('HomePricing');
+
   const availableServices = useMemo(
     () => services.filter(service => Boolean(presentation[service.slug])),
     [services]
@@ -209,7 +212,7 @@ export function HomePricing({ services }: HomePricingProps) {
     <section className={['rcentz-section', 'border-t', 'border-border', 'py-20', 'sm:py-24'].join(' ')}>
       <div className="max-w-4xl">
         <p className={['font-mono', 'text-[10px]', 'uppercase', 'tracking-[0.2em]', 'text-muted'].join(' ')}>
-          Starting points
+          {t('eyebrow')}
         </p>
 
         <h2
@@ -224,13 +227,12 @@ export function HomePricing({ services }: HomePricingProps) {
             'sm:text-4xl',
             'lg:text-5xl'
           ].join(' ')}>
-          Start with the system you need today.
-          <span className="text-muted"> Leave room for what comes next.</span>
+          {t('titlePrimary')}
+          <span className="text-muted"> {t('titleSecondary')}</span>
         </h2>
 
         <p className={['mt-6', 'max-w-2xl', 'text-sm', 'leading-7', 'text-muted', 'sm:text-base'].join(' ')}>
-          Real entry pricing from the Rcentz service catalogue. Scope expands according to integrations,
-          workflows, content and operational complexity.
+          {t('description')}
         </p>
       </div>
 
@@ -280,7 +282,7 @@ export function HomePricing({ services }: HomePricingProps) {
                       'hover:text-foreground'
                     ].join(' ')
               ].join(' ')}>
-              {itemConfig.label}
+              {t(itemConfig.label)}
 
               {active ? (
                 <span
@@ -369,7 +371,7 @@ export function HomePricing({ services }: HomePricingProps) {
               className={['font-mono', 'text-[9px]', 'uppercase', 'tracking-[0.18em]', 'text-muted'].join(
                 ' '
               )}>
-              {config.label}
+              {t(config.label)}
             </p>
 
             <h3
@@ -385,7 +387,7 @@ export function HomePricing({ services }: HomePricingProps) {
 
                 'sm:text-3xl'
               ].join(' ')}>
-              {config.headline}
+              {t(config.headline)}
             </h3>
 
             <p className={['mt-5', 'max-w-lg', 'text-sm', 'leading-7', 'text-muted'].join(' ')}>
@@ -397,7 +399,7 @@ export function HomePricing({ services }: HomePricingProps) {
                 className={['font-mono', 'text-[9px]', 'uppercase', 'tracking-[0.17em]', 'text-muted'].join(
                   ' '
                 )}>
-                Starting from
+                {t('startingFrom')}
               </p>
 
               {ngn ? (
@@ -411,8 +413,7 @@ export function HomePricing({ services }: HomePricingProps) {
 
               {usd ? (
                 <p className={['mt-2', 'text-[12px]', 'text-muted'].join(' ')}>
-                  International projects from{' '}
-                  <span className="font-medium text-foreground">{formatUsd(usd.priceFrom)}</span>
+                  {t('internationalFrom', { amount: formatUsd(usd.priceFrom) })}
                 </p>
               ) : null}
             </div>
@@ -445,7 +446,7 @@ export function HomePricing({ services }: HomePricingProps) {
                     />
                   </span>
 
-                  <p className={['text-[12px]', 'leading-5', 'text-foreground/78'].join(' ')}>{point}</p>
+                  <p className={['text-[12px]', 'leading-5', 'text-foreground/78'].join(' ')}>{t(point)}</p>
                 </div>
               ))}
             </div>
@@ -478,7 +479,7 @@ export function HomePricing({ services }: HomePricingProps) {
                   'hover:opacity-85',
                   'active:scale-[0.98]'
                 ].join(' ')}>
-                Explore this service
+                {t('exploreService')}
                 <ArrowRight aria-hidden="true" className="size-3.5" />
               </Link>
             </div>
@@ -519,11 +520,11 @@ export function HomePricing({ services }: HomePricingProps) {
                       'tracking-[0.17em]',
                       'text-muted'
                     ].join(' ')}>
-                    Starting architecture
+                    {t('architectureEyebrow')}
                   </p>
 
                   <p className={['mt-2', 'text-sm', 'font-medium'].join(' ')}>
-                    How the system begins to move.
+                    {t('architectureTitle')}
                   </p>
                 </div>
 
@@ -581,7 +582,7 @@ export function HomePricing({ services }: HomePricingProps) {
                       'tracking-[0.14em]',
                       'text-muted'
                     ].join(' ')}>
-                    Live preview
+                    {t('livePreview')}
                   </span>
                 </span>
               </div>
@@ -700,10 +701,10 @@ export function HomePricing({ services }: HomePricingProps) {
                           </span>
 
                           <div>
-                            <p className={['text-[13px]', 'font-medium'].join(' ')}>{step.label}</p>
+                            <p className={['text-[13px]', 'font-medium'].join(' ')}>{t(step.label)}</p>
 
                             <p className={['mt-1', 'text-[11px]', 'leading-5', 'text-muted'].join(' ')}>
-                              {step.description}
+                              {t(step.description)}
                             </p>
                           </div>
                         </div>
@@ -734,19 +735,19 @@ export function HomePricing({ services }: HomePricingProps) {
                 <div className="bg-background/85 p-3">
                   <Boxes aria-hidden="true" className="size-3.5 text-muted" />
 
-                  <p className="mt-2 text-[11px] font-medium">Modular</p>
+                  <p className="mt-2 text-[11px] font-medium">{t('modular')}</p>
                 </div>
 
                 <div className="bg-background/85 p-3">
                   <BarChart3 aria-hidden="true" className="size-3.5 text-muted" />
 
-                  <p className="mt-2 text-[11px] font-medium">Measurable</p>
+                  <p className="mt-2 text-[11px] font-medium">{t('measurable')}</p>
                 </div>
 
                 <div className="bg-background/85 p-3">
                   <Workflow aria-hidden="true" className="size-3.5 text-muted" />
 
-                  <p className="mt-2 text-[11px] font-medium">Connected</p>
+                  <p className="mt-2 text-[11px] font-medium">{t('connected')}</p>
                 </div>
               </div>
             </div>
@@ -755,8 +756,7 @@ export function HomePricing({ services }: HomePricingProps) {
       </div>
 
       <p className={['mt-8', 'max-w-2xl', 'text-[11px]', 'leading-6', 'text-muted'].join(' ')}>
-        Starting prices are guidance, not fixed quotes. Final project cost reflects actual scope,
-        integrations, workflows, data requirements and delivery complexity.
+        {t('disclaimer')}
       </p>
 
       <style>{`

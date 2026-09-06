@@ -1,6 +1,7 @@
 'use client';
 
 import { BrainCircuit, Rocket, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { InspirationCapsule } from './InspirationCapsule';
 import { inspirationNodeMap } from './inspiration-data';
@@ -48,6 +49,7 @@ const iconStyles = [
 ];
 
 export function InspirationNetwork({ activeNode, onChange }: InspirationNetworkProps) {
+  const t = useTranslations('HomeInspirations');
   const active = inspirationNodeMap[activeNode];
   const activePathD = activePathMap[activeNode];
 
@@ -269,14 +271,17 @@ export function InspirationNetwork({ activeNode, onChange }: InspirationNetworkP
 
         {/* OUTPUT CAPSULES */}
         <div className="absolute left-1/2 top-[500px] flex -translate-x-1/2 items-center gap-3">
-          {['Reusable', 'Scalable', 'Maintainable'].map(label => (
+          {[0, 1, 2].map(index => {
+            const label = t(`outputs.${index}`);
+            return (
             <div
               key={label}
               className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/90 px-4 text-[11px] font-semibold text-slate-200 shadow-md backdrop-blur-md">
               <span className="size-2 rounded-full bg-[#6af3db] shadow-[0_0_8px_#6af3db]" />
               {label}
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* ACTIVE SUMMARY PANEL */}
@@ -286,9 +291,9 @@ export function InspirationNetwork({ activeNode, onChange }: InspirationNetworkP
           </span>
 
           <div className="min-w-0">
-            <p className="text-[12px] font-bold tracking-wide text-white">{active.label}</p>
+            <p className="text-[12px] font-bold tracking-wide text-white">{t(`nodes.${active.id}.label`)}</p>
             <p className="mt-0.5 text-[12px] font-normal leading-relaxed text-slate-300">
-              {active.description}
+              {t(`nodes.${active.id}.description`)}
             </p>
           </div>
         </div>
@@ -325,10 +330,10 @@ export function InspirationNetwork({ activeNode, onChange }: InspirationNetworkP
 
         <div className="mt-5 rounded-2xl border border-slate-700/80 bg-slate-900/95 p-4.5 shadow-xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#6af3db]">
-            {active.label}
+            {t(`nodes.${active.id}.label`)}
           </p>
           <p className="mt-2.5 text-[13px] font-normal leading-relaxed text-slate-200">
-            {active.description}
+            {t(`nodes.${active.id}.description`)}
           </p>
         </div>
       </div>

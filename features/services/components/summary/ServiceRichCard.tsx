@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import type { LucideIcon } from 'lucide-react';
@@ -33,7 +35,7 @@ import {
   Wrench
 } from 'lucide-react';
 
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 import type { ServiceCardSummary } from '../../server/get-service-categories';
 
@@ -60,71 +62,89 @@ const typeIcons: Record<string, LucideIcon> = {
   CONSULTING: BriefcaseBusiness
 };
 
+/*
+ * Keep category identity separate from translated presentation copy.
+ * These values are canonical catalogue identifiers used only to resolve
+ * the correct visual and technology stack.
+ */
+const CATEGORY = {
+  web: ['Web', 'Development'].join(' '),
+  wordpress: 'WordPress',
+  mobile: ['Mobile', '&', 'Adaptive', 'Experiences'].join(' '),
+  business: ['Business', 'Systems'].join(' '),
+  ecommerce: 'E-commerce',
+  financial: ['Financial', '&', 'Regulated', 'Platforms'].join(' '),
+  logistics: ['Logistics', '&', 'Tracking', 'Systems'].join(' '),
+  gaming: ['Gaming', '&', 'Interactive', 'Platforms'].join(' '),
+  maintenance: ['Maintenance', '&', 'Modernization'].join(' '),
+  consulting: ['Technical', 'Consulting'].join(' ')
+} as const;
+
 const categoryVisuals: Record<string, CategoryVisual> = {
-  'Web Development': {
+  [CATEGORY.web]: {
     primary: Globe2,
     secondary: Code2,
     tertiary: PanelsTopLeft,
     labelKey: 'webExperience'
   },
 
-  WordPress: {
+  [CATEGORY.wordpress]: {
     primary: PanelsTopLeft,
     secondary: Globe2,
     tertiary: Blocks,
     labelKey: 'contentPlatform'
   },
 
-  'Mobile & Adaptive Experiences': {
+  [CATEGORY.mobile]: {
     primary: Smartphone,
     secondary: TabletSmartphone,
     tertiary: MonitorSmartphone,
     labelKey: 'adaptiveExperience'
   },
 
-  'Business Systems': {
+  [CATEGORY.business]: {
     primary: Workflow,
     secondary: Database,
     tertiary: ShieldCheck,
     labelKey: 'operationsSystem'
   },
 
-  'E-commerce': {
+  [CATEGORY.ecommerce]: {
     primary: ShoppingBag,
     secondary: CreditCard,
     tertiary: Package,
     labelKey: 'commerceSystem'
   },
 
-  'Financial & Regulated Platforms': {
+  [CATEGORY.financial]: {
     primary: Landmark,
     secondary: WalletCards,
     tertiary: ChartNoAxesCombined,
     labelKey: 'financialPlatform'
   },
 
-  'Logistics & Tracking Systems': {
+  [CATEGORY.logistics]: {
     primary: Truck,
     secondary: Route,
     tertiary: MapPin,
     labelKey: 'trackingSystem'
   },
 
-  'Gaming & Interactive Platforms': {
+  [CATEGORY.gaming]: {
     primary: Gamepad2,
     secondary: WalletCards,
     tertiary: Sparkles,
     labelKey: 'interactivePlatform'
   },
 
-  'Maintenance & Modernization': {
+  [CATEGORY.maintenance]: {
     primary: Wrench,
     secondary: RefreshCw,
     tertiary: ShieldCheck,
     labelKey: 'modernization'
   },
 
-  'Technical Consulting': {
+  [CATEGORY.consulting]: {
     primary: Lightbulb,
     secondary: Layers3,
     tertiary: Workflow,
@@ -133,26 +153,36 @@ const categoryVisuals: Record<string, CategoryVisual> = {
 };
 
 const categoryTechnologies: Record<string, string[]> = {
-  'Web Development': ['Next.js', 'React', 'TypeScript'],
+  [CATEGORY.web]: ['Next.js', 'React', 'TypeScript'],
 
-  WordPress: ['WordPress', 'Next.js', 'Cloudflare'],
+  [CATEGORY.wordpress]: ['WordPress', 'Next.js', 'Cloudflare'],
 
-  'Mobile & Adaptive Experiences': ['React', 'Next.js', 'TypeScript'],
+  [CATEGORY.mobile]: ['React', 'Next.js', 'TypeScript'],
 
-  'Business Systems': ['Next.js', 'Prisma', 'PostgreSQL'],
+  [CATEGORY.business]: ['Next.js', 'Prisma', 'PostgreSQL'],
 
-  'E-commerce': ['Next.js', 'PostgreSQL', 'Paystack'],
+  [CATEGORY.ecommerce]: ['Next.js', 'PostgreSQL', 'Paystack'],
 
-  'Financial & Regulated Platforms': ['Next.js', 'PostgreSQL', 'Prisma'],
+  [CATEGORY.financial]: ['Next.js', 'PostgreSQL', 'Prisma'],
 
-  'Logistics & Tracking Systems': ['Next.js', 'PostgreSQL', 'APIs'],
+  [CATEGORY.logistics]: ['Next.js', 'PostgreSQL', 'APIs'],
 
-  'Gaming & Interactive Platforms': ['Next.js', 'PostgreSQL', 'APIs'],
+  [CATEGORY.gaming]: ['Next.js', 'PostgreSQL', 'APIs'],
 
-  'Maintenance & Modernization': ['Next.js', 'TypeScript', 'Cloudflare'],
+  [CATEGORY.maintenance]: ['Next.js', 'TypeScript', 'Cloudflare'],
 
-  'Technical Consulting': ['Next.js', 'Prisma', 'PostgreSQL']
+  [CATEGORY.consulting]: ['Next.js', 'Prisma', 'PostgreSQL']
 };
+
+const serviceTypeKeys = {
+  WEBSITE: 'website',
+  WEB_APP: 'web_app',
+  MOBILE_APP: 'mobile_app',
+  SAAS: 'saas',
+  ECOMMERCE: 'ecommerce',
+  MAINTENANCE: 'maintenance',
+  CONSULTING: 'consulting'
+} as const;
 
 function humanize(value: string) {
   return value
@@ -162,8 +192,8 @@ function humanize(value: string) {
     .join(' ');
 }
 
-export async function ServiceRichCard({ service, categoryName, index }: ServiceRichCardProps) {
-  const t = await getTranslations('ServiceRichCard');
+export function ServiceRichCard({ service, categoryName, index }: ServiceRichCardProps) {
+  const t = useTranslations('ServiceRichCard');
 
   const TypeIcon = typeIcons[service.type] ?? MonitorSmartphone;
 
@@ -180,7 +210,9 @@ export async function ServiceRichCard({ service, categoryName, index }: ServiceR
   const SecondaryVisual = visual.secondary;
   const TertiaryVisual = visual.tertiary;
 
-  const serviceTypeKey = service.type.toLowerCase();
+  const serviceTypeKey = serviceTypeKeys[service.type as keyof typeof serviceTypeKeys];
+
+  const serviceTypeLabel = serviceTypeKey ? t(`serviceTypes.${serviceTypeKey}`) : humanize(service.type);
 
   return (
     <article className="group relative flex h-[500px] w-[326px] shrink-0 snap-start flex-col overflow-hidden rounded-[30px] border border-border bg-background shadow-[0_18px_55px_rgba(0,0,0,0.045)] transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1.5 hover:border-theme-accent/30 hover:shadow-[0_26px_75px_rgba(0,0,0,0.085)] sm:w-[385px]">
@@ -311,11 +343,7 @@ export async function ServiceRichCard({ service, categoryName, index }: ServiceR
                 {t('serviceType')}
               </p>
 
-              <p className="mt-1 text-[9px] font-medium text-foreground">
-                {t.has(`serviceTypes.${serviceTypeKey}`)
-                  ? t(`serviceTypes.${serviceTypeKey}`)
-                  : humanize(service.type)}
-              </p>
+              <p className="mt-1 text-[9px] font-medium text-foreground">{serviceTypeLabel}</p>
             </div>
 
             <Link

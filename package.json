@@ -16,7 +16,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "i18n:audit": "node scripts/i18n-audit.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

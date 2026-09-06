@@ -1,5 +1,7 @@
 import { Activity, CircleUserRound, Database } from 'lucide-react';
 
+import { getLocale, getTranslations } from 'next-intl/server';
+
 import { DeliveryProfileChart, type DeliveryProfileDatum } from '@/components/charts/DeliveryProfileChart';
 
 import { ReadinessGaugeChart } from '@/components/charts/ReadinessGaugeChart';
@@ -111,64 +113,24 @@ function getProjectStage(status: string): ProjectStage {
       return {
         eyebrow: 'Project',
         title: humanize(status),
-        detail: 'Current state is sourced from the project record.'
+        detail: 'Project status is sourced from the project record.'
       };
   }
 }
 
-function projectTypeLabel(type: string) {
-  switch (type) {
-    case 'ECOMMERCE':
-      return 'Commerce system';
-
-    case 'SAAS':
-      return 'SaaS platform';
-
-    case 'WEB_APP':
-      return 'Web application';
-
-    case 'WEBSITE':
-      return 'Website system';
-
-    case 'MOBILE_APP':
-      return 'Mobile application';
-
-    case 'DESKTOP_APP':
-      return 'Desktop application';
-
-    case 'API':
-      return 'API system';
-
-    case 'MAINTENANCE':
-      return 'Maintained system';
-
-    case 'CONSULTING':
-      return 'Consulting project';
-
-    case 'BRANDING':
-      return 'Brand system';
-
-    case 'GRAPHIC_DESIGN':
-      return 'Design project';
-
-    default:
-      return humanize(type);
-  }
-}
-
-function formatCompactNumber(value: number | null | undefined) {
+function formatCompactNumber(value: number | null | undefined, locale: string) {
   if (value === null || value === undefined) {
     return '—';
   }
 
-  return new Intl.NumberFormat('en', {
+  return new Intl.NumberFormat(locale, {
     notation: value >= 1000 ? 'compact' : 'standard',
     maximumFractionDigits: 1
   }).format(value);
 }
 
-function formatUpdateDate(value: string) {
-  return new Intl.DateTimeFormat('en', {
+function formatUpdateDate(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: 'numeric'
   }).format(new Date(value));
@@ -178,17 +140,16 @@ function formatUpdateDate(value: string) {
  * Illustration-only delivery segmentation.
  *
  * These phases are not fabricated historical milestones.
- * Every value is derived from the canonical project.progress.
+ * Every value is derived from canonical project.progress.
  */
-function getDeliveryProfile(progress: number): DeliveryProfileDatum[] {
+function getDeliveryProfile(progress: number, phaseLabels: string[]): DeliveryProfileDatum[] {
   const safeProgress = clampProgress(progress);
 
-  const phases = ['Foundation', 'Structure', 'Build', 'Integrate', 'Validate', 'Release'];
+  const phaseSize = 100 / phaseLabels.length;
 
-  const phaseSize = 100 / phases.length;
-
-  return phases.map((label, index) => {
+  return phaseLabels.map((label, index) => {
     const phaseStart = index * phaseSize;
+
     const phaseEnd = phaseStart + phaseSize;
 
     const completed = clampProgress(((safeProgress - phaseStart) / phaseSize) * 100);
@@ -204,14 +165,43 @@ function getDeliveryProfile(progress: number): DeliveryProfileDatum[] {
   });
 }
 
-export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHeroIllustrationProps) {
+export async function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHeroIllustrationProps) {
+  const locale = await getLocale();
+
+  const moreT = await getTranslations('PortfolioMoreProjects');
+
+  const galleryT = await getTranslations('PortfolioDetailGallery');
+
+  const enumT = await getTranslations('CommonEnums');
+
   const progress = clampProgress(project.progress);
+
   const stage = getProjectStage(project.status);
 
   const recentUpdates = project.updates.slice(0, 5);
+
   const visibleTechnologies = project.technologies.slice(0, 4);
 
-  const deliveryProfile = getDeliveryProfile(progress);
+  const deliveryProfile = getDeliveryProfile(progress, [
+    moreT('deliveryPhases.0'),
+    moreT('deliveryPhases.1'),
+    moreT('deliveryPhases.2'),
+    moreT('deliveryPhases.3'),
+    moreT('deliveryPhases.4'),
+    moreT('deliveryPhases.5')
+  ]);
+
+  const projectTypeMap: Record<string, string> = {
+    WEBSITE: enumT('projectTypes.website'),
+    WEB_APP: enumT('projectTypes.web_app'),
+    MOBILE_APP: enumT('projectTypes.mobile_app'),
+    SAAS: enumT('projectTypes.saas'),
+    ECOMMERCE: enumT('projectTypes.ecommerce'),
+    INTERNAL_TOOL: enumT('projectTypes.internal_tool'),
+    OTHER: enumT('projectTypes.other')
+  };
+
+  const projectTypeLabel = projectTypeMap[project.type] ?? humanize(project.type);
 
   const metrics = [
     {
@@ -223,7 +213,7 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
       value: String(project.technologies.length)
     },
     {
-      label: 'Project media',
+      label: galleryT('projectMedia'),
       value: String(project.media.length)
     },
     {
@@ -266,7 +256,7 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
             </div>
           </div>
 
-          <div className="grid min-h-[510px] md:min-h-[570px] lg:grid-cols-[minmax(0,1fr)_230px] lg:min-h-[610px]">
+          <div className="grid min-h-[510px] md:min-h-[570px] lg:min-h-[610px] lg:grid-cols-[minmax(0,1fr)_230px]">
             {/* Main */}
 
             <div className="min-w-0 p-3 sm:p-4 lg:p-5">
@@ -275,7 +265,7 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-theme-accent">
-                    {projectTypeLabel(project.type)}
+                    {projectTypeLabel}
                   </p>
 
                   <p className="mt-1.5 text-[16px] font-medium tracking-[-0.02em] text-foreground">
@@ -292,13 +282,13 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
                 </div>
               </div>
 
-              {/* Charts — untouched */}
+              {/* Charts */}
 
               <div className="mt-4 grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
                 <div className="relative overflow-hidden rounded-[18px] border border-border bg-surface-muted/35 p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-[14px] font-semibold text-foreground">Delivery profile</p>
+                      <p className="text-[14px] font-semibold text-foreground">{moreT('deliveryProfile')}</p>
 
                       <p className="mt-1 font-mono text-[9px] font-medium uppercase tracking-[0.09em] text-muted">
                         Current system progression
@@ -316,9 +306,9 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
                     <DeliveryProfileChart
                       data={deliveryProfile}
                       height={220}
-                      completedLabel="Phase completion"
-                      remainingLabel="Progress curve"
-                      trajectoryLabel="Trajectory"
+                      completedLabel={moreT('phaseCompletion')}
+                      remainingLabel={moreT('progressCurve')}
+                      trajectoryLabel={moreT('trajectory')}
                     />
                   </div>
                 </div>
@@ -453,7 +443,7 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
                           </p>
 
                           <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.06em] text-muted">
-                            {humanize(update.type)} · {formatUpdateDate(update.createdAt)}
+                            {humanize(update.type)} · {formatUpdateDate(update.createdAt, locale)}
                           </p>
                         </div>
                       </div>
@@ -480,13 +470,19 @@ export function PortfolioDetailHeroIllustration({ project }: PortfolioDetailHero
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-4">
-                  <MetricCell label="Views" value={formatCompactNumber(project.analytics?.views)} />
+                  <MetricCell label="Views" value={formatCompactNumber(project.analytics?.views, locale)} />
 
-                  <MetricCell label="Reactions" value={formatCompactNumber(project.engagement.reactions)} />
+                  <MetricCell
+                    label="Reactions"
+                    value={formatCompactNumber(project.engagement.reactions, locale)}
+                  />
 
-                  <MetricCell label="Comments" value={formatCompactNumber(project.engagement.comments)} />
+                  <MetricCell
+                    label="Comments"
+                    value={formatCompactNumber(project.engagement.comments, locale)}
+                  />
 
-                  <MetricCell label="Shares" value={formatCompactNumber(project.analytics?.shares)} />
+                  <MetricCell label="Shares" value={formatCompactNumber(project.analytics?.shares, locale)} />
                 </div>
               </div>
             </aside>

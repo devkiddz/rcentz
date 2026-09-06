@@ -11,11 +11,18 @@ import {
   siVercel
 } from 'simple-icons';
 
+import { getTranslations } from 'next-intl/server';
+
 type Brand = {
   name: string;
   category: string;
   path?: string;
   mark?: string;
+};
+
+type BrandMarkProps = {
+  brand: Brand;
+  categoryLabel: string;
 };
 
 const platforms: Brand[] = [
@@ -117,7 +124,7 @@ function BrandIcon({ brand }: { brand: Brand }) {
   );
 }
 
-function BrandMark({ brand }: { brand: Brand }) {
+function BrandMark({ brand, categoryLabel }: BrandMarkProps) {
   return (
     <div
       className={[
@@ -125,22 +132,15 @@ function BrandMark({ brand }: { brand: Brand }) {
         'shrink-0',
         'items-center',
         'gap-3',
-
         'rounded-2xl',
-
         'border',
         'border-border/65',
-
         'bg-background/38',
-
         'px-4',
         'py-3',
-
         'backdrop-blur-md',
-
         'transition-[background-color,border-color]',
         'duration-300',
-
         'hover:border-border-strong/70',
         'hover:bg-background/60'
       ].join(' ')}>
@@ -160,14 +160,16 @@ function BrandMark({ brand }: { brand: Brand }) {
             'tracking-[0.15em]',
             'text-muted'
           ].join(' ')}>
-          {brand.category}
+          {categoryLabel}
         </p>
       </div>
     </div>
   );
 }
 
-export function HomeTechnologyRail() {
+export async function HomeTechnologyRail() {
+  const t = await getTranslations('HomeTechnologyRail');
+
   const repeatedPlatforms = [...platforms, ...platforms];
 
   return (
@@ -179,19 +181,16 @@ export function HomeTechnologyRail() {
         <div>
           <p
             className={['font-mono', 'text-[10px]', 'uppercase', 'tracking-[0.2em]', 'text-muted'].join(' ')}>
-            Technology ecosystem
+            {t('eyebrow')}
           </p>
 
           <h2
             className={['mt-3', 'text-2xl', 'font-semibold', 'tracking-[-0.04em]', 'sm:text-3xl'].join(' ')}>
-            Technologies and platforms we build with.
+            {t('title')}
           </h2>
         </div>
 
-        <p className={['max-w-md', 'text-sm', 'leading-6', 'text-muted'].join(' ')}>
-          Frameworks, infrastructure, intelligence and payment platforms selected according to what each
-          product needs.
-        </p>
+        <p className={['max-w-md', 'text-sm', 'leading-6', 'text-muted'].join(' ')}>{t('description')}</p>
       </div>
 
       <div className={['rcentz-platform-marquee', 'relative', 'mt-9', 'overflow-hidden'].join(' ')}>
@@ -229,7 +228,11 @@ export function HomeTechnologyRail() {
 
         <div className={['rcentz-platform-track', 'flex', 'w-max', 'gap-3'].join(' ')}>
           {repeatedPlatforms.map((brand, index) => (
-            <BrandMark key={`${brand.name}-${index}`} brand={brand} />
+            <BrandMark
+              key={`${brand.name}-${index}`}
+              brand={brand}
+              categoryLabel={t(`categories.${brand.category.toLowerCase()}`)}
+            />
           ))}
         </div>
       </div>
