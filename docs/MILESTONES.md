@@ -1,3593 +1,2452 @@
-# RCENTZ SYSTEM
+RCENTZ SYSTEM
 
-## Development Milestones
+Development Milestones
 
-**Project:** Rcentz System  
+Project: Rcentz System
+Document: Development Milestones
+Version: 1.5
+Status: Active / Living Document
+Last Updated: 2026-09-06
 
-**Document:** Development Milestones  
-
-**Version:** 1.4  
-
-**Status:** Active / Living Document  
-
-**Last Updated:** 2026-09-04
-
----
-
-# 1. Purpose
+1. Purpose
 
 This document tracks the implementation progress of the Rcentz System.
 
-The **Master Blueprint** defines what Rcentz is and the long-term architectural direction. This milestone document defines:
+The Master Blueprint defines what Rcentz is and the long-term architectural direction. This milestone document defines:
 
-- What is being built
+What is being built
 
-- The order of implementation
+The order of implementation
 
-- What each milestone must accomplish
+What each milestone must accomplish
 
-- What must be tested before moving forward
+What must be tested before moving forward
 
-- Important architectural decisions
+Important architectural decisions
 
-- Completed, active, deferred and pending work
+Completed, active, deferred and pending work
 
 This is a living document and must reflect the real state of the codebase.
 
----
-
-# 2. Development Philosophy
+2. Development Philosophy
 
 Rcentz is developed module by module and file by file.
 
-```text
-
 PLAN
-
-  ↓
-
+  ↓
 ARCHITECT
-
-  ↓
-
+  ↓
 IMPLEMENT ONE FILE / MODULE
-
-  ↓
-
+  ↓
 AUDIT
-
-  ↓
-
+  ↓
 DISCUSS / MODIFY
-
-  ↓
-
+  ↓
 TEST
-
-  ↓
-
+  ↓
 DOCUMENT
-
-  ↓
-
+  ↓
 COMMIT / PUSH
-
-  ↓
-
+  ↓
 NEXT MODULE / MILESTONE
-
-```
 
 Important architectural decisions should remain:
 
-- Understandable
+Understandable
 
-- Auditable
+Auditable
 
-- Reusable
+Reusable
 
-- Testable
+Testable
 
-- Consistent with the Master Blueprint
+Consistent with the Master Blueprint
 
-## Milestone Closure Rule
+Milestone Closure Rule
 
 A milestone is a one-time implementation checkpoint.
 
 When a milestone is complete:
 
-- Its intended architecture and public contracts are considered settled.
+Its intended architecture and public contracts are considered settled.
 
-- It is tested.
+It is tested.
 
-- It is documented.
+It is documented.
 
-- The implementation is committed and pushed.
+The implementation is committed and pushed.
 
-- Development moves forward.
+Development moves forward.
 
 A completed milestone should only be reopened for a genuine defect or a demonstrated later architectural dependency.
 
 Future routes may be defined before their destination pages are implemented when the route contract belongs to an earlier shell or navigation milestone.
 
----
+Translation Closure Rule
 
-# 3. Status Legend
+Translations are treated as a milestone/project closure gate, not a per-component interruption.
 
-| Status | Meaning |
+During active implementation:
 
-|---|---|
+Temporary raw English strings may exist.
 
-| ⬜ Not Started | Work has not started |
+TypeScript and production build checks continue normally.
 
-| 🟡 In Progress | Currently being implemented |
+Translation JSON files are not repeatedly rewritten after every component.
 
-| 🟢 Completed | Implemented and tested |
+At final translation closure:
 
-| 🔴 Blocked | Cannot proceed because of an unresolved dependency |
+IMPLEMENTATION COMPLETE
+        ↓
+INSPECT FINAL UI COPY
+        ↓
+UPDATE EN / FR / ES / DE / PT
+        ↓
+RUN pnpm i18n:audit
+        ↓
+FIX MISSING / STALE KEYS
+        ↓
+CLOSE TRANSLATION GATE
 
-| 🔵 Review | Implemented but awaiting review |
+For the current project direction, the full translation pass is intentionally deferred until the project is functionally complete.
 
-| ⚪ Deferred | Intentionally postponed |
+3. Status Legend
 
----
+Status
 
-# 4. Overall Roadmap
+Meaning
 
-```text
+⬜ Not Started
 
-M01  Project Foundation
+Work has not started
 
- ↓
+🟡 In Progress
 
-M02  Architecture & Conventions
+Currently being implemented
 
- ↓
+🟢 Completed
 
-M03  Design System / UI Canvas
+Implemented and tested
 
- ↓
+🔴 Blocked
 
-M04  Database Foundation
+Cannot proceed because of an unresolved dependency
 
- ↓
+🔵 Review
 
-M05  Global Application Shell
+Implemented but awaiting review
 
- ↓
+⚪ Deferred
 
-M06  Public Homepage
+Intentionally postponed
 
- ↓
+4. Overall Roadmap
 
-M07  Portfolio Engine
+M01  Project Foundation
+ ↓
+M02  Architecture & Conventions
+ ↓
+M03  Design System / UI Canvas
+ ↓
+M04  Database Foundation
+ ↓
+M05  Global Application Shell
+ ↓
+M06  Public Homepage
+ ↓
+M07  Portfolio Engine
+ ↓
+M08  Services Engine
+ ↓
+M09  Commerce Foundation
+ ↓
+M10  Authentication & User System
+ ↓
+M11  Client Project Management
+ ↓
+M12  Admin Control Center
+ ↓
+M13  Blog / Community Content
+ ↓
+M14  Messaging / Support / Notifications
+ ↓
+M15  Analytics
+ ↓
+M16  SEO / Performance
+ ↓
+M17  Production Hardening
+ ↓
+M18  Mobile / Future Application Readiness
 
- ↓
+5. M01 — Project Foundation
 
-M08  Services Engine
+Status: 🟡 In Progress
 
- ↓
-
-M09  Commerce Foundation
-
- ↓
-
-M10  Authentication & User System
-
- ↓
-
-M11  Client Project Management
-
- ↓
-
-M12  Admin Control Center
-
- ↓
-
-M13  Blog / Community Content
-
- ↓
-
-M14  Messaging / Support / Notifications
-
- ↓
-
-M15  Analytics
-
- ↓
-
-M16  SEO / Performance
-
- ↓
-
-M17  Production Hardening
-
- ↓
-
-M18  Mobile / Future Application Readiness
-
-```
-
----
-
-# 5. M01 — Project Foundation
-
-**Status:** 🟡 In Progress
-
-## Objective
+Objective
 
 Create the initial Rcentz application and establish the fundamental development environment.
 
-## Scope
+Scope
 
-- Next.js application
+Next.js application
 
-- TypeScript
+TypeScript
 
-- Package manager
+Package manager
 
-- Tailwind CSS
+Tailwind CSS
 
-- shadcn/ui foundation
+shadcn/ui foundation
 
-- Shared UI/icon dependencies
+Shared UI/icon dependencies
 
-- Environment variables
+Environment variables
 
-- Development scripts
+Development scripts
 
-- Local development environment
+Local development environment
 
-- Git repository and `main` branch
+Git repository and main branch
 
-## Exit Criteria
+Current State
 
-- Application starts locally
+Foundation is operational and actively supporting production-style feature work.
 
-- TypeScript compiles
+Current validated stack includes:
 
-- Tailwind foundation is established
+Next.js 16.3.3
 
-- shadcn/ui dependency checkpoint is formally closed
+React 19.2.8
 
-- Shared UI/icon dependencies are formally closed
+TypeScript 5.9.3
 
-- Environment configuration supports the current database/auth foundation
+Prisma 7.10.0
 
-- Git repository and main branch are established
+Tailwind CSS 4
 
----
+Motion 13.1.1
 
-# 6. M02 — Architecture & Folder Conventions
+Better Auth
 
-**Status:** 🟡 In Progress
+PostgreSQL / Neon
 
-## Objective
+pnpm 11.1.1
+
+shadcn Base-UI / base-nova primitives
+
+Lucide icons
+
+Recharts
+
+Exit Criteria
+
+Application starts locally
+
+TypeScript compiles
+
+Tailwind foundation is established
+
+shadcn/ui dependency checkpoint is formally closed
+
+Shared UI/icon dependencies are formally closed
+
+Environment configuration supports the current database/auth foundation
+
+Git repository and main branch are established
+
+Foundation dependencies are stable enough to stop treating M01 as active support work
+
+6. M02 — Architecture & Folder Conventions
+
+Status: 🟡 In Progress
+
+Objective
 
 Establish the structural conventions that govern the Rcentz codebase.
 
-## Primary Boundaries
-
-```text
+Primary Boundaries
 
 app/
-
 features/
-
 components/
-
 server/
-
 lib/
-
 data/
-
 docs/
-
 ui-shell/
-
 prisma/
 
-```
+Directories are created when real implementation requires them. Empty folders should not be added only to imitate intended architecture.
 
-Directories should be created when real implementation requires them. Empty folders should not be added only to imitate the intended architecture.
-
-## Architectural Flow
-
-```text
+Architectural Flow
 
 USER
-
-  ↓
-
+ ↓
 APPLICATION SURFACE
-
-  ↓
-
+ ↓
 FEATURE / ENGINE
-
-  ↓
-
+ ↓
 BUSINESS LOGIC
-
-  ↓
-
+ ↓
 DATA ACCESS
-
-  ↓
-
+ ↓
 DATABASE / PROVIDER
 
-```
+Principles
 
-## Principles
+Business logic should not be scattered through UI components.
 
-- Business logic should not be scattered through UI components.
+Feature boundaries should remain reusable.
 
-- Feature boundaries should remain reusable.
+Server/data access should remain outside presentation components.
 
-- Server/data access should remain outside presentation components.
+Architecture should support Public Web, Client Dashboard, Admin System and future mobile/native applications.
 
-- Architecture should support:
+app/ owns routing/composition.
 
-  - Public Web
+features/ owns domain-specific presentation and engines.
 
-  - Client Dashboard
+server/ or feature-local server boundaries own business/data access.
 
-  - Admin System
+Shared UI primitives live outside domain-specific features.
 
-  - Future mobile/native applications
+Current Confirmed Pattern
 
-## Exit Criteria
+app/
+features/
+  admin/
+  auth/
+  home/
+  portfolio/
+  services/
+components/
+  ui/
+ui-shell/
+prisma/
+docs/
 
-- Folder architecture documented
+Exit Criteria
 
-- Responsibilities defined
+Folder architecture documented
 
-- First `features/` business boundary established
+Responsibilities defined
 
-- Server/data-access conventions documented
+features/ business boundaries established
 
-- Architecture recorded in `docs/ARCHITECTURE.md`
+Server/data-access conventions documented
 
-- M02 closure checkpoint documented
+Architecture recorded in docs/ARCHITECTURE.md
 
----
+M02 closure checkpoint documented
 
-# 7. M03 — Rcentz UI Canvas & Design System
+7. M03 — Rcentz UI Canvas & Design System
 
-**Status:** 🟢 Completed
+Status: 🟢 Completed
 
-## Objective
+Objective
 
 Establish the reusable visual foundation and persistent presentation environment for Rcentz application surfaces.
 
-## Final Canvas Foundation
-
-```text
+Final Canvas Foundation
 
 Environmental Canvas: 1440px
-
-Public Content Axis:   1200px
-
-```
+Public Content Axis:   1200px
 
 The application remains intentionally bounded on very large displays.
 
-## Theme Foundation
+Theme Foundation
 
 Semantic tokens exist for:
 
-- Background / foreground
+Background / foreground
 
-- Surfaces
+Surfaces
 
-- Muted states
+Raised surfaces
 
-- Borders
+Muted surfaces
 
-- Primary / secondary
+Borders
 
-- Accent
+Primary / secondary
 
-- Destructive states
+Accent
 
-- Grid lines
+Destructive states
 
-- Radius values
+Theme accent
 
-Visual direction:
+Grid lines
 
-```text
+Radius values
+
+Cards
+
+Popovers
+
+Shell surfaces
+
+Theme Semantic Rule
+
+The Rcentz theme owns visual meaning while shadcn/Base-UI semantic tokens resolve into that theme.
+
+background       → page
+surface          → popovers / menus
+surface-raised   → elevated cards / panels
+surface-muted    → hover / focus / subtle interaction
+foreground       → primary text
+muted            → secondary text
+primary          → strong action
+accent           → interaction surface
+theme-accent     → Rcentz teal identity
+
+Base-UI Compatibility Decision
+
+Generated shadcn/Base-UI components may use semantic primitives such as:
+
+bg-popover
+text-popover-foreground
+bg-accent
+text-accent-foreground
+
+These must resolve into the Rcentz theme rather than introduce a second visual language.
+
+Visual Direction
 
 BLACK
-
-  +
-
+ +
 WHITE
-
-  +
-
+ +
 STRUCTURAL GRID
-
-  +
-
+ +
 CONTROLLED LIGHT
+ +
+RESTRAINED TEAL SIGNAL
 
-```
+Verification
 
-Teal is used as a restrained signal/accent while foreground hierarchy remains neutral.
+TypeScript                PASS
+ESLint                    PASS
+Next.js production build  PASS
 
-## Shell Architecture
+Git Evidence
 
-```text
+Implementation Commit:
+f880aa93f9423b7e572f6a424148332cfbc09252
 
-RcentzShell
+Milestone Tag:
+m03-ui-canvas-v1
 
-│
+8. M04 — Database Foundation
 
-├── RcentzDataField
+Status: 🟢 Completed
 
-├── RcentzAce
-
-└── Application Content
-
-```
-
-The shell owns persistent visual presentation. Pages and feature engines own their own content and business composition.
-
-## Rcentz Data Field
-
-Implemented:
-
-- Structural data grid
-
-- Randomized star/data lights
-
-- Twinkling data points
-
-- Travelling data signals
-
-- Ambient illumination
-
-- Central breathing light
-
-- Readability masks
-
-- Mobile density reduction
-
-- Reduced-motion handling
-
-## Rcentz Ace
-
-Implemented:
-
-- Centered identity formation
-
-- Distributed light nodes
-
-- Inner support nodes
-
-- Circular arc structure
-
-- Breathing halo
-
-- Travelling light
-
-- Appearance lifecycle
-
-- Dissolve and reappearance
-
-- Mobile adaptation
-
-- Reduced-motion handling
-
-## Animation Identity
-
-```text
-
-STRUCTURE
-
-   +
-
-DATA
-
-   +
-
-LIGHT
-
-   +
-
-SUBTLE MOTION
-
-   +
-
-BREATHING SPACE
-
-```
-
-## Deferred Experiment
-
-Pointer-reactive lighting remains deferred.
-
-Desired behavior:
-
-```text
-
-POINTER
-
-   ↓
-
-LIGHT RESPONSE
-
-```
-
-Not:
-
-```text
-
-POINTER
-
-   ↓
-
-MOVE THE IDENTITY FORMATION
-
-```
-
-## Verification
-
-```text
-
-TypeScript                  PASS
-
-ESLint                      PASS
-
-Next.js production build    PASS
-
-```
-
-## Git Evidence
-
-**Implementation Commit:**  
-
-`f880aa93f9423b7e572f6a424148332cfbc09252`
-
-**Commit:**  
-
-`feat: establish Rcentz UI shell and milestone workflow`
-
-**Milestone Tag:**  
-
-`m03-ui-canvas-v1`
-
-## Result
-
-Rcentz has a reusable visual environment and identifiable presentation language.
-
----
-
-# 8. M04 — Database Foundation
-
-**Status:** 🟢 Completed
-
-## Objective
+Objective
 
 Establish PostgreSQL + Prisma as the central source of truth for the Rcentz System.
 
-## Architecture
+Architecture
 
-```text
+                    DATABASE
+                       │
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+       Website       Admin        Client
+          │            │            │
+      Portfolio     Management    Tracking
+          │
+      Public SEO
 
-                    DATABASE
-
-                       │
-
-          ┌────────────┼────────────┐
-
-          ↓            ↓            ↓
-
-       Website       Admin        Client
-
-          │            │            │
-
-      Portfolio     Management    Tracking
-
-          │
-
-      Public SEO
-
-```
-
-## Core Domains
+Core Domains
 
 The database foundation supports:
 
-- Users and authentication
+Users and authentication
 
-- Roles and account status
+Roles and account status
 
-- Services and service categories
+Services and service categories
 
-- Multi-currency service pricing
+Multi-currency service pricing
 
-- Service plans and subscriptions
+Service plans and subscriptions
 
-- Service requests
+Service requests
 
-- Quotes
+Quotes
 
-- Projects
+Projects
 
-- Project milestones
+Project milestones
 
-- Project features and tasks
+Project features and tasks
 
-- Portfolio profiles
+Portfolio profiles
 
-- Products and commerce
+Products and commerce
 
-- Orders
+Orders
 
-- Invoices
+Invoices
 
-- Payments and refunds
+Payments and refunds
 
-- Crypto payment records
+Crypto payment records
 
-- Blog/content
+Blog/content
 
-- Messaging
+Messaging
 
-- Notifications
+Notifications
 
-- Support
+Support
 
-- Analytics
+Analytics
 
-- Media
+Media
 
-- SEO
+SEO
 
-## Data Ownership Principle
-
-```text
+Data Ownership Principle
 
 DATABASE
-
-   ↓
-
+   ↓
 PUBLIC WEBSITE
-
-   ↓
-
+   ↓
 CLIENT EXPERIENCE
-
-   ↓
-
+   ↓
 ADMIN MANAGEMENT
 
-```
-
-Business records that belong in the database should not be permanently duplicated as hardcoded UI content.
-
-## Project Structure
-
-```text
+Project Structure
 
 Project
-
-   ↓
-
+   ↓
 Milestone
-
-   ↓
-
+   ↓
 Feature
-
-   ↓
-
+   ↓
 Task
 
-```
-
-Features may exist in backlog before milestone assignment. Tasks belong to features.
-
-## Billing Architecture
-
-```text
+Billing Architecture
 
 ONE-OFF SERVICES
-
 Service
-
-  ↓
-
+ ↓
 ServiceRequest
-
-  ↓
-
+ ↓
 Quote
-
-  ↓
-
+ ↓
 Project
 
 LONG-TERM SERVICES
-
 ServicePlan
-
-  ↓
-
+ ↓
 ClientSubscription
-
-  ↓
-
+ ↓
 Usage / Entitlements
-
-  ↓
-
+ ↓
 Invoice
 
 COMMERCE
-
 Product
-
-  ↓
-
+ ↓
 Order
-
-  ↓
-
+ ↓
 Invoice
 
 BILLING
-
 Invoice
-
-  ↓
-
+ ↓
 Payment
-
-  ↓
-
+ ↓
 Refund
 
 CRYPTO
-
 Payment
-
-  ↓
-
+ ↓
 CryptoPayment
-
-  ↓
-
+ ↓
 CryptoTransaction
 
-```
-
-## Multi-Currency Service Pricing
-
-```text
-
-Service
-
-  ↓
-
-ServicePrice
-
-  ├── NGN
-
-  └── USD
-
-```
-
-Quotes and invoices preserve final agreed monetary values.
-
-## Authentication Foundation
+Authentication Foundation
 
 Better Auth is connected to Prisma/PostgreSQL persistence.
 
-The official Rcentz administrator is seeded and promoted to:
-
-```text
+The official Rcentz administrator is seeded as:
 
 SUPER_ADMIN
-
 ACTIVE
-
 EMAIL VERIFIED
 
-```
-
-Seed credentials are environment-driven and are not stored directly in source code.
-
-## Official Project Seed
-
-Seeded projects include:
-
-- AJ Logik
-
-- Shelsea Commerce
-
-- Waffi Market
-
-- JobRcentz
-
-- NovaShad v01
-
-- NovaPanel v01
-
-- Rcentz Core
-
-Foundation counts at M04 closure:
-
-```text
-
-Projects         7
-
-Portfolio        7
-
-Technologies    61
-
-Milestones      26
-
-```
-
-## Official Service Catalogue
-
-Categories:
-
-- Web Development
-
-- WordPress
-
-- Mobile & Adaptive Experiences
-
-- Business Systems
-
-- E-commerce
-
-- Maintenance & Modernization
-
-- Technical Consulting
-
-Foundation counts:
-
-```text
-
-Service Categories     7
-
-Services              35
-
-Service Prices        70
-
-```
-
-## Seed Strategy
-
-```text
-
-INITIAL FOUNDATION
-
-      ↓
-
-SEED DATA
-
-      ↓
-
-DATABASE
-
-      ↓
-
-ADMIN CONTROL CENTER
-
-      ↓
-
-LONG-TERM MANAGEMENT
-
-```
-
-Seed data establishes canonical starting records. It is not the permanent management interface.
-
-## Verification
-
-```text
-
-Prisma schema validation     PASS
-
-Prisma Client generation     PASS
-
-TypeScript                   PASS
-
-ESLint                       PASS
-
-Database migrations          PASS
-
-Database synchronization     PASS
-
-Admin seed                   PASS
-
-Project seed                 PASS
-
-Service seed                 PASS
-
-Repeated seed execution      PASS
-
-Next.js production build     PASS
-
-```
-
-## Result
-
-Rcentz has a persistent business-data foundation shared by public, client and administrative surfaces.
-
----
-
-# 9. M05 — Global Application Shell
-
-**Status:** 🟢 Completed
-
-## Objective
+Foundation Counts at M04 Closure
+
+Projects             7
+Portfolio            7
+Technologies        61
+Milestones          26
+
+Service Categories   7
+Services             35
+Service Prices       70
+
+Verification
+
+Prisma schema validation    PASS
+Prisma Client generation    PASS
+TypeScript                  PASS
+ESLint                      PASS
+Database migrations         PASS
+Database synchronization    PASS
+Admin seed                  PASS
+Project seed                PASS
+Service seed                PASS
+Repeated seed execution     PASS
+Next.js production build    PASS
+
+9. M05 — Global Application Shell
+
+Status: 🟢 Completed
+
+Objective
 
 Build the shared application structure used throughout Rcentz.
 
-## Architecture
-
-```text
+Architecture
 
 RootLayout
+    │
+    ├── Providers
+    │
+    ├── Public Route Group
+    │     └── RcentzShell
+    │           ├── RcentzDataField
+    │           ├── RcentzAce
+    │           ├── RcentzHeader
+    │           ├── RcentzContentFrame
+    │           └── RcentzFooter
+    │
+    ├── Admin Route
+    │     └── AdminShell
+    │
+    └── Admin Auth Route
+          └── Dedicated Admin Login Surface
 
-    │
+Implemented
 
-    ├── ThemeProvider
+Global shell
 
-    │
+Public header/footer
 
-    └── RcentzShell
+Responsive navigation
 
-            │
+Authentication-aware navigation foundation
 
-            ├── RcentzDataField
+Theme system
 
-            ├── RcentzAce
+Runtime theme switching
 
-            ├── RcentzHeader
+Theme-aware environment
 
-            │     ├── Navigation
+Shared UI foundation
 
-            │     ├── Authentication Actions
+Persistent public canvas
 
-            │     ├── Theme Control
+Dedicated admin shell boundary
 
-            │     └── Mobile Navigation
+Public route grouping
 
-            ├── RcentzContentFrame
+Admin auth route separation
 
-            │     └── Application Content
+Canonical Public Navigation
 
-            └── RcentzFooter
+/                 Home
+/services         Services
+/portfolio        Work / Portfolio
+/store            Store / Commerce
+/blog             Blog / Community
+/about            About
+/login            Sign in
+/dashboard        Authenticated client system
+/admin            Administrative system
+/adminlogin/login Administrative sign in
 
-```
+Git Evidence
 
-## Implemented
+Implementation Checkpoint:
+a7d9bdcd2097da87fc65c10e7db83df77c1d38ca
 
-- Global shell
+Closure Documentation:
+8cf27a4d558d9152cf6a79c03298d5e83445937d
 
-- Header
+Milestone Tag:
+m05-global-application-shell-v1
 
-- Footer
+10. M06 — Database-Driven Public Homepage
 
-- Responsive navigation
+Status: 🟢 Completed
 
-- Authentication-aware navigation
+Initial Completion: 2026-09-02
+Final Presentation Closure: 2026-09-03
 
-- Theme system
-
-- Runtime theme switching
-
-- Theme-aware environment
-
-- Loading state
-
-- Error boundary
-
-- Toast entry point
-
-- Shared UI foundation
-
-- Persistent canvas
-
-## Canonical Navigation Contract
-
-```text
-
-/                Home
-
-/services        Services
-
-/portfolio       Work / Portfolio
-
-/store            Store / Commerce
-
-/blog             Blog / Community
-
-/about            About
-
-/login            Sign in
-
-/dashboard        Authenticated system
-
-```
-
-Primary acquisition action:
-
-```text
-
-Start a project → /services
-
-```
-
-Destination pages may belong to later milestones, but route contracts are owned by the completed shell.
-
-## Verification
-
-```text
-
-TypeScript                         PASS
-
-ESLint                             PASS
-
-Next.js production build           PASS
-
-Runtime light/dark theme switching PASS
-
-Responsive navigation              REVIEWED
-
-```
-
-## Git Evidence
-
-**Implementation Checkpoint:**  
-
-`a7d9bdcd2097da87fc65c10e7db83df77c1d38ca`
-
-**Closure Documentation:**  
-
-`8cf27a4d558d9152cf6a79c03298d5e83445937d`
-
-**Milestone Tag:**  
-
-`m05-global-application-shell-v1`
-
-## Result
-
-The shared application shell and canonical navigation contract are established.
-
----
-
-# 10. M06 — Database-Driven Public Homepage
-
-**Status:** 🟢 Completed  
-
-**Initial Completion:** 2026-09-02  
-
-**Final Presentation Closure:** 2026-09-03
-
-## Objective
+Objective
 
 Create the first complete public-facing Rcentz experience powered by the database while preserving the shared shell, visual identity, responsive architecture and reusable data boundaries.
 
-## Homepage Architecture
+Homepage Architecture
 
-```text
-
-app/page.tsx
-
-    ↓
-
+Public Home Route
+    ↓
 getHomepageData()
-
-    ↓
-
+    ↓
 HomeHero
-
-    ↓
-
+    ↓
 HomeServices
-
-    ↓
-
+    ↓
 HomeProjects
-
-    ↓
-
+    ↓
 HomeCTA
 
-```
-
-The homepage remains server-rendered and database-aware.
-
-```ts
-
-export const revalidate = 300;
-
-```
-
-## Data Boundary
-
-```text
-
-features/home/server/get-homepage-data.ts
-
-```
+Data Boundary
 
 The homepage consumes canonical database records for:
 
-- Featured services
+Featured services
 
-- Service categories
+Service categories
 
-- Multi-currency pricing
+Multi-currency pricing
 
-- Featured portfolio projects
+Featured portfolio projects
 
-- Project status/progress
+Project status/progress
 
-- Portfolio summaries
+Portfolio summaries
 
-- Technologies
+Technologies
 
-- Live/repository links
+Live/repository links
 
-Limits:
-
-```text
-
-Featured services: 6
-
-Featured projects: 4
-
-```
-
-## Final Public Canvas
-
-```text
-
-Environmental Canvas:     1440px
-
-Public Content Axis:      1200px
-
-Section Axis:             1200px
-
-Hero Composition:         1140px
-
-```
-
-Responsive gutters:
-
-```text
-
-Mobile:       8px per side
-
-sm and above: 16px per side
-
-```
-
-The shell defines available space. Individual compositions may use narrower widths when required for balance.
-
-## Hero Story System
+Hero Story System
 
 Final sequence:
 
-```text
-
 01 Rcentz
-
 02 Rcentz × AI
-
 03 System
-
 04 Live Data
-
 05 Commerce
-
 06 Rcentz Core
 
-```
+Presentation Principles
 
-Architecture:
+Read-first storytelling
 
-```text
+Long variable dwell periods
 
-HomeHero
+Reduced-motion support
 
-   ↓
+Wider mobile usable canvas
 
-HeroStoryEngine
+Controlled hero composition
 
-   ↓
+Database-driven content
 
-Active Story
+No fake business metrics
 
-   ↓
+Real project references only
 
-Story Copy + Illustration
+Verification
 
-```
+ESLint                     PASS
+Prisma Client generation   PASS
+Next.js compilation        PASS
+TypeScript                 PASS
+Static generation          PASS
+Production build           PASS
+Git push                   PASS
+Vercel deployment          PASS
 
-Supports:
+Git Evidence
 
-- Previous / next controls
-
-- Direct story selection
-
-- Automatic progression
-
-- Variable dwell timing
-
-- Reduced-motion handling
-
-- Responsive desktop/mobile presentation
-
-## Hero Communication Pattern
-
-Each story contains:
-
-- Eyebrow
-
-- Strong headline
-
-- Short introduction
-
-- 2 or 4 visual highlight points
-
-- Primary CTA
-
-- Secondary CTA
-
-Actions:
-
-```text
-
-View our work     → /portfolio
-
-Explore services  → /services
-
-```
-
-## Rcentz × AI
-
-AI collaboration is a first-class Rcentz story and appears immediately after the primary Rcentz introduction.
-
-It communicates:
-
-- Human-led decisions
-
-- AI-assisted engineering
-
-- Rapid intelligent iteration
-
-- Human-reviewed output
-
-Positioning:
-
-```text
-
-HUMAN DIRECTION
-
-      +
-
-AI ACCELERATION
-
-      ↓
-
-ENGINEERED BUSINESS SOLUTION
-
-```
-
-The illustration uses an intelligent motherboard / neural-core metaphor with connected capability modules and current flow.
-
-## Hero Motion Direction
-
-The Hero behaves as a readable page that occasionally comes alive.
-
-```text
-
-READ
-
- ↓
-
-SETTLE
-
- ↓
-
-ANIMATION WAKES
-
- ↓
-
-STORY COMPLETES
-
- ↓
-
-LONG QUIET STATE
-
- ↓
-
-NEXT STORY EVENTUALLY ARRIVES
-
-```
-
-Dwell ranges:
-
-```text
-
-Rcentz:        52–66 seconds
-
-Rcentz × AI:   58–74 seconds
-
-System:        65–82 seconds
-
-Live Data:     54–70 seconds
-
-Commerce:      56–72 seconds
-
-Rcentz Core:   56–72 seconds
-
-```
-
-Dwell durations vary within their ranges to avoid predictable carousel timing.
-
-The System story also uses:
-
-- Initial stillness
-
-- Code typing
-
-- Long completed-code hold
-
-- Delayed context change
-
-## Engineering Principles Surface
-
-The Hero capability surface communicates:
-
-```text
-
-Performance
-
-Security
-
-Scalable
-
-Maintainable
-
-```
-
-Each includes a signal/status, headline, supporting text and engineering points.
-
-## Services Presentation
-
-`HomeServices` consumes canonical service records from the homepage data layer.
-
-Presentation includes:
-
-- Category/type
-
-- Service name
-
-- Short description
-
-- Pricing context
-
-- Service illustration
-
-Previously empty illustration blocks were replaced with meaningful interface content.
-
-Existing public imagery is used only where media naturally belongs.
-
-## Modernization & Transformation
-
-Final modernization stories:
-
-```text
-
-WordPress → Next.js
-
-Static → Active
-
-Store → Smart commerce
-
-Manual → Connected
-
-```
-
-### WordPress → Next.js
-
-Migration stages type one at a time:
-
-```text
-
-Content preserved
-
-Media mapped
-
-Routes rebuilt
-
-SEO retained
-
-```
-
-Completed steps remain visible while the next types.
-
-The modern side communicates:
-
-- App Router
-
-- Reusable components
-
-- Performance
-
-- Database-driven services
-
-- Live portfolio content
-
-- Modern website preview
-
-### Static → Active
-
-The scene communicates:
-
-```text
-
-Static brochure
-
-      ↓
-
-Active business experience
-
-```
-
-It now includes real brochure content, visitor context, enquiry tracking, follow-up, mobile behavior, editable content and connected contact flow.
-
-### Manual → Connected
-
-The business-system scene includes:
-
-- Client records
-
-- Project workspace
-
-- Team context
-
-- Project phases
-
-- Tasks
-
-- Client updates
-
-- Progress
-
-### Commerce
-
-The commerce scene uses real storefront imagery and connected operational states rather than empty product placeholders.
-
-## Selected Work
-
-`HomeProjects` consumes published featured portfolio records.
-
-Presentation includes:
-
-- Project type
-
-- Project status
-
-- Project name
-
-- Portfolio tagline
-
-- Technologies
-
-- Progress
-
-- Live link where available
-
-## Verification
-
-Final M06 closure:
-
-```text
-
-ESLint                      PASS
-
-Prisma Client generation    PASS
-
-Next.js compilation         PASS
-
-TypeScript                  PASS
-
-Static generation           PASS
-
-Production build            PASS
-
-Git push                    PASS
-
-Working tree clean          PASS
-
-Vercel deployment           PASS
-
-```
-
-A PostgreSQL SSL-mode future-compatibility warning remains tracked under M17. It does not block M06.
-
-## Git Evidence
-
-**Initial Hero Checkpoint**
-
-```text
-
+Initial Hero Checkpoint
 2f3cd847b7e734ed6c9ea3d574b6db955e5aa490
 
-feat(home): enrich mobile hero storytelling
-
-```
-
-**Expanded Hero / Public UI Checkpoint**
-
-```text
-
+Expanded Hero / Public UI Checkpoint
 274c29e
 
-feat(home): expand hero storytelling and refine public UI system
-
-```
-
-**Final M06 Presentation Closure**
-
-```text
-
+Final M06 Presentation Closure
 95fc78b7a5edc3a265b7466fe51485bff488294b
 
-feat(home): complete homepage presentation refinement
+11. M07 — Portfolio Engine
 
-```
+Status: 🟢 Completed
 
-## Exit Criteria
-
-- Homepage server composition established
-
-- Homepage database boundary established
-
-- Featured services integrated
-
-- Featured projects integrated
-
-- Revalidation strategy established
-
-- Six-story Hero implemented
-
-- Rcentz × AI story implemented
-
-- Reading-first Hero timing implemented
-
-- Reduced-motion handling implemented
-
-- Responsive Hero implemented
-
-- 1200px public content axis established
-
-- 1140px Hero composition established
-
-- Wider mobile canvas established
-
-- Header/body width alignment established
-
-- Engineering principles surface implemented
-
-- Service illustrations completed
-
-- Modernization scenes completed
-
-- Sequential WordPress migration implemented
-
-- Static → Active completed
-
-- Manual → Connected completed
-
-- Commerce presentation completed
-
-- Selected Work established
-
-- CTA established
-
-- Lint/build/deployment verified
-
-- Implementation committed and pushed
-
-- Working tree clean
-
-## Result
-
-Rcentz now has a database-aware public homepage with a distinct visual storytelling system for Rcentz, AI collaboration, system architecture, live data, commerce, services, modernization and real project work.
-
-**M06 is complete and should remain closed unless a genuine defect is discovered.**
-
----
-
-# 11. M07 — Portfolio Engine
-
-**Status:** 🟡 In Progress  
-
-**Started:** 2026-09-02  
-
-**Confirmed Active After M06 Final Closure:** 2026-09-03
-
-## Objective
+Objective
 
 Build the Rcentz portfolio as a real database-driven product engine.
 
-The portfolio is owned by Rcentz and is not a direct rendering of GitHub, Vercel or another external platform.
-
-## Core Architecture
-
-```text
+Core Architecture
 
 Project
-
-   ↓
-
+   ↓
 PortfolioProfile
-
-   ↓
-
+   ↓
 Public Portfolio Data Access
-
-   ↓
-
+   ↓
 /portfolio
-
-   ↓
-
+   ↓
 /portfolio/[slug]
 
-```
+Implemented
 
-`Project` remains the canonical project source.
+Database-driven /portfolio listing
 
-`PortfolioProfile` remains the public presentation layer.
+/portfolio/[slug] project detail route
 
-## Existing Database Foundation
+Public project visibility rules
 
-Portfolio records already support:
+Published-profile filtering
 
-- Tagline
+Database-driven technologies
 
-- Summary
+Technology category, description, purpose and rationale
 
-- Challenge
+Enriched technology seed catalogue
 
-- Solution
+Real project media/gallery
 
-- Outcome
+Full-screen gallery preview
 
-- Live URL
+Project overview illustration
 
-- Repository URL
+Delivery-profile and readiness charts
 
-- Featured status
+Floating project technology rail
 
-- Publication date
+Detailed technology architecture presentation
 
-Projects already support:
+Related-project sliding carousel
 
-- Project type
+Dynamic project metadata
 
-- Project status
+Authentic missing-analytics handling
 
-- Visibility
+Mobile responsiveness refinement
 
-- Progress
+Real AJ Logik / JobRcentz representation where supported by data
 
-- Technologies
+Authentic Portfolio Principle
 
-- Updates
+Only genuine project information, screenshots, features, history, results and supported metrics may be shown.
 
-- Activities
+No project, client, result, metric or testimonial should be invented to make the portfolio appear larger.
 
-- Media
+Git Evidence
 
-- Comments
+Portfolio Index:
+d297c32ab332e2c7d5afdf5e3b561e0f070c8a2e
 
-- Reactions
+Project Detail:
+4c871dfe1467e1e1be650aeda21a3759bd51225c
 
-- Analytics
+Mobile Responsiveness:
+45a6954fec9a355c36f4ef123058219fa2bb10f8
 
-- SEO metadata
+Closure Note
 
-M07 should build on this foundation rather than redesign the schema without demonstrated need.
+Portfolio implementation is considered functionally established. Later engagement/analytics enhancements belong to their owning later milestones unless a genuine portfolio defect is discovered.
 
-## Feature Boundary
+12. M08 — Services Engine
 
-```text
+Status: 🟢 Completed
 
-features/
+Objective
 
-├── home/
+Create a database-driven services marketplace and public service discovery experience.
 
-└── portfolio/
-
-    ├── components/
-
-    └── server/
-
-```
-
-Presentation should not own Prisma access.
-
-```text
-
-DATABASE
-
-   ↓
-
-PORTFOLIO SERVER LAYER
-
-   ↓
-
-PORTFOLIO ENGINE
-
-   ↓
-
-PUBLIC ROUTES
-
-```
-
-## Canonical Routes
-
-```text
-
-/portfolio
-
-/portfolio/[slug]
-
-```
-
-The global navigation already treats `/portfolio` as the canonical Work destination.
-
-## Scope
-
-- Portfolio projects
-
-- Project types
-
-- Technologies
-
-- Public descriptions
-
-- Status and progress
-
-- Visibility
-
-- Featured projects
-
-- Live URLs
-
-- Repository URLs
-
-- Media
-
-- Views
-
-- Reactions
-
-- Comments
-
-- Upvotes
-
-- Trending signals
-
-- Recently updated projects
-
-- Recently completed projects
-
-- Most discussed projects
-
-## Authentic Portfolio Principle
-
-Real projects such as AJ Logik and JobRcentz should become authentic portfolio records.
-
-Only genuine project information, screenshots, features, development history, results and supported metrics should be shown.
-
-Do not invent projects to make the portfolio appear larger.
-
-## Implemented Work
-
-Since the initial M07 portfolio query boundary was established, the following work has been completed and committed:
-
-- Database-driven /portfolio listing
-
-- /portfolio/[slug] project detail route
-
-- Public project visibility and published-profile filtering
-
-- Database-driven project technologies
-
-- Project-specific technology category, description, purpose and rationale
-
-- Technology seed catalogue and migration for enriched project technology context
-
-- Real project media/gallery presentation
-
-- Full-screen gallery preview with previous/next navigation
-
-- Project overview illustration
-
-- Reusable delivery-profile and readiness chart components
-
-- Floating project technology rail
-
-- Detailed technology architecture presentation
-
-- Related-project sliding carousel
-
-- Dynamic project metadata for project detail routes
-
-- Authentic missing-analytics handling on project detail presentation
-
-- Initial mobile responsiveness refinement for the project Hero and technology sections
-
-## Git Evidence
-
-**Portfolio Index:**
-
-`d297c32ab332e2c7d5afdf5e3b561e0f070c8a2e`
-
-`feat(portfolio): complete portfolio index experience`
-
-**Project Detail:**
-
-`4c871dfe1467e1e1be650aeda21a3759bd51225c`
-
-`feat(portfolio): build project detail experience`
-
-**Mobile Responsiveness:**
-
-`45a6954fec9a355c36f4ef123058219fa2bb10f8`
-
-`fix(portfolio): improve detail mobile responsiveness`
-
-## Verification
-
-Latest completed validation:
-
-`TypeScript: PASS`
-
-`ESLint: PASS with 3 non-blocking warnings`
-
-## Initial Data Requirements
-
-- Project identity
-
-- Project slug
-
-- Project type
-
-- Project status
-
-- Project progress
-
-- Public visibility
-
-- Portfolio tagline
-
-- Portfolio summary
-
-- Portfolio outcome
-
-- Featured status
-
-- Publication date
-
-- Live URL
-
-- Repository URL
-
-- Technologies
-
-- Required media/presentation data
-
-## Exit Criteria
-
-- Portfolio feature boundary established
-
-- Public portfolio server query implemented
-
-- Public visibility rules enforced
-
-- Published profile filtering enforced
-
-- `/portfolio` listing implemented
-
-- `/portfolio/[slug]` detail route implemented
-
-- Technologies rendered from database
-
-- Real project media integrated
-
-- Featured presentation established
-
-- Status/progress presentation established
-
-- Live/repository links handled safely
-
-- Empty state implemented
-
-- Loading/error behavior reviewed
-
-- Reactions implemented or deliberately staged
-
-- Comments implemented or deliberately staged
-
-- Analytics/view tracking integrated
-
-- Portfolio SEO integrated
-
-- AJ Logik represented authentically
-
-- JobRcentz represented authentically
-
-- Desktop/mobile review completed
-
-- TypeScript verified
-
-- ESLint verified
-
-- Production build verified
-
-- Implementation checkpoint committed
-
-- M07 closure documented
-
----
-
-# 12. M08 — Services Engine
-
-**Status:** ⬜ Not Started
-
-## Objective
-
-Create a database-driven services marketplace.
-
-## Scope
-
-- Web development
-
-- SaaS development
-
-- UI/UX
-
-- Dashboards
-
-- E-commerce
-
-- API integration
-
-- Custom systems
-
-- Maintenance
-
-- Consulting
-
-- Related technical services
-
-## Canonical Routes
-
-```text
+Canonical Routes
 
 /services
-
 /services/[slug]
 
-```
-
-## Service Lifecycle
-
-```text
+Service Lifecycle
 
 Visitor
-
-  ↓
-
+ ↓
 Explore Service
-
-  ↓
-
+ ↓
 Request Service
-
-  ↓
-
+ ↓
 Review
-
-  ↓
-
+ ↓
 Quote
-
-  ↓
-
+ ↓
 Approval
-
-  ↓
-
+ ↓
 Project Creation
 
-```
+Implemented Foundation
 
-## Exit Criteria
+Database-driven service categories
 
-- Categories rendered from database
+Database-driven service records
 
-- Service records rendered from database
+Multi-currency pricing support
 
-- Listing page
+Services listing
 
-- Detail pages
+Service detail routes
 
-- Slug routing
+Slug routing
 
-- Service requests
+Public service presentation
 
-- Quote foundation
+Service acquisition route contract
 
-- Request-to-project workflow defined
+Service request / quote architecture already represented in database
 
-- Responsive review
+Homepage service integration
 
-- SEO metadata
+Service discovery / public navigation integration
 
-- TypeScript/lint/build verification
+Responsive presentation
 
-- Milestone closure documented
+Translation integration checkpoint previously completed during public service work
 
----
+Remaining Work Ownership
 
-# 13. M09 — Commerce Foundation
+Actual administrative service CRUD belongs primarily to M12 Admin Control Center.
 
-**Status:** ⬜ Not Started
+Full client request-to-project workflow execution belongs across M10 / M11 / M12 depending on the surface.
 
-## Objective
+The public Services Engine itself should not be reopened merely because later management screens are still pending.
+
+13. M09 — Commerce Foundation
+
+Status: ⚪ Deferred
+
+Objective
 
 Create a shared commerce foundation supporting digital and physical products.
 
-## Digital Product Examples
+Digital Product Examples
 
-- Templates
+Templates
 
-- UI kits
+UI kits
 
-- Code
+Code
 
-- Components
+Components
 
-- Design assets
+Design assets
 
-- Documents
+Documents
 
-- Digital resources
+Digital resources
 
-## Physical Product Examples
+Physical Product Examples
 
-- Mice
+Mice
 
-- PCs
+PCs
 
-- Batteries
+Batteries
 
-- Screens
+Screens
 
-- Technology accessories
+Technology accessories
 
-## Canonical Route
-
-```text
+Canonical Route
 
 /store
 
-```
+Scope
 
-Additional product/category routes may be introduced during M09.
+Product catalogue
 
-## Scope
+Categories
 
-- Product catalogue
+Media
 
-- Categories
+Variants
 
-- Media
+Inventory
 
-- Variants
+Cart
 
-- Inventory
+Orders
 
-- Cart
+Payments
 
-- Orders
+Digital delivery
 
-- Payments
+Physical fulfilment
 
-- Digital delivery
+Deferral Decision
 
-- Physical fulfilment
+M09 is intentionally deferred while Rcentz authentication, client workflows and administrative operations are established.
 
-## Fulfilment Architecture
+The database already contains commerce foundations, so deferral does not require architectural redesign.
 
-```text
+14. M10 — Authentication & User System
 
-                    PRODUCT
+Status: 🟡 In Progress
 
-                       │
+Current Major Checkpoint: 2026-09-06
+Checkpoint Commit: eeef24b8e9ac1b603f831379a34d0bb2a7351a28
 
-             ┌─────────┴─────────┐
+Objective
 
-             ↓                   ↓
+Establish identity, sessions, role-aware authorization and protected application shells throughout the platform.
 
-        DIGITAL PRODUCT     PHYSICAL PRODUCT
-
-             │                   │
-
-       DOWNLOAD DELIVERY    SHIPPING / FULFILMENT
-
-```
-
-## Exit Criteria
-
-- Product catalogue
-
-- Categories
-
-- Detail pages
-
-- Cart
-
-- Orders
-
-- Payment foundation
-
-- Digital delivery foundation
-
-- Physical fulfilment foundation
-
-- Responsive review
-
-- TypeScript/lint/build verification
-
----
-
-# 14. M10 — Authentication & User System
-
-**Status:** 🟡 In Progress
-
-## Objective
-
-Establish identity and role-aware access throughout the platform.
-
-## Roles
-
-```text
+Roles
 
 USER
-
 CLIENT
-
 STAFF
-
 ADMIN
-
 SUPER_ADMIN
 
-```
+Authentication Architecture
 
-## Scope
+IDENTITY
+   ↓
+SESSION
+   ↓
+ROLE
+   ↓
+STATUS
+   ↓
+SERVER AUTHORIZATION
+   ↓
+PROTECTED ROUTING
+   ↓
+ROLE-AWARE APPLICATION SHELL
 
-- Registration
-
-- Login
-
-- Logout
-
-- Sessions
-
-- Account management
-
-- Email verification
-
-- Role management
-
-- User status
-
-- Client profiles
-
-- Staff profiles
-
-- Authentication-aware navigation
-
-## Current Foundation
+Current Auth Foundation
 
 Better Auth + Prisma + PostgreSQL/Neon persistence is validated.
 
-```text
+Implemented:
 
-Better Auth identity
+Better Auth server configuration
 
-        +
+Better Auth client
 
-Prisma persistence
+Prisma adapter integration
 
-        +
+Canonical role/status persistence
 
-Canonical roles/status
+Current-user server helper
 
-        ↓
+Server-side admin authorization
 
-Protected Application Surfaces
+Protected /admin layout
 
-```
+Dedicated /adminlogin/login
 
-## Exit Criteria
+Admin sign-out flow
 
-- Registration validated
+Auth-aware public navigation foundation
 
-- Login validated
+Public /login surface
 
-- Session retrieval validated
+Official seeded SUPER_ADMIN account
 
-- Logout integrated
+Admin shell user identity propagation
 
-- Email verification completed
+requireAdmin() Contract
 
-- Server-side role authorization established
+Current behavior:
 
-- Client profile flow established
+NO SESSION
+  → /adminlogin/login?next=/admin
 
-- Staff profile flow established
+INACTIVE USER
+  → /
 
-- Auth-aware navigation established
+NON ADMIN / SUPER_ADMIN
+  → /dashboard
 
-- Protected surfaces established
+ADMIN / SUPER_ADMIN
+  → protected admin surface
 
-- Production-safe auth configuration verified
+Admin Shell Foundation Established During M10
 
----
+Although full Admin CRUD belongs to M12, M10 now owns the protected Admin application foundation required to prove authorization and role-aware routing.
 
-# 15. M11 — Client Project Management
+Implemented:
 
-**Status:** ⬜ Not Started
+AdminShell
 
-## Objective
+AdminSidebar
+
+AdminHeader
+
+Sidebar collapse behavior
+
+Theme toggle
+
+Command search
+
+Account dropdown
+
+Messages dropdown foundation
+
+Notifications dropdown foundation
+
+Admin avatar/identity trigger
+
+Protected session presentation
+
+Admin overview composition
+
+Role-aware admin shell entry
+
+Admin Navigation Contract Established
+
+WORKSPACE
+├── Overview
+├── Analysis
+├── Service Requests
+├── Projects
+├── Tasks
+└── Clients
+
+OPERATIONS
+├── Messages
+├── Notifications
+└── Finance
+
+MANAGEMENT
+├── Services
+└── Settings
+
+Destination pages may be completed in later milestones. Defining these routes here does not mean all Admin CRUD is complete.
+
+Admin Overview Implemented
+
+Current overview includes:
+
+Service request metric
+
+Active project metric
+
+Client metric
+
+Open milestone metric
+
+Pending quote metric
+
+Projects progress
+
+Active project health monitor
+
+Tasks overview
+
+Clients overview
+
+Notifications overview
+
+Financial operations overview
+
+Preview fallback data where database records are absent
+
+Preview Data Rule
+
+Preview data is allowed for dashboard design only when:
+
+It is explicitly labeled Preview.
+
+It cannot be mistaken for real business records.
+
+It does not navigate to fake entity routes.
+
+Real database records automatically replace preview content when available.
+
+Finance Foundation
+
+The Admin financial overview uses existing schema foundations:
+
+Invoice
+
+Payment
+
+ClientSubscription
+
+Current overview covers:
+
+Gross received
+
+Net received
+
+Payment fees/deductions
+
+Outstanding receivables
+
+Overdue balances
+
+Recent payments
+
+Client subscriptions
+
+A dedicated company Expense model has not been introduced at this checkpoint.
+
+Theme / Base-UI Compatibility Fix
+
+During M10 Admin shell work, a semantic mismatch was identified between generated shadcn/Base-UI primitives and Rcentz theme tokens.
+
+Decision:
+
+shadcn semantic vocabulary
+        ↓
+Rcentz theme aliases
+        ↓
+consistent light / dark surfaces
+
+Base-UI dropdown focus behavior now uses Rcentz surface semantics rather than strong inverted accent colors.
+
+Verification — 2026-09-06 Checkpoint
+
+pnpm typecheck              PASS
+Prisma Client generation    PASS
+Next.js 16.3.3 compilation  PASS
+TypeScript build phase      PASS
+Static page generation      PASS
+Production build            PASS
+Git commit                  PASS
+Git push                    PASS
+
+Production build routes at checkpoint:
+
+/
+/_not-found
+/admin
+/adminlogin/login
+/api/auth/[...all]
+/login
+/portfolio
+/portfolio/[slug]
+/services
+/services/[slug]
+
+Git Evidence
+
+Checkpoint Commit:
+eeef24b8e9ac1b603f831379a34d0bb2a7351a28
+
+Commit Message:
+feat(admin): build dashboard overview finance and navigation shell
+
+M10 Remaining Work
+
+Tighten next redirect validation to reject protocol-relative destinations such as //example.com
+
+Complete email verification flow/policy
+
+Establish reusable authenticated-user guard for client dashboard
+
+Implement /dashboard
+
+Implement client dashboard shell
+
+Complete role-aware public navbar destination behavior
+
+Establish account/profile surface
+
+Validate client profile flow
+
+Decide/validate staff profile flow
+
+Confirm production-safe auth configuration
+
+Complete runtime authorization tests for all roles
+
+Final M10 verification
+
+Document closure
+
+Commit/push closure checkpoint
+
+Exit Criteria
+
+Registration validated
+
+Login validated
+
+Session retrieval validated
+
+Logout integrated
+
+Email verification completed
+
+Server-side role authorization established
+
+Client profile flow established
+
+Staff profile flow established or deliberately staged
+
+Auth-aware navigation established
+
+Protected admin surface established
+
+Protected client surface established
+
+Production-safe auth configuration verified
+
+M10 closure documented
+
+15. M11 — Client Project Management
+
+Status: ⬜ Not Started
+
+Objective
 
 Allow clients to interact with and track their projects.
 
-## Project Information
+Project Information
 
 Projects may contain:
 
-- Name
+Name
 
-- Client
+Client
 
-- Purpose
+Purpose
 
-- Vision
+Vision
 
-- Description
+Description
 
-- Expected outcome
+Expected outcome
 
-- Start date
+Start date
 
-- Expected completion date
+Expected completion date
 
-- Actual completion date
+Actual completion date
 
-- Status
+Status
 
-- Progress
+Progress
 
-- Key features
+Key features
 
-- Milestones
+Milestones
 
-- Tasks
+Tasks
 
-- Project phases
+Project phases
 
-- Feature dependencies
+Feature dependencies
 
-- Assignments
+Assignments
 
-- Activity history
+Activity history
 
-- Attachments
+Attachments
 
-- Deliverables
+Deliverables
 
-- Analytics
+Analytics
 
-## Progress Presentation
-
-- Percentages
-
-- Progress bars
-
-- Milestone completion
-
-- Charts
-
-- Pie/donut visualizations where useful
-
-## Project Lifecycle
-
-```text
+Project Lifecycle
 
 PLANNING
-
-   ↓
-
+ ↓
 DISCOVERY
-
-   ↓
-
+ ↓
 DESIGN
-
-   ↓
-
+ ↓
 DEVELOPMENT
-
-   ↓
-
+ ↓
 TESTING
-
-   ↓
-
+ ↓
 REVIEW
-
-   ↓
-
+ ↓
 DEPLOYMENT
-
-   ↓
-
+ ↓
 MAINTENANCE
-
-   ↓
-
+ ↓
 COMPLETED
-
-```
 
 Additional states:
 
-```text
-
 ON_HOLD
-
 CANCELLED
 
-```
+Exit Criteria
 
-## Exit Criteria
+Client project dashboard
 
-- Client project dashboard
+Project overview
 
-- Project overview
+Milestones
 
-- Milestones
+Features
 
-- Features
+Tasks
 
-- Tasks
+Updates
 
-- Updates
+Activity history
 
-- Activity history
+Files/deliverables
 
-- Files/deliverables
+Progress visualization
 
-- Progress visualization
+Project analytics
 
-- Project analytics
+Authorization review
 
-- Authorization review
+Responsive review
 
-- Responsive review
+16. M12 — Admin Control Center
 
----
+Status: 🟡 Foundation Started
 
-# 16. M12 — Admin Control Center
-
-**Status:** ⬜ Not Started
-
-## Objective
+Objective
 
 Build the central management system for Rcentz.
 
-## Admin Structure
+Important Boundary
 
-```text
+M10 established the protected Admin shell and overview foundation.
+
+M12 owns the full operational managers and CRUD workflows.
+
+This distinction prevents M10 from expanding indefinitely.
+
+Current Admin Navigation Contract
 
 ADMIN
-
 ├── Overview
-
+├── Analysis
+├── Service Requests
 ├── Projects
-
-├── Project Updates
-
-├── Milestones
-
 ├── Tasks
-
 ├── Clients
-
-├── Services
-
-├── Portfolio
-
-├── Products
-
-├── Orders
-
-├── Content
-
-├── Blog
-
-├── Comments
-
 ├── Messages
-
 ├── Notifications
-
-├── Analytics
-
+├── Finance
+├── Services
 └── Settings
 
-```
+Future managers may add:
 
-## Principle
+Portfolio
+
+Products
+
+Orders
+
+Content
+
+Blog
+
+Comments
+
+Support
+
+Analytics-specific modules
+
+Audit tooling
+
+Existing M12 Foundation
+
+Already available from the M10 checkpoint:
+
+Protected Admin shell
+
+Admin navigation
+
+Admin overview
+
+Database-backed metrics
+
+Project monitoring
+
+Task/client/notification overview surfaces
+
+Finance intelligence overview
+
+Preview fallback pattern
+
+Theme-aware Base-UI primitives
+
+M12 Scope
+
+Service request management
+
+Project management
+
+Milestone management
+
+Task management
+
+Client management
+
+Service management
+
+Portfolio management
+
+Product management
+
+Content management
+
+Order management
+
+Finance management
+
+Analytics access
+
+Settings
+
+Administrative mutations
+
+Audit/security review
+
+Principle
 
 Admin-managed data should drive:
 
-- Public website
+Public website
 
-- Client experience
+Client experience
 
-- Internal management
+Internal management
 
 The Admin system should replace long-term dependence on seed files for business management.
 
-## Exit Criteria
+17. M13 — Blog / Community Content Engine
 
-- Admin authentication/authorization
+Status: ⬜ Not Started
 
-- Admin navigation
-
-- Dashboard overview
-
-- Project management
-
-- Client management
-
-- Service management
-
-- Portfolio management
-
-- Product management
-
-- Content management
-
-- Order management
-
-- Analytics access
-
-- Settings foundation
-
-- Audit/security review
-
----
-
-# 17. M13 — Blog / Community Content Engine
-
-**Status:** ⬜ Not Started
-
-## Objective
+Objective
 
 Build an interactive content platform around the Rcentz blog.
 
-## Routes
-
-```text
+Routes
 
 /blog
-
 /blog/[slug]
 
-```
+Scope
 
-## Scope
+Articles
 
-- Articles
+Categories
 
-- Categories
+Tags
 
-- Tags
+Authors
 
-- Authors
+Comments
 
-- Comments
+Threaded replies
 
-- Threaded replies
+Reactions
 
-- Reactions
+Upvotes
 
-- Upvotes
+Saves/bookmarks
 
-- Saves/bookmarks
+Trending content
 
-- Trending content
+Popular content
 
-- Popular content
+Related content
 
-- Related content
+SEO metadata
 
-## Routing Principle
+18. M14 — Messaging, Support & Notifications
 
-Articles use real SEO-friendly routes.
+Status: ⬜ Not Started
 
-Example:
+Objective
 
-```text
+Create full communication infrastructure between Rcentz, clients and users.
 
-/blog/how-we-built-the-rcentz-system
+Existing Foundation
 
-```
+The Admin header and overview now expose Messages and Notifications presentation contracts.
 
-Canonical article pages should be route-based rather than modal-only.
+These are shell/navigation foundations only.
 
-## Exit Criteria
+Full messaging, notification mutation, support workflows and real-time behavior remain M14 work.
 
-- Blog listing
-
-- Category pages
-
-- Tag support
-
-- Canonical article routes
-
-- Comments
-
-- Threaded replies
-
-- Reactions
-
-- Related content
-
-- SEO metadata
-
-- Responsive review
-
----
-
-# 18. M14 — Messaging, Support & Notifications
-
-**Status:** ⬜ Not Started
-
-## Objective
-
-Create communication infrastructure between Rcentz, clients and users.
-
-## Messaging
+Messaging
 
 Support:
 
-- Direct conversations
+Direct conversations
 
-- Project conversations
+Project conversations
 
-- Support conversations
+Support conversations
 
-- Service conversations
+Service conversations
 
-- Order conversations
+Order conversations
 
-- Group conversations
+Group conversations
 
-## Support
+Support
 
-- Assistance requests
+Assistance requests
 
-- Support tickets
+Support tickets
 
-- Priorities
+Priorities
 
-- Statuses
+Statuses
 
-- Staff assignment
+Staff assignment
 
-- Ticket messages
+Ticket messages
 
-- Attachments
+Attachments
 
-## Notifications
+Notifications
 
 Notifications may cover:
 
-- Messages
+Messages
 
-- Projects
+Projects
 
-- Project updates
+Project updates
 
-- Services
+Services
 
-- Orders
+Orders
 
-- Payments
+Payments
 
-- Comments
+Comments
 
-- Reactions
+Reactions
 
-- Tickets
+Tickets
 
-- Assistance
+Assistance
 
-- Commerce
+Commerce
 
-- System events
+System events
 
-## Exit Criteria
+Exit Criteria
 
-- Conversations
+Conversations
 
-- Participants
+Participants
 
-- Messages
+Messages
 
-- Attachments
+Attachments
 
-- Support tickets
+Support tickets
 
-- Ticket messaging
+Ticket messaging
 
-- Notifications
+Notifications
 
-- Notification preferences
+Notification read/unread mutations
 
-- Authorization review
+Notification preferences
 
----
+Authorization review
 
-# 19. M15 — Analytics Engine
+19. M15 — Analytics Engine
 
-**Status:** ⬜ Not Started
+Status: ⬜ Not Started
 
-## Objective
+Objective
 
 Make analytics a first-class system within Rcentz.
 
-## Project Analytics
+Existing Foundation
+
+An Admin Analysis navigation contract now exists.
+
+The current Admin overview already displays operational summaries and project health, but this does not constitute the full analytics milestone.
+
+Project Analytics
 
 Track:
 
-- Views
+Views
 
-- Milestone completion
+Milestone completion
 
-- Feature completion
+Feature completion
 
-- Timeline performance
+Timeline performance
 
-- Activity
+Activity
 
-- Downloads
+Downloads
 
-- Engagement
+Engagement
 
-## Portfolio Analytics
-
-Track:
-
-- Views
-
-- Unique views
-
-- Reactions
-
-- Comments
-
-- Shares
-
-- Downloads
-
-- Trends
-
-- Conversions
-
-## Website Analytics
+Portfolio Analytics
 
 Track:
 
-- Page views
+Views
 
-- Popular pages
+Unique views
 
-- Search
+Reactions
 
-- Engagement
+Comments
 
-- Conversions
+Shares
 
-- Product views
+Downloads
 
-- Service views
+Trends
 
-- Portfolio views
+Conversions
 
-- Purchases
+Website Analytics
 
-## Principle
+Track:
 
-External analytics providers may be integrated while Rcentz retains room for its own project/business intelligence.
+Page views
 
-## Exit Criteria
+Popular pages
 
-- Analytics sessions
+Search
 
-- Analytics events
+Engagement
 
-- Event tracking foundation
+Conversions
 
-- Project analytics
+Product views
 
-- Portfolio analytics
+Service views
 
-- Dashboard analytics
+Portfolio views
 
-- Conversion tracking foundation
+Purchases
 
-- Privacy/data review
+20. M16 — SEO / Superhero SEO
 
----
+Status: ⬜ Not Started
 
-# 20. M16 — SEO / Superhero SEO
-
-**Status:** ⬜ Not Started
-
-## Objective
+Objective
 
 Make Rcentz highly discoverable while keeping SEO useful and genuine.
 
-## Scope
+Scope
 
-- Semantic HTML
+Semantic HTML
 
-- Accessible structure
+Accessible structure
 
-- Dynamic metadata
+Dynamic metadata
 
-- Structured data
+Structured data
 
-- Sitemap
+Sitemap
 
-- Robots configuration
+Robots configuration
 
-- Canonical URLs
+Canonical URLs
 
-- Open Graph
+Open Graph
 
-- Social metadata
+Social metadata
 
-- Search-friendly routes
+Search-friendly routes
 
-- Slugs
+Slugs
 
-- Internal linking
+Internal linking
 
-- Related content
+Related content
 
-- Performance
+Performance
 
-- Indexability
+Indexability
 
-## Priority Indexable Content
+Priority Indexable Content
 
-- Projects
+Projects
 
-- Services
+Services
 
-- Products
+Products
 
-- Blog articles
+Blog articles
 
-- Categories
+Categories
 
-- Other genuinely useful content
+Other genuinely useful content
 
-## Principle
+Principle
 
 Do not create artificial SEO pages simply to increase page count.
 
-## Exit Criteria
+21. M17 — Production Hardening
 
-- Metadata system
+Status: ⬜ Not Started
 
-- Canonical URLs
-
-- Sitemap
-
-- Robots configuration
-
-- Structured data
-
-- Open Graph
-
-- Search-friendly routes
-
-- Internal linking strategy
-
-- Performance review
-
----
-
-# 21. M17 — Production Hardening
-
-**Status:** ⬜ Not Started
-
-## Objective
+Objective
 
 Prepare the platform for real-world production use.
 
-## Security
+Security
 
-- Authentication review
+Authentication review
 
-- Authorization review
+Authorization review
 
-- Input validation
+Input validation
 
-- File upload validation
+File upload validation
 
-- Server-side validation
+Server-side validation
 
-- Rate limiting strategy
+Rate limiting strategy
 
-- Sensitive data protection
+Sensitive data protection
 
-- Audit logging
+Audit logging
 
-## Performance
+Performance
 
-- Image optimization
+Image optimization
 
-- Database query review
+Database query review
 
-- Caching strategy
+Caching strategy
 
-- Server rendering review
+Server rendering review
 
-- Client bundle review
+Client bundle review
 
-- Loading states
+Loading states
 
-- Error handling
+Error handling
 
-## Reliability
+Reliability
 
-- Error boundaries
+Error boundaries
 
-- Logging
+Logging
 
-- Database backup strategy
+Database backup strategy
 
-- Recovery strategy
+Recovery strategy
 
-- Monitoring
+Monitoring
 
-## Database / Connection Hardening
+Known PostgreSQL Warning
 
-The PostgreSQL driver currently emits a future compatibility warning around SSL-mode interpretation.
+Current production builds emit a future compatibility warning concerning PostgreSQL SSL-mode interpretation.
 
-Before M17 closure, connection-string SSL semantics must be explicitly reviewed and configured for the intended security behavior.
+The warning does not currently block builds.
 
-## Exit Criteria
+Before M17 closure:
 
-- Security review
+Connection-string SSL semantics must be reviewed.
 
-- Performance review
+Intended security behavior must be explicit.
 
-- Error-handling review
+Current behavior should be preserved intentionally or migrated deliberately.
 
-- Database review
+22. M18 — Mobile / Future Application Readiness
 
-- PostgreSQL SSL configuration reviewed
+Status: ⚪ Deferred
 
-- Production environment verified
-
-- Deployment verified
-
-- Monitoring/recovery strategy established
-
----
-
-# 22. M18 — Mobile / Future Application Readiness
-
-**Status:** ⚪ Deferred
-
-## Objective
+Objective
 
 Ensure the architecture can support a future native/mobile application without unnecessary duplication.
 
-## Principle
+Principle
 
 The initial product is web-first.
 
-```text
+                Rcentz Business Logic
+                         │
+             ┌───────────┴───────────┐
+             ↓                       ↓
+           WEB                     MOBILE
+             │                       │
+        Web Interface          Native Interface
 
-                 Rcentz Business Logic
+Future Considerations
 
-                         │
+Shared API/data contracts
 
-             ┌───────────┴───────────┐
+Reusable business logic
 
-             ↓                       ↓
+Authentication compatibility
 
-           WEB                    MOBILE
+Mobile-friendly interaction patterns
 
-             │                       │
+Push notifications
 
-        Web Interface          Native Interface
+Installable applications
 
-```
+PWA
 
-Business logic and data structures should not unnecessarily depend on a specific UI implementation.
+Native application possibilities
 
-## Future Considerations
+23. Cross-Cutting Systems
 
-- Shared API/data contracts
-
-- Reusable business logic
-
-- Authentication compatibility
-
-- Mobile-friendly interaction patterns
-
-- Push notifications
-
-- Installable applications
-
-- PWA
-
-- Native application possibilities
-
-This milestone is primarily protected through earlier architectural decisions and does not need full implementation during the initial web product.
-
----
-
-# 23. Cross-Cutting Systems
-
-These systems evolve alongside the major milestones.
-
-## Media System
+Media System
 
 Used by:
 
-- Users
+Users
 
-- Services
+Services
 
-- Projects
+Projects
 
-- Project updates
+Project updates
 
-- Portfolio
+Portfolio
 
-- Products
+Products
 
-- Blog
+Blog
 
-- Tickets
+Tickets
 
-- Messages
+Messages
 
-## SEO System
-
-Used by:
-
-- Services
-
-- Products
-
-- Blog
-
-- Portfolio
-
-- Public pages
-
-## Analytics System
+SEO System
 
 Used by:
 
-- Website
+Services
 
-- Portfolio
+Products
 
-- Products
+Blog
 
-- Services
+Portfolio
 
-- Projects
+Public pages
 
-- Content
-
-## Notification System
+Analytics System
 
 Used by:
 
-- Projects
+Website
 
-- Services
+Portfolio
 
-- Orders
+Products
 
-- Payments
+Services
 
-- Messages
+Projects
 
-- Support
+Content
 
-- Community
-
-## Activity System
+Notification System
 
 Used by:
 
-- Projects
+Projects
 
-- Client management
+Services
 
-- Administrative actions
+Orders
 
-- Important system events
+Payments
 
----
+Messages
 
-# 24. Project Update Visibility
+Support
+
+Community
+
+Activity System
+
+Used by:
+
+Projects
+
+Client management
+
+Administrative actions
+
+Important system events
+
+24. Project Update Visibility
 
 Project updates support three visibility levels:
 
-```text
-
 INTERNAL
-
 CLIENT
-
 PUBLIC
-
-```
 
 The same update infrastructure can therefore support:
 
-- Internal staff communication
+Internal staff communication
 
-- Client project tracking
+Client project tracking
 
-- Public portfolio/project history
+Public portfolio/project history
 
----
-
-# 25. Data Ownership Principle
+25. Data Ownership Principle
 
 Rcentz owns its business data and presentation.
 
 External services may act as integrations or data sources.
 
-```text
-
 GitHub
-
-   ↓
-
+   ↓
 Optional Integration
-
-   ↓
-
+   ↓
 Rcentz Portfolio System
 
 Vercel
-
-   ↓
-
+   ↓
 Optional Integration
-
-   ↓
-
+   ↓
 Rcentz Portfolio System
-
-```
 
 Neither external platform should become the canonical portfolio presentation layer.
 
----
-
-# 26. Definition of Done
+26. Definition of Done
 
 A milestone is not complete merely because code exists.
 
 A milestone should normally satisfy:
 
-- Implementation complete
+Implementation complete
 
-- TypeScript passes
+TypeScript passes
 
-- Application builds
+Application builds
 
-- Runtime behavior tested
+Runtime behavior tested
 
-- Responsive behavior tested where applicable
+Responsive behavior tested where applicable
 
-- Database behavior tested where applicable
+Database behavior tested where applicable
 
-- Error states considered
+Error states considered
 
-- Security implications considered
+Security implications considered
 
-- Architecture reviewed
+Architecture reviewed
 
-- Route/navigation contracts finalized where applicable
+Route/navigation contracts finalized where applicable
 
-- Documentation updated
+Documentation updated
 
-- Git changes reviewed
+Git changes reviewed
 
-- Implementation committed and pushed
+Implementation committed and pushed
 
-- No known blocking issue
+No known blocking issue
 
 Once closed, a milestone remains closed unless a genuine defect or later architectural dependency requires a targeted correction.
 
----
+27. Architectural Decision Log
 
-# 27. Architectural Decision Log
+2026-08-31 — Modular Monolith
 
-## 2026-08-31 — Modular Monolith
+Decision: Use a modular monolith with explicit internal boundaries.
+Reason: Preserve maintainability and reuse without premature distributed-system complexity.
+Status: Active
 
-**Decision:** Use a modular monolith with explicit internal boundaries.  
+2026-08-31 — PostgreSQL + Prisma Source of Truth
 
-**Reason:** Preserve maintainability and reuse without premature distributed-system complexity.  
+Decision: PostgreSQL + Prisma are the persistent business-data source of truth.
+Reason: Public, client and admin surfaces must consume consistent underlying data.
+Status: Active
 
-**Status:** Active
+2026-08-31 — Better Auth + Prisma
 
-## 2026-08-31 — PostgreSQL + Prisma Source of Truth
+Decision: Use Better Auth with Prisma persistence.
+Reason: Establish reusable identity/session infrastructure before protected surfaces.
+Status: Active
 
-**Decision:** PostgreSQL + Prisma are the persistent business-data source of truth.  
+2026-08-31 — Dedicated Auth Shell
 
-**Reason:** Public, client and admin surfaces must consume consistent underlying data.  
+Decision: Authentication uses dedicated application surfaces rather than depending entirely on the public Navbar.
+Reason: Keep authentication focused and preserve application-surface boundaries.
+Status: Active
 
-**Status:** Active
+2026-08-31 — Create Boundaries When Needed
 
-## 2026-08-31 — Better Auth + Prisma
+Decision: Create feature/component/server boundaries when real code requires them.
+Reason: Avoid empty-folder architecture while preserving documented responsibilities.
+Status: Active
 
-**Decision:** Use Better Auth with Prisma persistence.  
+2026-09-02 — Canonical Work Route
 
-**Reason:** Establish reusable identity/session infrastructure before protected surfaces.  
+Decision: Public Work destination is /portfolio.
+Reason: Preserve one canonical route across Navbar, Footer, Hero and M07.
+Status: Active
 
-**Status:** Active
+2026-09-02 — Canonical Services Route
 
-## 2026-08-31 — Dedicated Auth Shell
+Decision: Public service destination is /services.
+Reason: Keep homepage acquisition and M08 on one route contract.
+Status: Active
 
-**Decision:** Authentication uses a dedicated application shell rather than the public Navbar.  
+2026-09-02 — Future Routes May Be Reserved Early
 
-**Reason:** Keep auth focused and preserve application-surface boundaries.  
+Decision: Navigation may point to future routes before destination pages are implemented.
+Reason: Completed shell milestones define route contracts; later milestones build the experiences.
+Status: Active
 
-**Status:** Active
+2026-09-02 — Database-Backed Homepage Content
 
-## 2026-08-31 — Create Boundaries When Needed
+Decision: Homepage business content remains database-backed.
+Reason: Avoid duplicated hardcoded service/project truth.
+Status: Active
 
-**Decision:** Create `features/`, `components/` and `server/` boundaries when real code requires them.  
+2026-09-03 — Six-Story Hero with Rcentz × AI
 
-**Reason:** Avoid empty-folder architecture while preserving documented responsibilities.  
+Decision: The homepage Hero uses six stories, with Rcentz × AI immediately after the main Rcentz introduction.
+Reason: AI collaboration is part of the Rcentz engineering method and should be presented as human-directed acceleration.
+Status: Active
 
-**Status:** Active
+2026-09-03 — 1200px Public Content Axis
 
-## 2026-09-02 — Canonical Work Route
+Decision: Environmental canvas remains 1440px while public content is capped at 1200px.
+Reason: Preserve a premium wider presentation without stretching internal compositions.
+Status: Active
 
-**Decision:** Public Work destination is `/portfolio`.  
+2026-09-03 — Component Width Is Independent from Shell Width
 
-**Reason:** Preserve one canonical route across Navbar, Footer, Hero and M07.  
+Decision: Individual compositions may be narrower than the application shell.
+Reason: Available space and useful composition width are not the same thing.
+Status: Active
 
-**Status:** Active
+2026-09-03 — Long Hero Stillness
 
-## 2026-09-02 — Canonical Services Route
+Decision: Hero stories use long variable dwell periods and intentional quiet states.
+Reason: Rcentz should feel readable first and unexpectedly alive second.
+Status: Active
 
-**Decision:** Public service destination is `/services`.  
+2026-09-03 — Wider Mobile Usable Canvas
 
-**Reason:** Keep homepage acquisition and M08 on one route contract.  
+Decision: Mobile public sections use reduced outer gutters.
+Reason: Protect useful width and future application-style information density.
+Status: Active
 
-**Status:** Active
+2026-09-06 — Admin Foundation Belongs to M10, Full CRUD to M12
 
-## 2026-09-02 — Future Routes May Be Reserved Early
+Decision: M10 may establish the protected Admin shell, overview and navigation contracts needed to prove authentication and authorization. Full operational Admin CRUD remains M12.
+Reason: Authentication cannot be validated meaningfully without a protected destination, but M10 must not expand into the entire control center.
+Status: Active
 
-**Decision:** Navigation may point to future routes before destination pages are implemented.  
+2026-09-06 — Rcentz Theme Owns shadcn Semantic Meaning
 
-**Reason:** Completed shell milestones define route contracts; later milestones build the experiences.  
+Decision: Generated shadcn/Base-UI semantic colors must resolve into Rcentz theme surfaces.
+Reason: Prevent component-library defaults from introducing inconsistent hover/focus/popover behavior.
+Status: Active
 
-**Status:** Active
+2026-09-06 — Preview Data Must Be Explicit
 
-## 2026-09-02 — Database-Backed Homepage Content
+Decision: Dashboard preview records may be used only when clearly labeled and automatically replaced by real database data.
+Reason: Support interface development without fabricating business truth.
+Status: Active
 
-**Decision:** Homepage business content remains database-backed.  
+2026-09-06 — Translation Pass Deferred to Final Project Closure
 
-**Reason:** Avoid duplicated hardcoded service/project truth.  
+Decision: Complete all language JSON synchronization in one final project-level pass rather than repeatedly during active feature construction.
+Reason: Avoid churn while UI copy and Admin/client surfaces are still changing.
+Status: Active
 
-**Status:** Active
+28. Rejected Approaches
 
-## 2026-09-03 — Six-Story Hero with Rcentz × AI
+Conventional Portfolio Website
 
-**Decision:** The homepage Hero uses six stories, with Rcentz × AI immediately after the main Rcentz introduction.  
+Rejected: Treat Rcentz as a conventional portfolio website.
+Replacement: SaaS-like living business platform.
 
-**Reason:** AI collaboration is part of the Rcentz engineering method and should be presented as human-directed acceleration.  
+Premature Microservices
 
-**Status:** Active
+Rejected: Distributed microservices during the foundation stage.
+Replacement: Modular monolith with extractable boundaries.
 
-## 2026-09-03 — 1200px Public Content Axis
+UI-Only Authorization
 
-**Decision:** Environmental canvas remains 1440px while public content is capped at 1200px.  
+Rejected: Protecting access by hiding UI elements only.
+Replacement: Server/business-layer authorization.
 
-**Reason:** Preserve a premium wider presentation without stretching internal compositions.  
+Temporary Homepage Anchors
 
-**Status:** Active
+Rejected: Temporary homepage-anchor routing for canonical Hero actions.
+Replacement: Route directly to canonical product destinations.
 
-## 2026-09-03 — Component Width Is Independent from Shell Width
+/work as a Second Portfolio Route
 
-**Decision:** Individual compositions may be narrower than the application shell.  
+Rejected: Add /work alongside /portfolio.
+Replacement: /portfolio.
 
-**Reason:** Available space and useful composition width are not the same thing.  
+Fake Dashboard Business Data
 
-**Status:** Active
+Rejected: Presenting dummy records as if they are real clients, finances, messages, project outcomes or metrics.
+Replacement: Explicit Preview fallback states.
 
-## 2026-09-03 — Long Hero Stillness
+Per-Component Translation Churn
 
-**Decision:** Hero stories use long variable dwell periods and intentional quiet states.  
+Rejected: Rewriting all language JSON files every time a component changes during active implementation.
+Replacement: Final translation closure gate.
 
-**Reason:** Rcentz should feel readable first and unexpectedly alive second.  
+29. Lessons Learned
 
-**Status:** Active
+Living Documentation Can Become Stale Quickly
 
-## 2026-09-03 — Wider Mobile Usable Canvas
+Impact: Verify milestone status against code and tested behavior before planning the next module.
 
-**Decision:** Mobile public sections use reduced outer gutters.  
+Framework-Sensitive Work Must Match the Installed Version
 
-**Reason:** Protect useful width and future application-style information density.  
+Impact: Avoid relying on older Next.js or shadcn assumptions.
 
-**Status:** Active
+Local Validation Is Not Production Readiness
 
----
+Impact: Track security, environment and deployment requirements explicitly.
 
-# 28. Rejected Approaches
+Route Contracts Belong to Their Owning Milestone
 
-## Conventional Portfolio Website
+Impact: Prevent reopening shell/homepage work when later route milestones begin.
 
-**Rejected:** Treat Rcentz as a conventional portfolio website.  
+Mobile Needs Different Density
 
-**Reason:** It would not operate the business or demonstrate the intended system capabilities.  
+Impact: Compact presentation and controlled information density improve small-screen usability.
 
-**Replacement:** SaaS-like living business platform.
+Shell Width and Composition Width Are Different
 
-## Premature Microservices
+Impact: Treat shell geometry and component geometry separately.
 
-**Rejected:** Distributed microservices during the foundation stage.  
+Stillness Is Part of Animation Design
 
-**Reason:** Adds operational complexity before independent deployment/scaling is justified.  
+Impact: Long quiet periods improve readability and make motion more meaningful.
 
-**Replacement:** Modular monolith with extractable boundaries.
+AI Is Best Framed as Human-Directed Acceleration
 
-## UI-Only Authorization
+Impact: Present business context, technical judgment, AI execution and human review as one engineering workflow.
 
-**Rejected:** Protecting access by hiding UI elements only.  
+2026-09-06 — Primitive Semantics Can Override Feature Styling
 
-**Reason:** Hidden UI does not protect server data or mutations.  
+Impact: When a shadcn/Base-UI component behaves strangely, inspect the generated primitive and theme token semantics before adding feature-level overrides.
 
-**Replacement:** Server/business-layer authorization.
+2026-09-06 — Source First, Override Second
 
-## Temporary Homepage Anchors
+Impact: Fix reusable primitives or theme contracts at the source when the issue affects multiple components.
 
-**Rejected:** Temporary homepage-anchor routing for canonical Hero actions.  
+2026-09-06 — Protected Destination Surfaces Help Validate Auth
 
-**Reason:** Weakens already-defined product routes and creates avoidable rework.  
+Impact: Authentication architecture becomes easier to validate when there is a real role-protected shell rather than only login forms.
 
-**Replacement:** Route directly to canonical future destinations.
+30. Current Development State
 
-## `/work` as a Second Portfolio Route
-
-**Rejected:** Add `/work` alongside `/portfolio`.  
-
-**Reason:** Two names would fragment navigation and SEO.  
-
-**Replacement:** `/portfolio`.
-
----
-
-# 29. Lessons Learned
-
-## 2026-08-31 — Living Documentation Can Become Stale Quickly
-
-**Impact:** Verify milestone status against code and tested behavior before planning the next module.
-
-## 2026-08-31 — Framework-Sensitive Work Must Match the Installed Version
-
-**Impact:** Avoid relying on older Next.js App Router assumptions.
-
-## 2026-08-31 — Local Validation Is Not Production Readiness
-
-**Impact:** Track temporary development configuration, security boundaries and deployment requirements explicitly.
-
-## 2026-09-02 — Route Contracts Belong to Their Owning Milestone
-
-**Impact:** Prevent reopening shell/homepage work when later route milestones begin.
-
-## 2026-09-02 — Mobile Needs Different Density
-
-**Impact:** Read-first copy, compact highlights and delayed visual discovery improve the mobile Hero.
-
-## 2026-09-02 — Hero Visuals Should Be Modular Planes
-
-**Impact:** Improves maintainability, animation control and responsive adaptation.
-
-## 2026-09-03 — Shell Width and Composition Width Are Different
-
-**Impact:** Increasing the global shell can weaken an already-balanced component. Treat shell geometry and component geometry separately.
-
-## 2026-09-03 — Stillness Is Part of Animation Design
-
-**Impact:** Long quiet periods improve readability and make later motion feel more alive.
-
-## 2026-09-03 — Empty Placeholders Weaken Strong Illustrations
-
-**Impact:** Populate presentation UI with believable content and use imagery only where naturally appropriate.
-
-## 2026-09-03 — AI Is Best Framed as Human-Directed Acceleration
-
-**Impact:** Present business context, technical judgment, AI execution and human review as one engineering workflow.
-
----
-
-# 30. Current Development State
-
-**Primary Active Milestone:**  
-
-M07 — Portfolio Engine
-
-**Supporting Active Foundations:**  
-
-M01 — Project Foundation  
-
-M02 — Architecture & Folder Conventions  
-
+Primary Active Milestone:
 M10 — Authentication & User System
 
-**Last Fully Completed Milestone:**  
+Secondary Foundation Started:
+M12 — Admin Control Center
 
-M06 — Database-Driven Public Homepage
+Completed Public Milestones:
 
-**M06 Final Closure Commit:**
+M03  UI Canvas / Design System       ✅
+M04  Database Foundation             ✅
+M05  Global Application Shell        ✅
+M06  Public Homepage                 ✅
+M07  Portfolio Engine                ✅
+M08  Services Engine                 ✅
 
-```text
+Deferred:
 
-95fc78b7a5edc3a265b7466fe51485bff488294b
+M09 Commerce Foundation              ⚪
+M18 Mobile / Future App Readiness    ⚪
 
-```
+Current Git Checkpoint:
 
-**Current Module:**  
+eeef24b8e9ac1b603f831379a34d0bb2a7351a28
+feat(admin): build dashboard overview finance and navigation shell
 
-Portfolio Engine / Public Data Boundary
+Checkpoint Validation:
 
-**Current Target:**
+pnpm typecheck  PASS
+pnpm build      PASS
+git push        PASS
 
-```text
+Current System Surface:
 
-features/portfolio/server/get-portfolio-projects.ts
+PUBLIC
+├── /
+├── /services
+├── /services/[slug]
+├── /portfolio
+├── /portfolio/[slug]
+└── /login
 
-```
+AUTH
+├── /api/auth/[...all]
+└── /adminlogin/login
 
-**Current Objective:**  
+ADMIN
+└── /admin
 
-Establish the canonical server-side public portfolio query boundary using the existing `Project → PortfolioProfile` architecture before extending the `/portfolio` presentation routes.
+Current Admin Shell Contracts:
 
-**Known Production Gap:**  
+Overview
+Analysis
+Service Requests
+Projects
+Tasks
+Clients
+Messages
+Notifications
+Finance
+Services
+Settings
 
-PostgreSQL SSL-mode future compatibility warning remains tracked for M17 Production Hardening.
+Known Production Gap:
+PostgreSQL SSL-mode future compatibility warning remains tracked for M17.
 
-**Blocking Issues:**  
-
+Blocking Issues:
 None recorded.
 
----
+31. Immediate Next Steps
 
-# 31. Immediate Next Steps
+Current continuation sequence:
 
-M07 sequence:
+M10 AUTH FOUNDATION
+        ↓
+tighten redirect safety
+        ↓
+email verification decision/flow
+        ↓
+require authenticated user
+        ↓
+/dashboard
+        ↓
+client dashboard shell
+        ↓
+role-aware navigation
+        ↓
+profile/account flow
+        ↓
+role/runtime authorization tests
+        ↓
+M10 verification
+        ↓
+M10 closure
 
-```text
+After M10 closure:
 
-Portfolio server query
+M11 CLIENT PROJECT MANAGEMENT
+        ↓
+M12 ADMIN CRUD / OPERATIONS
+        ↓
+M14 MESSAGING / NOTIFICATIONS
+        ↓
+M15 ANALYTICS
 
-        ↓
+The Admin overview should not be repeatedly redesigned while M10 authentication foundations remain unfinished unless a genuine defect appears.
 
-Portfolio listing engine
-
-        ↓
-
-/portfolio
-
-        ↓
-
-Portfolio detail query
-
-        ↓
-
-/portfolio/[slug]
-
-        ↓
-
-Media / engagement / analytics / SEO
-
-        ↓
-
-M07 verification and closure
-
-```
-
-Development should continue through the smallest meaningful implementation unit:
-
-```text
-
-CURRENT MILESTONE
-
-        ↓
-
-CURRENT MODULE
-
-        ↓
-
-CURRENT FILE
-
-        ↓
-
-IMPLEMENT
-
-        ↓
-
-TEST
-
-        ↓
-
-REVIEW
-
-        ↓
-
-DOCUMENT
-
-        ↓
-
-COMMIT / PUSH
-
-```
-
-Do not begin unrelated major work until the active milestone is complete enough to satisfy its Definition of Done.
-
----
-
-# 32. Relationship to the Master Blueprint
-
-```text
+32. Relationship to the Master Blueprint
 
 MASTER-BLUEPRINT.md
-
-        │
-
-        │ defines
-
-        ↓
-
+        │
+        │ defines
+        ↓
 PRODUCT + ARCHITECTURAL VISION
-
-        │
-
-        ↓
-
+        │
+        ↓
 MILESTONES.md
-
-        │
-
-        │ defines
-
-        ↓
-
+        │
+        │ defines
+        ↓
 IMPLEMENTATION ROADMAP
-
-        │
-
-        ↓
-
+        │
+        ↓
 ACTUAL CODEBASE
-
-        │
-
-        ↓
-
+        │
+        ↓
 RUNNING RCENTZ SYSTEM
-
-```
 
 The Master Blueprint answers:
 
-> What are we building and why?
+What are we building and why?
 
 The Milestones document answers:
 
-> What are we building next and how do we know it is complete?
+What are we building next and how do we know it is complete?
 
 The codebase answers:
 
-> What has actually been implemented?
+What has actually been implemented?
 
----
-
-# 33. Living Document Rule
+33. Living Document Rule
 
 This document must evolve with the project.
 
 When a significant architectural change occurs:
 
-- Update the relevant milestone
+Update the relevant milestone
 
-- Record the architectural decision
+Record the architectural decision
 
-- Record rejected approaches where useful
+Record rejected approaches where useful
 
-- Record lessons learned
+Record lessons learned
 
-- Update the current development state
+Update the current development state
 
-- Ensure the Master Blueprint remains consistent with implementation
+Ensure the Master Blueprint remains consistent with implementation
 
 Documentation must describe the real Rcentz system, not an idealized version of what it was expected to become.
 
 A milestone closure is a durable checkpoint, not a temporary note that is silently reopened later.
 
----
-
-# Current Handoff
-
-```text
+Current Handoff
 
 M06 PUBLIC HOMEPAGE
-
-        ✅ CLOSED
-
-           │
-
-           ▼
+        ✅ CLOSED
 
 M07 PORTFOLIO ENGINE
+        ✅ CLOSED
 
-        🟡 ACTIVE
+M08 SERVICES ENGINE
+        ✅ CLOSED
 
-```
+M09 COMMERCE FOUNDATION
+        ⚪ DEFERRED
 
-**Final M06 implementation evidence:**  
+M10 AUTHENTICATION & USER SYSTEM
+        🟡 ACTIVE
+             │
+             ├── Auth persistence            ✅
+             ├── Admin authorization         ✅
+             ├── Protected Admin shell       ✅
+             ├── Admin overview foundation   ✅
+             ├── Admin navigation contract   ✅
+             ├── Finance overview            ✅
+             ├── Client dashboard            ⬜
+             ├── Email verification closure  ⬜
+             ├── Profile/account flow        ⬜
+             └── Final auth hardening         ⬜
 
-`95fc78b7a5edc3a265b7466fe51485bff488294b`
+M12 ADMIN CONTROL CENTER
+        🟡 FOUNDATION STARTED
+        Full CRUD remains future work
 
----
+Latest verified implementation checkpoint:
+eeef24b8e9ac1b603f831379a34d0bb2a7351a28
 
-**END OF DOCUMENT**
+Next development focus:
+Complete M10 Authentication & User System without reopening completed Admin overview work.
+
+Final project translation pass:
+Deferred until functional project completion.
+
+END OF DOCUMENT

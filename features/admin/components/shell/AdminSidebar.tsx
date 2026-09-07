@@ -8,10 +8,14 @@ import {
   BarChart3,
   Bell,
   BriefcaseBusiness,
+  CreditCard,
+  FileText,
   FolderKanban,
   LayoutDashboard,
   ListTodo,
   MessageSquareText,
+  MessagesSquare,
+  ReceiptText,
   Settings,
   UsersRound,
   WalletCards,
@@ -51,9 +55,9 @@ const workspaceNavigation = [
     icon: LayoutDashboard
   },
   {
-    key: 'analysis',
-    label: 'Analysis',
-    href: '/admin/analysis',
+    key: 'analytics',
+    label: 'Analytics',
+    href: '/admin/analytics',
     icon: BarChart3
   },
   {
@@ -82,7 +86,7 @@ const workspaceNavigation = [
   }
 ] satisfies AdminNavigationItem[];
 
-const operationsNavigation = [
+const communicationNavigation = [
   {
     key: 'messages',
     label: 'Messages',
@@ -96,10 +100,37 @@ const operationsNavigation = [
     icon: Bell
   },
   {
+    key: 'feedback',
+    label: 'Feedback',
+    href: '/admin/feedback',
+    icon: MessagesSquare
+  }
+] satisfies AdminNavigationItem[];
+
+const financeNavigation = [
+  {
     key: 'finance',
     label: 'Finance',
     href: '/admin/finance',
     icon: WalletCards
+  },
+  {
+    key: 'transactions',
+    label: 'Transactions',
+    href: '/admin/transactions',
+    icon: ReceiptText
+  },
+  {
+    key: 'invoices',
+    label: 'Invoices',
+    href: '/admin/invoices',
+    icon: FileText
+  },
+  {
+    key: 'subscriptions',
+    label: 'Subscriptions',
+    href: '/admin/subscriptions',
+    icon: CreditCard
   }
 ] satisfies AdminNavigationItem[];
 
@@ -247,7 +278,9 @@ export function AdminSidebar() {
       <SidebarContent>
         <AdminNavigationGroup label="Workspace" items={workspaceNavigation} pathname={pathname} />
 
-        <AdminNavigationGroup label="Operations" items={operationsNavigation} pathname={pathname} />
+        <AdminNavigationGroup label="Communication" items={communicationNavigation} pathname={pathname} />
+
+        <AdminNavigationGroup label="Finance" items={financeNavigation} pathname={pathname} />
 
         <AdminNavigationGroup label="Management" items={managementNavigation} pathname={pathname} />
       </SidebarContent>
