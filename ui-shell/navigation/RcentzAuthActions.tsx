@@ -6,8 +6,6 @@ import { useRouter } from 'next/navigation';
 
 import { LayoutDashboard, LoaderCircle, LogOut, UserRound } from 'lucide-react';
 
-import { useTranslations } from 'next-intl';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import {
@@ -32,7 +30,7 @@ function getInitials(name: string) {
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(part => part.charAt(0).toUpperCase())
+    .map(namePart => namePart.charAt(0).toUpperCase())
     .join('');
 
   return initials || 'R';
@@ -40,8 +38,6 @@ function getInitials(name: string) {
 
 export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActionsProps) {
   const router = useRouter();
-
-  const t = useTranslations('Header');
 
   const { data: session, isPending } = authClient.useSession();
 
@@ -54,7 +50,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
   if (isPending) {
     return (
       <div
-        aria-label={t('checkingAccount')}
+        aria-label="Checking account"
         className={['flex items-center', mobile ? 'h-11 w-full px-3' : 'h-9 justify-center px-2'].join(' ')}>
         <LoaderCircle aria-hidden="true" className="size-3.5 animate-spin text-muted" />
       </div>
@@ -81,7 +77,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
           'hover:text-foreground',
           mobile ? 'h-10 w-full px-3 text-[13px]' : 'h-9 px-3 text-[12px]'
         ].join(' ')}>
-        {t('signIn')}
+        Sign in
       </button>
     );
   }
@@ -130,7 +126,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
               'hover:bg-surface-muted',
               mobile ? 'h-11 w-full gap-3 px-3' : 'h-9 gap-2 px-2'
             ].join(' ')}
-            aria-label={t('accountMenu')}
+            aria-label="Account menu"
           />
         }>
         <Avatar size={mobile ? 'default' : 'sm'}>
@@ -147,21 +143,23 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
-        <DropdownMenuLabel className="px-2 py-2">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              {user.image ? <AvatarImage src={user.image} alt="" /> : null}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="px-2 py-2">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                {user.image ? <AvatarImage src={user.image} alt="" /> : null}
 
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
 
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
 
-              <p className="mt-0.5 truncate text-[11px] font-normal text-muted">{user.email}</p>
+                <p className="mt-0.5 truncate text-[11px] font-normal text-muted">{user.email}</p>
+              </div>
             </div>
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
@@ -169,13 +167,13 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
           <DropdownMenuItem className="px-2 py-2" onClick={handleDashboard}>
             <LayoutDashboard aria-hidden="true" />
 
-            <span>{t('dashboard')}</span>
+            <span>Dashboard</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem className="px-2 py-2" onClick={handleProfile}>
             <UserRound aria-hidden="true" />
 
-            <span>{t('profile')}</span>
+            <span>Profile</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -192,7 +190,7 @@ export function RcentzAuthActions({ mobile = false, onNavigate }: RcentzAuthActi
             <LogOut aria-hidden="true" />
           )}
 
-          <span>{isSigningOut ? t('signingOut') : t('signOut')}</span>
+          <span>{isSigningOut ? 'Signing out...' : 'Sign out'}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

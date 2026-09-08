@@ -5,5 +5,5 @@ type RcentzContentFrameProps = {
 };
 
 export function RcentzContentFrame({ children }: RcentzContentFrameProps) {
-  return <div className="rcentz-section w-full flex-1">{children}</div>;
+  return <div className="rcentz-canvas w-full flex-1">{children}</div>;
 }
