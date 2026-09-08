@@ -4,6 +4,11 @@ import { cache } from 'react';
 
 import { prisma } from '@/lib/prisma';
 
+const clientVisible = [
+  'CLIENT',
+  'PUBLIC'
+] as const;
+
 export const getClientProject = cache(
   async ({
     userId,
@@ -32,44 +37,276 @@ export const getClientProject = cache(
         status: true,
         progress: true,
 
+        budget: true,
+        currency: true,
+
         startedAt: true,
         expectedEndAt: true,
         completedAt: true,
+
         createdAt: true,
         updatedAt: true,
 
         portfolio: {
           select: {
             tagline: true,
-            liveUrl: true
+            summary: true,
+            liveUrl: true,
+            repositoryUrl: true
           }
         },
 
         infrastructure: {
           select: {
-            primaryDomain: true
+            primaryDomain: true,
+
+            domainRegistrar: true,
+            dnsProvider: true,
+
+            hostingProvider: true,
+            hostingRegion: true,
+
+            databaseProvider: true,
+            storageProvider: true,
+
+            emailProvider: true,
+            sslProvider: true
           }
         },
 
-        analytics: {
+        media: {
+          orderBy: [
+            {
+              sortOrder: 'asc'
+            },
+            {
+              createdAt: 'asc'
+            }
+          ],
+
           select: {
-            views: true,
-            uniqueViews: true,
-            reactions: true,
-            comments: true,
-            shares: true,
-            downloads: true,
-            lastViewedAt: true
+            id: true,
+
+            url: true,
+
+            alt: true,
+            caption: true,
+
+            fileName: true,
+            mimeType: true,
+
+            width: true,
+            height: true,
+
+            sortOrder: true
+          }
+        },
+
+        technologies: {
+          orderBy: [
+            {
+              featured: 'desc'
+            },
+            {
+              sortOrder: 'asc'
+            }
+          ],
+
+          select: {
+            id: true,
+
+            name: true,
+            slug: true,
+
+            icon: true,
+            category: true,
+
+            description: true,
+            purpose: true,
+            rationale: true,
+
+            featured: true,
+            sortOrder: true
+          }
+        },
+
+        deliverables: {
+          where: {
+            visibility: {
+              in: [
+                ...clientVisible
+              ]
+            }
+          },
+
+          orderBy: [
+            {
+              sortOrder: 'asc'
+            },
+            {
+              dueDate: 'asc'
+            }
+          ],
+
+          select: {
+            id: true,
+            milestoneId: true,
+
+            title: true,
+            slug: true,
+
+            type: true,
+
+            summary: true,
+            description: true,
+
+            agreementSummary: true,
+            rationale: true,
+
+            expectedOutcome: true,
+
+            status: true,
+            progress: true,
+
+            originalDueDate: true,
+            dueDate: true,
+
+            deliveredAt: true,
+            acceptedAt: true,
+
+            extensionReason: true,
+            completionNotes: true,
+
+            _count: {
+              select: {
+                files: true,
+                processes: true
+              }
+            }
+          }
+        },
+
+        milestones: {
+          where: {
+            visibility: {
+              in: [
+                ...clientVisible
+              ]
+            }
+          },
+
+          orderBy: [
+            {
+              sortOrder: 'asc'
+            },
+            {
+              dueDate: 'asc'
+            }
+          ],
+
+          select: {
+            id: true,
+
+            title: true,
+            slug: true,
+
+            description: true,
+            purpose: true,
+            expectedOutcome: true,
+
+            status: true,
+            priority: true,
+            progress: true,
+
+            startedAt: true,
+            dueDate: true,
+            completedAt: true,
+
+            completionNotes: true,
+
+            records: {
+              orderBy: {
+                version: 'desc'
+              },
+
+              take: 1,
+
+              select: {
+                id: true,
+
+                status: true,
+                version: true,
+
+                recipientEmail: true,
+
+                pdfUrl: true,
+                fileName: true,
+
+                requestedAt: true,
+                preparingAt: true,
+                readyAt: true,
+                sentAt: true,
+                failedAt: true
+              }
+            },
+
+            _count: {
+              select: {
+                deliverables: true,
+                features: true,
+                files: true,
+                processes: true
+              }
+            }
+          }
+        },
+
+        invoices: {
+          orderBy: [
+            {
+              dueAt: 'asc'
+            },
+            {
+              createdAt: 'desc'
+            }
+          ],
+
+          select: {
+            id: true,
+
+            invoiceNumber: true,
+            sourceType: true,
+            status: true,
+
+            currency: true,
+
+            subtotal: true,
+            discount: true,
+            tax: true,
+
+            total: true,
+            amountPaid: true,
+            balanceDue: true,
+
+            issuedAt: true,
+            dueAt: true,
+            paidAt: true,
+
+            pdfUrl: true,
+
+            createdAt: true
           }
         },
 
         _count: {
           select: {
+            deliverables: true,
             milestones: true,
             features: true,
             tasks: true,
             updates: true,
-            files: true
+            files: true,
+            supportTickets: true
           }
         }
       }

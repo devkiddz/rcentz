@@ -1,54 +1,72 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {
+  NextRequest,
+  NextResponse
+} from 'next/server';
 
-import { prisma } from '@/lib/prisma';
+import {
+  collectProjectAnalyticsEvent,
+  parseProjectAnalyticsEventPayload
+} from '@/features/analytics/server/collector/collect-project-event';
 
-const supportedEventTypes = new Set([
-  'PAGE_VIEW',
-  'PROJECT_VIEW',
-  'PRODUCT_VIEW',
-  'SERVICE_VIEW',
-  'SEARCH',
-  'CLICK',
-  'REACTION',
-  'COMMENT',
-  'SHARE',
-  'DOWNLOAD',
-  'ADD_TO_CART',
-  'REMOVE_FROM_CART',
-  'CHECKOUT_STARTED',
-  'PURCHASE',
-  'SERVICE_REQUEST',
-  'SIGN_UP',
-  'LOGIN',
-  'OTHER'
-]);
+const MAX_REQUEST_SIZE = 32_768;
 
-type ProjectAnalyticsEventBody = {
-  projectId?: string;
-  sessionKey?: string;
-  type?: string;
-  path?: string;
-  metadata?: Record<string, unknown>;
-};
+function createCorsHeaders(
+  origin: string | null
+) {
+  const headers =
+    new Headers();
 
-function createCorsHeaders(origin: string | null) {
-  return {
-    'Access-Control-Allow-Origin': origin ?? '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    Vary: 'Origin'
-  };
+  headers.set(
+    'Access-Control-Allow-Methods',
+    'POST, OPTIONS'
+  );
+
+  headers.set(
+    'Access-Control-Allow-Headers',
+    'Content-Type'
+  );
+
+  headers.set(
+    'Access-Control-Max-Age',
+    '600'
+  );
+
+  headers.set(
+    'Vary',
+    'Origin'
+  );
+
+  /*
+   * OPTIONS cannot validate the project configuration because
+   * the tracking key arrives with the POST payload.
+   *
+   * The actual POST request performs the authoritative
+   * allowedOrigins check before anything is persisted.
+   */
+  if (origin) {
+    headers.set(
+      'Access-Control-Allow-Origin',
+      origin
+    );
+  }
+
+  return headers;
 }
 
 export async function OPTIONS(
   request: NextRequest
 ) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: createCorsHeaders(
-      request.headers.get('origin')
-    )
-  });
+  const origin =
+    request.headers.get('origin');
+
+  return new NextResponse(
+    null,
+    {
+      status: 204,
+      headers:
+        createCorsHeaders(origin)
+    }
+  );
 }
 
 export async function POST(
@@ -60,15 +78,85 @@ export async function POST(
   const corsHeaders =
     createCorsHeaders(origin);
 
-  let body: ProjectAnalyticsEventBody;
+  if (!origin) {
+    return NextResponse.json(
+      {
+        error:
+          'Analytics requests require an origin.'
+      },
+      {
+        status: 403,
+        headers: corsHeaders
+      }
+    );
+  }
+
+  const contentType =
+    request.headers.get(
+      'content-type'
+    );
+
+  if (
+    !contentType
+      ?.toLowerCase()
+      .includes(
+        'application/json'
+      )
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          'Content-Type must be application/json.'
+      },
+      {
+        status: 415,
+        headers: corsHeaders
+      }
+    );
+  }
+
+  const contentLengthHeader =
+    request.headers.get(
+      'content-length'
+    );
+
+  if (contentLengthHeader) {
+    const contentLength =
+      Number(
+        contentLengthHeader
+      );
+
+    if (
+      Number.isFinite(
+        contentLength
+      ) &&
+      contentLength >
+        MAX_REQUEST_SIZE
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'Analytics payload is too large.'
+        },
+        {
+          status: 413,
+          headers:
+            corsHeaders
+        }
+      );
+    }
+  }
+
+  let requestBody: unknown;
 
   try {
-    body =
-      (await request.json()) as ProjectAnalyticsEventBody;
+    requestBody =
+      await request.json();
   } catch {
     return NextResponse.json(
       {
-        error: 'Invalid request body.'
+        error:
+          'Invalid JSON request body.'
       },
       {
         status: 400,
@@ -77,24 +165,16 @@ export async function POST(
     );
   }
 
-  const projectId =
-    body.projectId?.trim();
+  const parsedPayload =
+    parseProjectAnalyticsEventPayload(
+      requestBody
+    );
 
-  const sessionKey =
-    body.sessionKey?.trim();
-
-  const eventType =
-    body.type?.trim();
-
-  if (
-    !projectId ||
-    !sessionKey ||
-    !eventType
-  ) {
+  if (!parsedPayload.ok) {
     return NextResponse.json(
       {
         error:
-          'projectId, sessionKey and type are required.'
+          parsedPayload.error
       },
       {
         status: 400,
@@ -103,127 +183,55 @@ export async function POST(
     );
   }
 
-  if (
-    !supportedEventTypes.has(
-      eventType
-    )
-  ) {
-    return NextResponse.json(
-      {
-        error:
-          'Unsupported analytics event type.'
-      },
-      {
-        status: 400,
-        headers: corsHeaders
-      }
-    );
-  }
+  try {
+    const result =
+      await collectProjectAnalyticsEvent({
+        payload:
+          parsedPayload.data,
+        origin
+      });
 
-  const project =
-    await prisma.project.findUnique({
-      where: {
-        id: projectId
-      },
-
-      select: {
-        id: true,
-
-        infrastructure: {
-          select: {
-            primaryDomain: true
-          }
+    if (!result.ok) {
+      return NextResponse.json(
+        {
+          error: result.error
+        },
+        {
+          status:
+            result.status,
+          headers:
+            corsHeaders
         }
-      }
-    });
+      );
+    }
 
-  if (!project) {
     return NextResponse.json(
       {
-        error: 'Project not found.'
+        accepted: true,
+
+        eventId:
+          result.eventId
       },
       {
-        status: 404,
+        status: 202,
+        headers: corsHeaders
+      }
+    );
+  } catch (error) {
+    console.error(
+      '[analytics:collector]',
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          'Analytics event could not be collected.'
+      },
+      {
+        status: 500,
         headers: corsHeaders
       }
     );
   }
-
-  const analyticsSession =
-    await prisma.analyticsSession.upsert({
-      where: {
-        sessionKey
-      },
-
-      update: {
-        lastSeenAt: new Date()
-      },
-
-      create: {
-        sessionKey,
-        lastSeenAt: new Date()
-      },
-
-      select: {
-        id: true
-      }
-    });
-
-  await prisma.analyticsEvent.create({
-    data: {
-      sessionId:
-        analyticsSession.id,
-
-      type:
-        eventType as
-          | 'PAGE_VIEW'
-          | 'PROJECT_VIEW'
-          | 'PRODUCT_VIEW'
-          | 'SERVICE_VIEW'
-          | 'SEARCH'
-          | 'CLICK'
-          | 'REACTION'
-          | 'COMMENT'
-          | 'SHARE'
-          | 'DOWNLOAD'
-          | 'ADD_TO_CART'
-          | 'REMOVE_FROM_CART'
-          | 'CHECKOUT_STARTED'
-          | 'PURCHASE'
-          | 'SERVICE_REQUEST'
-          | 'SIGN_UP'
-          | 'LOGIN'
-          | 'OTHER',
-
-      path:
-        body.path?.trim() ||
-        null,
-
-      entityType: 'PROJECT',
-      entityId: project.id,
-
-      metadata: {
-        ...body.metadata,
-
-        source: 'RCENTZ_TRACKER',
-
-        origin:
-          origin ?? null,
-
-        projectDomain:
-          project.infrastructure
-            ?.primaryDomain ?? null
-      }
-    }
-  });
-
-  return NextResponse.json(
-    {
-      accepted: true
-    },
-    {
-      status: 202,
-      headers: corsHeaders
-    }
-  );
 }

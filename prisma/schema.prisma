@@ -61,6 +61,15 @@ enum ProjectStatus {
   CANCELLED
 }
 
+enum ProjectMilestoneRecordStatus {
+  REQUESTED
+  PREPARING
+  READY
+  SENT
+  FAILED
+  CANCELLED
+}
+
 enum ProjectVisibility {
   PUBLIC
   PRIVATE
@@ -545,6 +554,13 @@ enum AnalyticsEventType {
   OTHER
 }
 
+enum AnalyticsCollectionStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
 enum SeoRobots {
   INDEX_FOLLOW
   INDEX_NOFOLLOW
@@ -582,6 +598,9 @@ model User {
 
   assignedProjects    ProjectAssignment[]
   createdAttributions ProjectAttribution[]
+
+  milestoneRecordRequests ProjectMilestoneRecord[] @relation("MilestoneRecordRequester")
+  milestoneRecordPrepared ProjectMilestoneRecord[] @relation("MilestoneRecordPreparer")
 
   createdMilestones       ProjectMilestone[]           @relation("MilestoneCreator")
   milestoneAssignments    ProjectMilestoneAssignment[]
@@ -1408,6 +1427,8 @@ model Project {
   infrastructure ProjectInfrastructure?
   technologies   ProjectTechnology[]
 
+  milestoneRecords ProjectMilestoneRecord[]
+
   milestones            ProjectMilestone[]
   milestoneDependencies ProjectMilestoneDependency[]
   deliverables          ProjectDeliverable[]
@@ -1422,7 +1443,12 @@ model Project {
   attributions ProjectAttribution[]
   files        ProjectFile[]
 
-  analytics      ProjectAnalytics?
+  analytics       ProjectAnalytics?
+  analyticsConfig ProjectAnalyticsConfig?
+  analyticsDaily  ProjectAnalyticsDaily[]
+  analyticsGoals  ProjectAnalyticsGoal[]
+  analyticsEvents AnalyticsEvent[]
+
   invoices       Invoice[]
   conversations  Conversation[]
   supportTickets SupportTicket[]
@@ -1548,6 +1574,7 @@ model ProjectMilestone {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdBy User    @relation("MilestoneCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
+  records      ProjectMilestoneRecord[]
   assignments  ProjectMilestoneAssignment[]
   deliverables ProjectDeliverable[]
   processes    ProjectProcess[]
@@ -1581,6 +1608,53 @@ model ProjectMilestoneAssignment {
   @@id([milestoneId, userId])
   @@index([userId])
   @@index([removedAt])
+}
+
+model ProjectMilestoneRecord {
+  id String @id @default(cuid())
+
+  projectId   String
+  milestoneId String
+
+  requestedById String
+  preparedById  String?
+
+  status  ProjectMilestoneRecordStatus @default(REQUESTED)
+  version Int                          @default(1)
+
+  recipientEmail String
+
+  pdfUrl   String?
+  fileName String?
+
+  snapshot Json?
+
+  requestedAt DateTime  @default(now())
+  preparingAt DateTime?
+  readyAt     DateTime?
+  sentAt      DateTime?
+  failedAt    DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  milestone ProjectMilestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+  requestedBy User @relation("MilestoneRecordRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+
+  preparedBy User? @relation("MilestoneRecordPreparer", fields: [preparedById], references: [id], onDelete: SetNull)
+
+  @@unique([milestoneId, version])
+  @@index([projectId])
+  @@index([milestoneId])
+  @@index([requestedById])
+  @@index([preparedById])
+  @@index([status])
+  @@index([requestedAt])
+  @@index([sentAt])
 }
 
 model ProjectMilestoneDependency {
@@ -2747,6 +2821,23 @@ model NotificationPreference {
 
 // =========================================================
 // ANALYTICS
+//
+// Rcentz managed-project analytics.
+//
+// AnalyticsEvent:
+// Raw immutable analytics truth.
+//
+// ProjectAnalyticsDaily:
+// Aggregated project metrics for historical trends.
+//
+// ProjectAnalytics:
+// Current/lifetime project performance snapshot.
+//
+// ProjectAnalyticsGoal:
+// Project-specific definitions of meaningful conversions.
+//
+// ProjectAnalyticsConfig:
+// Collection and tracking configuration for a project.
 // =========================================================
 
 model AnalyticsSession {
@@ -2771,6 +2862,7 @@ model AnalyticsEvent {
 
   userId    String?
   sessionId String?
+  projectId String?
 
   type       AnalyticsEventType
   path       String?
@@ -2782,17 +2874,177 @@ model AnalyticsEvent {
 
   user    User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   session AnalyticsSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  project Project?          @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([sessionId])
+  @@index([projectId])
+  @@index([projectId, createdAt])
+  @@index([projectId, type, createdAt])
   @@index([type])
   @@index([entityType, entityId])
   @@index([createdAt])
 }
 
+model ProjectAnalyticsConfig {
+  id        String @id @default(cuid())
+  projectId String @unique
+
+  // Public browser-tracker identifier. This is not a secret.
+  trackingKey String @unique @default(cuid())
+
+  status AnalyticsCollectionStatus @default(PENDING)
+
+  // IANA timezone used to group analytics into project-local days.
+  // Example: Africa/Lagos
+  timezone String @default("UTC")
+
+  // Exact origins allowed to submit browser analytics.
+  // Example: ["https://example.com", "https://www.example.com"]
+  allowedOrigins String[] @default([])
+
+  // Rcentz may keep operational monitoring independent of whether
+  // the client-facing analytics workspace is currently visible.
+  clientVisible Boolean @default(true)
+
+  // Raw events may be pruned while aggregates remain long-term.
+  rawEventRetentionDays Int @default(90)
+
+  startedAt DateTime?
+  endedAt   DateTime?
+
+  lastIngestedAt   DateTime?
+  lastAggregatedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([lastIngestedAt])
+  @@index([lastAggregatedAt])
+}
+
+model ProjectAnalyticsGoal {
+  id        String @id @default(cuid())
+  projectId String
+
+  // Stable programmatic identifier.
+  // Examples: whatsapp_contact, quote_request, completed_purchase
+  key String
+
+  name        String
+  description String?
+
+  // Event representing this conversion.
+  eventType AnalyticsEventType
+
+  // Optional route restriction.
+  path String?
+
+  // Optional matching rules for event metadata.
+  matchMetadata Json?
+
+  isPrimary Boolean @default(false)
+  active    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, key])
+  @@index([projectId])
+  @@index([eventType])
+  @@index([active])
+  @@index([isPrimary])
+}
+
+model ProjectAnalyticsDaily {
+  id        String @id @default(cuid())
+  projectId String
+
+  // Calendar day normalized using the project's configured timezone.
+  date DateTime @db.Date
+
+  sessions       Int @default(0)
+  uniqueVisitors Int @default(0)
+
+  pageViews    Int @default(0)
+  projectViews Int @default(0)
+  productViews Int @default(0)
+  serviceViews Int @default(0)
+
+  searches Int @default(0)
+  clicks   Int @default(0)
+
+  reactions Int @default(0)
+  comments  Int @default(0)
+  shares    Int @default(0)
+  downloads Int @default(0)
+
+  addToCarts      Int @default(0)
+  removeFromCarts Int @default(0)
+
+  checkoutStarted Int @default(0)
+  purchases       Int @default(0)
+
+  serviceRequests Int @default(0)
+
+  signUps Int @default(0)
+  logins  Int @default(0)
+
+  conversions Int @default(0)
+  totalEvents Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, date])
+  @@index([projectId])
+  @@index([date])
+}
+
 model ProjectAnalytics {
   id        String @id @default(cuid())
   projectId String @unique
+
+  // -------------------------------------------------------
+  // Managed website performance summary
+  // -------------------------------------------------------
+
+  sessions       Int @default(0)
+  uniqueVisitors Int @default(0)
+
+  pageViews    Int @default(0)
+  projectViews Int @default(0)
+  productViews Int @default(0)
+  serviceViews Int @default(0)
+
+  searches Int @default(0)
+  clicks   Int @default(0)
+
+  addToCarts      Int @default(0)
+  removeFromCarts Int @default(0)
+
+  checkoutStarted Int @default(0)
+  purchases       Int @default(0)
+
+  serviceRequests Int @default(0)
+
+  signUps Int @default(0)
+  logins  Int @default(0)
+
+  conversions Int @default(0)
+  totalEvents Int @default(0)
+
+  // -------------------------------------------------------
+  // Existing Rcentz project/public engagement counters.
+  // Kept for backward compatibility with current queries.
+  // -------------------------------------------------------
 
   views       Int @default(0)
   uniqueViews Int @default(0)
@@ -2802,6 +3054,7 @@ model ProjectAnalytics {
   downloads   Int @default(0)
 
   lastViewedAt DateTime?
+  lastEventAt  DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2809,6 +3062,7 @@ model ProjectAnalytics {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([lastViewedAt])
+  @@index([lastEventAt])
 }
 
 // =========================================================

@@ -16,13 +16,12 @@ import {
 } from 'lucide-react';
 
 import { CopyProjectIdButton } from '@/features/client/components/overview/CopyProjectIdButton';
-import { MilestoneHealthChart } from '@/features/client/components/overview/MilestoneHealthChart';
 import { ProjectScreenshotCarousel } from '@/features/client/components/overview/ProjectScreenshotCarousel';
 
-import type { ClientOverviewProject } from '@/features/client/server/overview/get-client-overview';
+import type { ClientProject } from '@/features/client/server/projects/get-client-project';
 
 type ProjectDetailsSectionProps = {
-  project: ClientOverviewProject;
+  project: ClientProject;
 };
 
 function humanize(value: string) {
@@ -61,7 +60,7 @@ function getHostname(value: string | null | undefined) {
   }
 }
 
-function getCurrentMilestone(project: ClientOverviewProject) {
+function getCurrentMilestone(project: ClientProject) {
   return (
     project.milestones.find(milestone => milestone.status === 'IN_PROGRESS') ??
     project.milestones.find(milestone => milestone.status === 'REVIEW') ??
@@ -71,7 +70,7 @@ function getCurrentMilestone(project: ClientOverviewProject) {
   );
 }
 
-function getCurrentDeliverable(project: ClientOverviewProject) {
+function getCurrentDeliverable(project: ClientProject) {
   return (
     project.deliverables.find(deliverable => deliverable.status === 'IN_PROGRESS') ??
     project.deliverables.find(
@@ -104,17 +103,6 @@ export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
     technology =>
       Boolean(technology.purpose) || Boolean(technology.rationale) || Boolean(technology.description)
   );
-
-  const visibleMilestones = project.milestones.filter(milestone => milestone.status !== 'CANCELLED');
-
-  const completedMilestones = visibleMilestones.filter(milestone => milestone.status === 'COMPLETED').length;
-
-  const activeMilestones = visibleMilestones.filter(
-    milestone =>
-      milestone.status === 'IN_PROGRESS' || milestone.status === 'REVIEW' || milestone.status === 'BLOCKED'
-  ).length;
-
-  const remainingMilestones = Math.max(0, visibleMilestones.length - completedMilestones - activeMilestones);
 
   const hasScopeInformation =
     Boolean(project.purpose) ||
@@ -259,17 +247,8 @@ export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
         )}
       </AnimatedDetails>
 
-      <AnimatedDetails title="Development Summary" meta="Technologies and milestone health">
+      <AnimatedDetails title="Development Summary" meta="Technology and technical context">
         <div className="overflow-hidden rounded-xl border border-border bg-background">
-          <div className="border-b border-border">
-            <MilestoneHealthChart
-              completed={completedMilestones}
-              active={activeMilestones}
-              remaining={remainingMilestones}
-              total={visibleMilestones.length}
-            />
-          </div>
-
           <div className="p-4 sm:p-5">
             <h3 className="text-sm font-semibold text-foreground">Technologies</h3>
 
@@ -485,6 +464,7 @@ function TechnologyBadge({
       title={category ? `${name} · ${category}` : name}
       className={[
         'inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5',
+
         featured ? 'border-theme-accent/20 bg-theme-accent/5' : 'border-border bg-surface'
       ].join(' ')}>
       <span
@@ -517,6 +497,7 @@ function TechnologyNoteCard({
     <article
       className={[
         'rounded-xl border p-4',
+
         featured ? 'border-theme-accent/20 bg-theme-accent/[0.035]' : 'border-border bg-surface'
       ].join(' ')}>
       <div className="flex items-start justify-between gap-3">
@@ -533,6 +514,7 @@ function TechnologyNoteCard({
         <span
           className={[
             'mt-1 size-2 shrink-0 rounded-full',
+
             featured ? 'bg-theme-accent' : 'bg-border-strong'
           ].join(' ')}
         />

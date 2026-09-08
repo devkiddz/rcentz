@@ -3,7 +3,10 @@ import { notFound } from 'next/navigation';
 import { requireAuth } from '@/features/auth/server/require-auth';
 
 import { ClientProjectPage } from '@/features/client/components/projects/ClientProjectPage';
+
 import { getClientProject } from '@/features/client/server/projects/get-client-project';
+
+import { getClientProjectAnalytics } from '@/features/analytics/server/read/get-client-project-analytics';
 
 type DashboardProjectPageProps = {
   params: Promise<{
@@ -16,14 +19,21 @@ export default async function DashboardProjectPage({ params }: DashboardProjectP
 
   const { projectId } = await params;
 
-  const project = await getClientProject({
-    userId: user.id,
-    projectId
-  });
+  const [project, analytics] = await Promise.all([
+    getClientProject({
+      userId: user.id,
+      projectId
+    }),
 
-  if (!project) {
+    getClientProjectAnalytics({
+      userId: user.id,
+      projectId
+    })
+  ]);
+
+  if (!project || !analytics) {
     notFound();
   }
 
-  return <ClientProjectPage project={project} />;
+  return <ClientProjectPage project={project} analytics={analytics} />;
 }
