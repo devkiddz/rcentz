@@ -81,6 +81,11 @@ type ClientNavigationItem = {
   icon: typeof LayoutDashboard;
 };
 
+type ClientHeaderIdentity = {
+  title: string;
+  description: string;
+};
+
 const projectNavigation = [
   {
     label: 'Overview',
@@ -142,6 +147,98 @@ const workspaceNavigation = [
   }
 ] satisfies ClientNavigationItem[];
 
+const dashboardHeaderRoutes: Array<{
+  path: string;
+  exact?: boolean;
+  identity: ClientHeaderIdentity;
+}> = [
+  {
+    path: '/dashboard',
+    exact: true,
+    identity: {
+      title: 'Overview',
+      description: 'Project workspace'
+    }
+  },
+  {
+    path: '/dashboard/projects',
+    identity: {
+      title: 'Projects',
+      description: 'Project portfolio'
+    }
+  },
+  {
+    path: '/dashboard/milestones',
+    identity: {
+      title: 'Milestones',
+      description: 'Delivery checkpoints'
+    }
+  },
+  {
+    path: '/dashboard/features',
+    identity: {
+      title: 'Features',
+      description: 'Project capabilities'
+    }
+  },
+  {
+    path: '/dashboard/tasks',
+    identity: {
+      title: 'Tasks',
+      description: 'Delivery work'
+    }
+  },
+  {
+    path: '/dashboard/updates',
+    identity: {
+      title: 'Updates',
+      description: 'Project activity'
+    }
+  },
+  {
+    path: '/dashboard/files',
+    identity: {
+      title: 'Files',
+      description: 'Project resources'
+    }
+  },
+  {
+    path: '/dashboard/analytics',
+    identity: {
+      title: 'Analytics',
+      description: 'Project intelligence'
+    }
+  },
+  {
+    path: '/dashboard/messages',
+    identity: {
+      title: 'Messages',
+      description: 'Client communication'
+    }
+  },
+  {
+    path: '/dashboard/notifications',
+    identity: {
+      title: 'Notifications',
+      description: 'Workspace alerts'
+    }
+  },
+  {
+    path: '/dashboard/profile',
+    identity: {
+      title: 'Profile',
+      description: 'Client account'
+    }
+  },
+  {
+    path: '/dashboard/settings',
+    identity: {
+      title: 'Settings',
+      description: 'Workspace preferences'
+    }
+  }
+];
+
 function isActiveRoute(pathname: string, href: string) {
   if (href === '/dashboard') {
     return pathname === '/dashboard';
@@ -150,12 +247,29 @@ function isActiveRoute(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function getHeaderIdentity(pathname: string): ClientHeaderIdentity {
+  const matchedRoute = dashboardHeaderRoutes.find(route => {
+    if (route.exact) {
+      return pathname === route.path;
+    }
+
+    return pathname === route.path || pathname.startsWith(`${route.path}/`);
+  });
+
+  return (
+    matchedRoute?.identity ?? {
+      title: 'Dashboard',
+      description: 'Client workspace'
+    }
+  );
+}
+
 function getInitials(name: string) {
   const initials = name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(part => part.charAt(0).toUpperCase())
+    .map(namePart => namePart.charAt(0).toUpperCase())
     .join('');
 
   return initials || 'R';
@@ -245,20 +359,20 @@ function ClientNavigationGroup({
           {items.map(item => {
             const Icon = item.icon;
 
-            const isActive = isActiveRoute(pathname, item.href);
+            const active = isActiveRoute(pathname, item.href);
 
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
-                  isActive={isActive}
+                  isActive={active}
                   tooltip={item.label}
-                  render={<Link href={item.href} aria-current={isActive ? 'page' : undefined} />}
+                  render={<Link href={item.href} aria-current={active ? 'page' : undefined} />}
                   className={[
                     'group/client-nav',
                     'relative',
                     'transition-colors',
                     'duration-150',
-                    isActive
+                    active
                       ? [
                           'bg-theme-accent-faint',
                           'text-theme-accent',
@@ -271,7 +385,7 @@ function ClientNavigationGroup({
                           'hover:text-sidebar-foreground'
                         ].join(' ')
                   ].join(' ')}>
-                  {isActive ? (
+                  {active ? (
                     <span
                       aria-hidden="true"
                       className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-theme-accent"
@@ -281,13 +395,13 @@ function ClientNavigationGroup({
                   <Icon
                     aria-hidden="true"
                     className={
-                      isActive
+                      active
                         ? 'text-theme-accent'
                         : 'text-sidebar-foreground/55 transition-colors group-hover/client-nav:text-sidebar-foreground'
                     }
                   />
 
-                  <span className={isActive ? 'font-semibold text-theme-accent' : 'font-medium'}>
+                  <span className={active ? 'font-semibold text-theme-accent' : 'font-medium'}>
                     {item.label}
                   </span>
                 </SidebarMenuButton>
@@ -301,6 +415,10 @@ function ClientNavigationGroup({
 }
 
 function ClientHeader({ user }: { user: ClientShellProps['user'] }) {
+  const pathname = usePathname();
+
+  const headerIdentity = getHeaderIdentity(pathname);
+
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="flex min-h-14 min-w-0 items-center gap-3 px-3 sm:px-4">
@@ -321,17 +439,19 @@ function ClientHeader({ user }: { user: ClientShellProps['user'] }) {
         <div className="h-5 w-px shrink-0 bg-border" />
 
         <div className="min-w-0">
-          <p className="truncate text-[12px] font-semibold tracking-[-0.02em] text-foreground">Overview</p>
+          <p className="truncate text-[12px] font-semibold tracking-[-0.02em] text-foreground">
+            {headerIdentity.title}
+          </p>
 
-          <p className="hidden truncate text-[9px] text-muted sm:block">Project workspace</p>
+          <p className="hidden truncate text-[9px] text-muted sm:block">{headerIdentity.description}</p>
         </div>
 
         <div className="ml-auto flex min-w-0 items-center gap-1">
           <Tooltip>
             <TooltipTrigger
               render={
-                <button
-                  type="button"
+                <Link
+                  href="/dashboard/notifications"
                   aria-label="Notifications"
                   className="relative flex size-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
                 />

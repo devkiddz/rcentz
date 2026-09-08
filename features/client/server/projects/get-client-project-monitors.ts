@@ -4,15 +4,9 @@ import { cache } from 'react';
 
 import { prisma } from '@/lib/prisma';
 
-const activeProjectStatuses = [
-  'PLANNING',
-  'DISCOVERY',
-  'DESIGN',
-  'DEVELOPMENT',
-  'TESTING',
-  'REVIEW',
-  'DEPLOYMENT',
-  'MAINTENANCE'
+const clientVisible = [
+  'CLIENT',
+  'PUBLIC'
 ] as const;
 
 const DAY_IN_MILLISECONDS =
@@ -109,16 +103,12 @@ function getProjectHealth({
   };
 }
 
-export const getActiveProjectMonitors =
-  cache(async () => {
+export const getClientProjectMonitors =
+  cache(async (userId: string) => {
     const projects =
       await prisma.project.findMany({
         where: {
-          status: {
-            in: [
-              ...activeProjectStatuses
-            ]
-          }
+          clientId: userId
         },
 
         orderBy: {
@@ -135,13 +125,6 @@ export const getActiveProjectMonitors =
 
           expectedEndAt: true,
           updatedAt: true,
-
-          client: {
-            select: {
-              name: true,
-              image: true
-            }
-          },
 
           media: {
             where: {
@@ -169,6 +152,14 @@ export const getActiveProjectMonitors =
           },
 
           milestones: {
+            where: {
+              visibility: {
+                in: [
+                  ...clientVisible
+                ]
+              }
+            },
+
             orderBy: {
               sortOrder: 'asc'
             },
@@ -177,21 +168,15 @@ export const getActiveProjectMonitors =
               id: true,
               title: true,
               status: true,
-              priority: true,
               progress: true,
-              dueDate: true,
-              completedAt: true,
-              sortOrder: true
+              dueDate: true
             }
           },
 
           tasks: {
             select: {
               id: true,
-              status: true,
-              priority: true,
-              progress: true,
-              dueDate: true
+              status: true
             }
           }
         }
@@ -359,9 +344,6 @@ export const getActiveProjectMonitors =
         blocked: 0
       };
 
-      const screenshot =
-        project.media[0] ?? null;
-
       return {
         id: project.id,
         name: project.name,
@@ -376,9 +358,8 @@ export const getActiveProjectMonitors =
         updatedAt:
           project.updatedAt,
 
-        client: project.client,
-
-        screenshot,
+        screenshot:
+          project.media[0] ?? null,
 
         milestones:
           project.milestones.map(
@@ -428,9 +409,9 @@ export const getActiveProjectMonitors =
     });
   });
 
-export type ActiveProjectMonitor =
+export type ClientProjectMonitor =
   Awaited<
     ReturnType<
-      typeof getActiveProjectMonitors
+      typeof getClientProjectMonitors
     >
   >[number];

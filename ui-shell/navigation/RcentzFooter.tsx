@@ -53,7 +53,9 @@ export function RcentzFooter() {
         'text-foreground',
 
         'transition-colors',
-        'duration-300'
+        'duration-300',
+        'pb-14',
+        'mb:pb-4'
       ].join(' ')}>
       {/* =====================================================
           THEME-AWARE STRUCTURAL GRID

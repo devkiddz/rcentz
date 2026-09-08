@@ -21,7 +21,9 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         email: user.email,
         image: user.image
       }}>
-      <DashboardCanvas>{children}</DashboardCanvas>
+      <DashboardCanvas>
+        <div className="pb-24 md:pb-0">{children}</div>
+      </DashboardCanvas>
 
       <RcentzMobileNavigationPill />
     </ClientShell>

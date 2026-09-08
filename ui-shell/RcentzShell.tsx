@@ -32,7 +32,7 @@ export function RcentzShell({ children, style }: RcentzShellProps) {
       <div className="relative z-10 flex min-h-screen flex-col">
         <RcentzHeader />
 
-        <main className="flex-1 pt-5 sm:pt-6 lg:pt-8">
+        <main className="flex-1 pt-5 sm:pt-6 pb-14 lg:pt-8">
           <RcentzContentFrame>{children}</RcentzContentFrame>
         </main>
 
