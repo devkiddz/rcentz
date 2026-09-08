@@ -204,153 +204,148 @@ export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
         </div>
       </div>
 
-      <details className="group border-t border-border">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 transition-colors hover:bg-surface-muted/60 sm:px-6 [&::-webkit-details-marker]:hidden">
-          <ChevronDown
-            aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
-          />
+      <AnimatedDetails title="Project Scope & Agreements" meta="Delivery context">
+        {hasScopeInformation ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            <ScopeItem
+              title="Project Purpose"
+              value={project.purpose ?? 'No project purpose has been published.'}
+            />
 
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-foreground">Project Scope & Agreements</p>
-          </div>
+            <ScopeItem
+              title="Expected Outcome"
+              value={project.expectedOutcome ?? 'No expected outcome has been published.'}
+            />
 
-          <span className="hidden text-xs text-muted-foreground sm:block">Delivery context</span>
-        </summary>
+            {currentDeliverable?.agreementSummary ? (
+              <ScopeItem title="Current Agreement" value={currentDeliverable.agreementSummary} />
+            ) : null}
 
-        <div className="border-t border-border bg-background/40 px-5 py-5 sm:px-6">
-          {hasScopeInformation ? (
-            <div className="grid gap-6 md:grid-cols-2">
-              <ScopeItem
-                title="Project Purpose"
-                value={project.purpose ?? 'No project purpose has been published.'}
-              />
+            {currentDeliverable?.rationale ? (
+              <ScopeItem title="Why This Deliverable" value={currentDeliverable.rationale} />
+            ) : null}
 
-              <ScopeItem
-                title="Expected Outcome"
-                value={project.expectedOutcome ?? 'No expected outcome has been published.'}
-              />
+            {currentDeliverable ? (
+              <div className="md:col-span-2">
+                <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
+                  <div className="grid gap-5 sm:grid-cols-3">
+                    <ScopeDate
+                      label="Original deadline"
+                      value={formatDate(currentDeliverable.originalDueDate)}
+                    />
 
-              {currentDeliverable?.agreementSummary ? (
-                <ScopeItem title="Current Agreement" value={currentDeliverable.agreementSummary} />
-              ) : null}
+                    <ScopeDate label="Current deadline" value={formatDate(currentDeliverable.dueDate)} />
 
-              {currentDeliverable?.rationale ? (
-                <ScopeItem title="Why This Deliverable" value={currentDeliverable.rationale} />
-              ) : null}
-
-              {currentDeliverable ? (
-                <div className="md:col-span-2">
-                  <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
-                    <div className="grid gap-5 sm:grid-cols-3">
-                      <ScopeDate
-                        label="Original deadline"
-                        value={formatDate(currentDeliverable.originalDueDate)}
-                      />
-
-                      <ScopeDate label="Current deadline" value={formatDate(currentDeliverable.dueDate)} />
-
-                      <ScopeDate label="Delivery status" value={humanize(currentDeliverable.status)} />
-                    </div>
-
-                    {currentDeliverable.extensionReason ? (
-                      <div className="mt-5 border-t border-border pt-4">
-                        <p className="text-xs font-medium text-muted-foreground">Why the deadline changed</p>
-
-                        <p className="mt-2 text-sm leading-6 text-foreground">
-                          {currentDeliverable.extensionReason}
-                        </p>
-                      </div>
-                    ) : null}
+                    <ScopeDate label="Delivery status" value={humanize(currentDeliverable.status)} />
                   </div>
+
+                  {currentDeliverable.extensionReason ? (
+                    <div className="mt-5 border-t border-border pt-4">
+                      <p className="text-xs font-medium text-muted-foreground">Why the deadline changed</p>
+
+                      <p className="mt-2 text-sm leading-6 text-foreground">
+                        {currentDeliverable.extensionReason}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              No client-visible scope or agreement information has been published yet.
-            </p>
-          )}
-        </div>
-      </details>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-sm leading-6 text-muted-foreground">
+            No client-visible scope or agreement information has been published yet.
+          </p>
+        )}
+      </AnimatedDetails>
 
-      <details className="group border-t border-border">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 transition-colors hover:bg-surface-muted/60 sm:px-6 [&::-webkit-details-marker]:hidden">
-          <ChevronDown
-            aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
-          />
-
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-foreground">Development Summary</p>
+      <AnimatedDetails title="Development Summary" meta="Technologies and milestone health">
+        <div className="overflow-hidden rounded-xl border border-border bg-background">
+          <div className="border-b border-border">
+            <MilestoneHealthChart
+              completed={completedMilestones}
+              active={activeMilestones}
+              remaining={remainingMilestones}
+              total={visibleMilestones.length}
+            />
           </div>
 
-          <span className="hidden text-xs text-muted-foreground sm:block">
-            Technologies and milestone health
-          </span>
-        </summary>
+          <div className="p-4 sm:p-5">
+            <h3 className="text-sm font-semibold text-foreground">Technologies</h3>
 
-        <div className="border-t border-border bg-background/40 px-5 py-5 sm:px-6">
-          <div className="overflow-hidden rounded-xl border border-border bg-background">
-            <div className="border-b border-border">
-              <MilestoneHealthChart
-                completed={completedMilestones}
-                active={activeMilestones}
-                remaining={remainingMilestones}
-                total={visibleMilestones.length}
-              />
-            </div>
+            <p className="mt-1 text-xs text-muted-foreground">Core technologies powering this project</p>
 
-            <div className="p-4 sm:p-5">
-              <h3 className="text-sm font-semibold text-foreground">Technologies</h3>
+            {technologies.length > 0 ? (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {technologies.map(technology => (
+                  <TechnologyBadge
+                    key={technology.id}
+                    name={technology.name}
+                    category={technology.category}
+                    featured={technology.featured}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="mt-5 text-xs text-muted-foreground">No technologies recorded.</p>
+            )}
 
-              <p className="mt-1 text-xs text-muted-foreground">Core technologies powering this project</p>
+            {technologiesWithNotes.length > 0 ? (
+              <div className="mt-6 border-t border-border pt-5">
+                <div>
+                  <h4 className="text-xs font-semibold text-foreground">Technology Notes</h4>
 
-              {technologies.length > 0 ? (
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {technologies.map(technology => (
-                    <TechnologyBadge
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Why these technologies are used in this project
+                  </p>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {technologiesWithNotes.map(technology => (
+                    <TechnologyNoteCard
                       key={technology.id}
                       name={technology.name}
                       category={technology.category}
+                      purpose={technology.purpose}
+                      rationale={technology.rationale}
+                      description={technology.description}
                       featured={technology.featured}
                     />
                   ))}
                 </div>
-              ) : (
-                <p className="mt-5 text-xs text-muted-foreground">No technologies recorded.</p>
-              )}
-
-              {technologiesWithNotes.length > 0 ? (
-                <div className="mt-6 border-t border-border pt-5">
-                  <div>
-                    <h4 className="text-xs font-semibold text-foreground">Technology Notes</h4>
-
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Why these technologies are used in this project
-                    </p>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                    {technologiesWithNotes.map(technology => (
-                      <TechnologyNoteCard
-                        key={technology.id}
-                        name={technology.name}
-                        category={technology.category}
-                        purpose={technology.purpose}
-                        rationale={technology.rationale}
-                        description={technology.description}
-                        featured={technology.featured}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
           </div>
         </div>
-      </details>
+      </AnimatedDetails>
     </section>
+  );
+}
+
+function AnimatedDetails({ title, meta, children }: { title: string; meta: string; children: ReactNode }) {
+  return (
+    <details className="group border-t border-border">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 transition-colors duration-200 hover:bg-surface-muted/60 sm:px-6 [&::-webkit-details-marker]:hidden">
+        <ChevronDown
+          aria-hidden="true"
+          className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 ease-out group-open:rotate-180"
+        />
+
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-foreground">{title}</p>
+        </div>
+
+        <span className="hidden text-xs text-muted-foreground sm:block">{meta}</span>
+      </summary>
+
+      <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-open:grid-rows-[1fr]">
+        <div className="overflow-hidden">
+          <div className="-translate-y-1 border-t border-border bg-background/40 px-5 py-0 opacity-0 transition-[opacity,transform,padding] duration-300 ease-out group-open:translate-y-0 group-open:py-5 group-open:opacity-100 sm:px-6">
+            {children}
+          </div>
+        </div>
+      </div>
+    </details>
   );
 }
 
