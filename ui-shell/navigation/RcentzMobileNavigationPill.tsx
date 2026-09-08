@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { FolderKanban, House, MessageCircle, UserRound } from 'lucide-react';
+import { FolderKanban, House, LayoutDashboard, MessageCircle } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
 
@@ -12,10 +12,23 @@ type MobileNavigationItem = {
   href: string;
   icon: typeof House;
   activeRoutes: string[];
+  exact?: boolean;
 };
 
-function isRouteActive(pathname: string, activeRoutes: string[]) {
+function isRouteActive({
+  pathname,
+  activeRoutes,
+  exact = false
+}: {
+  pathname: string;
+  activeRoutes: string[];
+  exact?: boolean;
+}) {
   return activeRoutes.some(route => {
+    if (exact) {
+      return pathname === route;
+    }
+
     if (route === '/') {
       return pathname === '/';
     }
@@ -36,7 +49,8 @@ export function RcentzMobileNavigationPill() {
       label: 'Home',
       href: '/',
       icon: House,
-      activeRoutes: ['/']
+      activeRoutes: ['/'],
+      exact: true
     },
     {
       label: 'Projects',
@@ -51,10 +65,11 @@ export function RcentzMobileNavigationPill() {
       activeRoutes: ['/dashboard/messages']
     },
     {
-      label: 'Profile',
-      href: authenticated ? '/dashboard/profile' : '/login',
-      icon: UserRound,
-      activeRoutes: ['/dashboard/profile']
+      label: 'Dashboard',
+      href: authenticated ? '/dashboard' : '/login?next=/dashboard',
+      icon: LayoutDashboard,
+      activeRoutes: ['/dashboard'],
+      exact: true
     }
   ];
 
@@ -88,7 +103,11 @@ export function RcentzMobileNavigationPill() {
         {navigationItems.map(item => {
           const Icon = item.icon;
 
-          const active = isRouteActive(pathname, item.activeRoutes);
+          const active = isRouteActive({
+            pathname,
+            activeRoutes: item.activeRoutes,
+            exact: item.exact
+          });
 
           return (
             <Link
