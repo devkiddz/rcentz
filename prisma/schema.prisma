@@ -67,6 +67,52 @@ enum ProjectVisibility {
   UNLISTED
 }
 
+enum ProjectDeliverableType {
+  PAGE
+  FEATURE
+  DOCUMENT
+  DESIGN
+  API
+  ASSET
+  DEPLOYMENT
+  REPORT
+  HANDOVER
+  OTHER
+}
+
+enum ProjectDeliverableStatus {
+  PLANNED
+  IN_PROGRESS
+  BLOCKED
+  REVIEW
+  READY
+  DELIVERED
+  ACCEPTED
+  DEFERRED
+  CANCELLED
+}
+
+enum ProjectProcessType {
+  PAYMENT
+  CLIENT_APPROVAL
+  CONTENT
+  CREDENTIALS
+  ASSET
+  DECISION
+  EXTERNAL_SERVICE
+  SUBSCRIPTION_RENEWAL
+  INFORMATION
+  OTHER
+}
+
+enum ProjectProcessStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  WAIVED
+  CANCELLED
+}
+
 enum ProjectMilestoneStatus {
   PLANNED
   IN_PROGRESS
@@ -436,6 +482,15 @@ enum AssistanceStatus {
   CLOSED
 }
 
+enum TicketType {
+  SUPPORT
+  ISSUE
+  BUG
+  REPORT
+  CHANGE_REQUEST
+  QUESTION
+}
+
 enum TicketStatus {
   OPEN
   IN_PROGRESS
@@ -528,8 +583,10 @@ model User {
   assignedProjects    ProjectAssignment[]
   createdAttributions ProjectAttribution[]
 
-  createdMilestones    ProjectMilestone[]           @relation("MilestoneCreator")
-  milestoneAssignments ProjectMilestoneAssignment[]
+  createdMilestones       ProjectMilestone[]           @relation("MilestoneCreator")
+  milestoneAssignments    ProjectMilestoneAssignment[]
+  createdDeliverables     ProjectDeliverable[]         @relation("DeliverableCreator")
+  createdProjectProcesses ProjectProcess[]             @relation("ProjectProcessCreator")
 
   createdFeatures   ProjectFeature[] @relation("FeatureCreator")
   nominatedFeatures ProjectFeature[] @relation("FeatureNominator")
@@ -543,7 +600,7 @@ model User {
   uploadedProjectFiles  ProjectFile[]     @relation("ProjectFileUploader")
 
   serviceRequests ServiceRequest[]
-  quotes          Quote[] @relation("QuoteClient")
+  quotes          Quote[]          @relation("QuoteClient")
 
   createdServicePlans  ServicePlan[]        @relation("ServicePlanCreator")
   customServicePlans   ServicePlan[]        @relation("ServicePlanClient")
@@ -561,7 +618,7 @@ model User {
   reactions Reaction[]
 
   conversations ConversationParticipant[]
-  sentMessages  Message[] @relation("MessageSender")
+  sentMessages  Message[]                 @relation("MessageSender")
 
   notifications          Notification[]
   notificationPreference NotificationPreference?
@@ -821,7 +878,7 @@ model ServiceOutcome {
   title       String
   slug        String
   description String?
-  sortOrder   Int @default(0)
+  sortOrder   Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -843,7 +900,7 @@ model ServiceMilestoneTemplate {
   expectedOutcome String?
   minDays         Int?
   maxDays         Int?
-  sortOrder       Int @default(0)
+  sortOrder       Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -890,7 +947,7 @@ model ServiceOnboardingQuestion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service Service                   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   options ServiceOnboardingOption[]
   answers ServiceRequestAnswer[]
 
@@ -912,8 +969,8 @@ model ServiceOnboardingOption {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  question       ServiceOnboardingQuestion   @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  answerLinks    ServiceRequestAnswerOption[]
+  question    ServiceOnboardingQuestion    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answerLinks ServiceRequestAnswerOption[]
 
   @@unique([questionId, value])
   @@index([questionId, sortOrder])
@@ -933,8 +990,8 @@ model ServiceRequest {
   currency    String               @default("NGN")
   status      ServiceRequestStatus @default(DRAFT)
 
-  preferredStartAt    DateTime?
-  preferredDeadlineAt DateTime?
+  preferredStartAt      DateTime?
+  preferredDeadlineAt   DateTime?
   onboardingCompletedAt DateTime?
   submittedAt           DateTime?
 
@@ -947,10 +1004,10 @@ model ServiceRequest {
 
   answers ServiceRequestAnswer[]
 
-  quote        Quote?
-  project      Project?
-  invoices     Invoice[]
-  usageRecords SubscriptionUsageRecord[]
+  quote         Quote?
+  project       Project?
+  invoices      Invoice[]
+  usageRecords  SubscriptionUsageRecord[]
   conversations Conversation[]
 
   @@index([userId])
@@ -971,7 +1028,7 @@ model ServiceRequestAnswer {
   questionType  ServiceQuestionType
 
   textValue    String?
-  numberValue  Decimal? @db.Decimal(20, 4)
+  numberValue  Decimal?  @db.Decimal(20, 4)
   booleanValue Boolean?
   dateValue    DateTime?
   metadata     Json?
@@ -979,8 +1036,8 @@ model ServiceRequestAnswer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  serviceRequest ServiceRequest             @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
-  question       ServiceOnboardingQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  serviceRequest  ServiceRequest               @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  question        ServiceOnboardingQuestion    @relation(fields: [questionId], references: [id], onDelete: Restrict)
   selectedOptions ServiceRequestAnswerOption[]
 
   @@unique([serviceRequestId, questionId])
@@ -992,13 +1049,12 @@ model ServiceRequestAnswerOption {
   answerId String
   optionId String
 
-  answer ServiceRequestAnswer     @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  answer ServiceRequestAnswer    @relation(fields: [answerId], references: [id], onDelete: Cascade)
   option ServiceOnboardingOption @relation(fields: [optionId], references: [id], onDelete: Restrict)
 
   @@id([answerId, optionId])
   @@index([optionId])
 }
-
 
 // =========================================================
 // LOCALIZED CONTENT
@@ -1031,7 +1087,6 @@ model LocalizedContent {
   updatedAt DateTime @updatedAt
 
   @@unique([entityType, entityId, fieldName, locale])
-
   @@index([entityType, entityId, locale])
   @@index([entityType, entityId])
   @@index([locale])
@@ -1058,8 +1113,8 @@ model Quote {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
-  serviceRequest ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
-  client         User           @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
+  serviceRequest ServiceRequest      @relation(fields: [serviceRequestId], references: [id], onDelete: Restrict)
+  client         User                @relation("QuoteClient", fields: [clientId], references: [id], onDelete: Restrict)
   items          QuoteItem[]
   invoices       Invoice[]
   subscription   ClientSubscription?
@@ -1241,12 +1296,13 @@ model ClientSubscription {
   quote     Quote?            @relation(fields: [quoteId], references: [id], onDelete: SetNull)
   createdBy User?             @relation("SubscriptionCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
-  entitlements    SubscriptionEntitlement[]
-  usageRecords    SubscriptionUsageRecord[]
-  invoices        Invoice[]
-  projects        Project[]
-  serviceRequests ServiceRequest[]
-  conversations   Conversation[]
+  entitlements     SubscriptionEntitlement[]
+  usageRecords     SubscriptionUsageRecord[]
+  invoices         Invoice[]
+  projects         Project[]
+  projectProcesses ProjectProcess[]
+  serviceRequests  ServiceRequest[]
+  conversations    Conversation[]
 
   @@index([clientId])
   @@index([planId])
@@ -1265,18 +1321,18 @@ model SubscriptionEntitlement {
   key          String
   name         String
   description  String?
-  limitValue   Decimal? @db.Decimal(14, 2)
-  usedValue    Decimal  @default(0) @db.Decimal(14, 2)
+  limitValue   Decimal?  @db.Decimal(14, 2)
+  usedValue    Decimal   @default(0) @db.Decimal(14, 2)
   unit         String?
-  unlimited    Boolean  @default(false)
+  unlimited    Boolean   @default(false)
   metadata     Json?
   usageResetAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  subscription    ClientSubscription       @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  planEntitlement ServicePlanEntitlement?  @relation(fields: [planEntitlementId], references: [id], onDelete: SetNull)
+  subscription    ClientSubscription        @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planEntitlement ServicePlanEntitlement?   @relation(fields: [planEntitlementId], references: [id], onDelete: SetNull)
   usageRecords    SubscriptionUsageRecord[]
 
   @@unique([subscriptionId, key])
@@ -1310,6 +1366,8 @@ model SubscriptionUsageRecord {
 // =========================================================
 // PROJECT MANAGEMENT — CANONICAL PROJECT SOURCE
 // Execution hierarchy: Project -> Milestone -> Feature -> Task.
+// Deliverables represent agreed project outputs and may optionally belong to a milestone.
+// Processes explain project requirements, blockers, dependencies and client actions.
 // A feature with milestoneId = null is backlog/unscheduled work.
 // Cross-project invariants remain server-enforced.
 // =========================================================
@@ -1346,11 +1404,14 @@ model Project {
   serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
   subscription   ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
-  portfolio    PortfolioProfile?
-  technologies ProjectTechnology[]
+  portfolio      PortfolioProfile?
+  infrastructure ProjectInfrastructure?
+  technologies   ProjectTechnology[]
 
   milestones            ProjectMilestone[]
   milestoneDependencies ProjectMilestoneDependency[]
+  deliverables          ProjectDeliverable[]
+  processes             ProjectProcess[]
   features              ProjectFeature[]
   featureDependencies   ProjectFeatureDependency[]
   tasks                 ProjectTask[]
@@ -1361,13 +1422,14 @@ model Project {
   attributions ProjectAttribution[]
   files        ProjectFile[]
 
-  analytics     ProjectAnalytics?
-  invoices      Invoice[]
-  conversations Conversation[]
-  media         MediaAsset[]
-  comments      Comment[]
-  reactions     Reaction[]
-  seo           SeoMetadata?
+  analytics      ProjectAnalytics?
+  invoices       Invoice[]
+  conversations  Conversation[]
+  supportTickets SupportTicket[]
+  media          MediaAsset[]
+  comments       Comment[]
+  reactions      Reaction[]
+  seo            SeoMetadata?
 
   @@index([clientId])
   @@index([subscriptionId])
@@ -1400,6 +1462,36 @@ model PortfolioProfile {
 
   @@index([featured])
   @@index([publishedAt])
+}
+
+model ProjectInfrastructure {
+  id        String @id @default(cuid())
+  projectId String @unique
+
+  primaryDomain String?
+
+  domainRegistrar String?
+  dnsProvider     String?
+
+  hostingProvider String?
+  hostingRegion   String?
+
+  databaseProvider String?
+  storageProvider  String?
+  emailProvider    String?
+  sslProvider      String?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([domainRegistrar])
+  @@index([dnsProvider])
+  @@index([hostingProvider])
+  @@index([databaseProvider])
 }
 
 model ProjectTechnology {
@@ -1456,10 +1548,12 @@ model ProjectMilestone {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdBy User    @relation("MilestoneCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
-  assignments ProjectMilestoneAssignment[]
-  features    ProjectFeature[]
-  updates     ProjectUpdate[]
-  files       ProjectFile[]
+  assignments  ProjectMilestoneAssignment[]
+  deliverables ProjectDeliverable[]
+  processes    ProjectProcess[]
+  features     ProjectFeature[]
+  updates      ProjectUpdate[]
+  files        ProjectFile[]
 
   dependencies ProjectMilestoneDependency[] @relation("MilestoneDependencies")
   dependents   ProjectMilestoneDependency[] @relation("MilestoneDependents")
@@ -1478,7 +1572,7 @@ model ProjectMilestoneAssignment {
   milestoneId String
   userId      String
   role        String?
-  assignedAt  DateTime @default(now())
+  assignedAt  DateTime  @default(now())
   removedAt   DateTime?
 
   milestone ProjectMilestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
@@ -1502,6 +1596,109 @@ model ProjectMilestoneDependency {
   @@id([milestoneId, dependsOnMilestoneId])
   @@index([projectId])
   @@index([dependsOnMilestoneId])
+}
+
+model ProjectDeliverable {
+  id          String  @id @default(cuid())
+  projectId   String
+  milestoneId String?
+  createdById String
+
+  title String
+  slug  String
+
+  type ProjectDeliverableType
+
+  summary          String?
+  description      String?
+  agreementSummary String?
+  rationale        String?
+  expectedOutcome  String?
+
+  status     ProjectDeliverableStatus @default(PLANNED)
+  visibility ProjectUpdateVisibility  @default(CLIENT)
+  progress   Int                      @default(0)
+  sortOrder  Int                      @default(0)
+
+  originalDueDate DateTime?
+  dueDate         DateTime?
+
+  deliveredAt DateTime?
+  acceptedAt  DateTime?
+
+  extensionReason String?
+  completionNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  createdBy User              @relation("DeliverableCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  files     ProjectFile[]
+  processes ProjectProcess[]
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([milestoneId])
+  @@index([createdById])
+  @@index([type])
+  @@index([status])
+  @@index([visibility])
+  @@index([dueDate])
+  @@index([sortOrder])
+}
+
+model ProjectProcess {
+  id             String  @id @default(cuid())
+  projectId      String
+  milestoneId    String?
+  deliverableId  String?
+  invoiceId      String?
+  subscriptionId String?
+  createdById    String
+
+  type   ProjectProcessType
+  status ProjectProcessStatus @default(PENDING)
+
+  title       String
+  description String?
+  reason      String?
+  impact      String?
+
+  blocking             Boolean                 @default(false)
+  requiresClientAction Boolean                 @default(false)
+  visibility           ProjectUpdateVisibility @default(CLIENT)
+  sortOrder            Int                     @default(0)
+
+  dueAt           DateTime?
+  resolvedAt      DateTime?
+  resolutionNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project      Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone    ProjectMilestone?   @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  deliverable  ProjectDeliverable? @relation(fields: [deliverableId], references: [id], onDelete: SetNull)
+  invoice      Invoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  subscription ClientSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  createdBy    User                @relation("ProjectProcessCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([projectId])
+  @@index([milestoneId])
+  @@index([deliverableId])
+  @@index([invoiceId])
+  @@index([subscriptionId])
+  @@index([createdById])
+  @@index([type])
+  @@index([status])
+  @@index([blocking])
+  @@index([requiresClientAction])
+  @@index([visibility])
+  @@index([dueAt])
+  @@index([sortOrder])
 }
 
 model ProjectFeature {
@@ -1614,11 +1811,11 @@ model ProjectTask {
 }
 
 model ProjectAssignment {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   projectId  String
   userId     String
   role       String?
-  assignedAt DateTime @default(now())
+  assignedAt DateTime  @default(now())
   removedAt  DateTime?
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -1685,11 +1882,12 @@ model ProjectActivity {
 }
 
 model ProjectFile {
-  id          String  @id @default(cuid())
-  projectId   String
-  milestoneId String?
-  featureId   String?
-  uploaderId  String?
+  id            String  @id @default(cuid())
+  projectId     String
+  milestoneId   String?
+  deliverableId String?
+  featureId     String?
+  uploaderId    String?
 
   name       String
   url        String
@@ -1700,13 +1898,15 @@ model ProjectFile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  milestone ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
-  feature   ProjectFeature?   @relation(fields: [featureId], references: [id], onDelete: SetNull)
-  uploader  User?             @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+  project     Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone   ProjectMilestone?   @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  deliverable ProjectDeliverable? @relation(fields: [deliverableId], references: [id], onDelete: SetNull)
+  feature     ProjectFeature?     @relation(fields: [featureId], references: [id], onDelete: SetNull)
+  uploader    User?               @relation("ProjectFileUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([milestoneId])
+  @@index([deliverableId])
   @@index([featureId])
   @@index([uploaderId])
   @@index([visibility])
@@ -1911,8 +2111,8 @@ model Order {
 
   completedAt DateTime?
   cancelledAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
@@ -1973,7 +2173,7 @@ model DigitalDelivery {
   token  String                @unique
   status DigitalDeliveryStatus @default(PENDING)
 
-  downloadCount    Int      @default(0)
+  downloadCount    Int       @default(0)
   expiresAt        DateTime?
   lastDownloadedAt DateTime?
 
@@ -2040,8 +2240,9 @@ model Invoice {
   project        Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
   serviceRequest ServiceRequest?     @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
 
-  items    InvoiceItem[]
-  payments Payment[]
+  items            InvoiceItem[]
+  payments         Payment[]
+  projectProcesses ProjectProcess[]
 
   @@index([clientId])
   @@index([createdById])
@@ -2106,12 +2307,12 @@ model Payment {
   netAmount         Decimal? @db.Decimal(14, 2)
   metadata          Json?
 
-  initiatedAt DateTime @default(now())
+  initiatedAt DateTime  @default(now())
   paidAt      DateTime?
   failedAt    DateTime?
   expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
   payer   User?   @relation("PaymentPayer", fields: [payerId], references: [id], onDelete: SetNull)
@@ -2135,8 +2336,8 @@ model PaymentRefund {
   currency String       @default("NGN")
   status   RefundStatus @default(PENDING)
 
-  reference         String? @unique
-  providerReference String? @unique
+  reference         String?   @unique
+  providerReference String?   @unique
   reason            String?
   metadata          Json?
   processedAt       DateTime?
@@ -2195,10 +2396,10 @@ model CryptoTransaction {
   status        CryptoTransactionStatus @default(DETECTED)
   rawData       Json?
 
-  detectedAt  DateTime @default(now())
+  detectedAt  DateTime  @default(now())
   confirmedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   cryptoPayment CryptoPayment @relation(fields: [cryptoPaymentId], references: [id], onDelete: Cascade)
 
@@ -2374,7 +2575,7 @@ model ConversationParticipant {
   conversationId String
   userId         String
 
-  joinedAt   DateTime @default(now())
+  joinedAt   DateTime  @default(now())
   leftAt     DateTime?
   lastReadAt DateTime?
   mutedAt    DateTime?
@@ -2429,7 +2630,7 @@ model MessageAttachment {
   height    Int?
   duration  Int?
   caption   String?
-  sortOrder Int @default(0)
+  sortOrder Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2464,6 +2665,7 @@ model AssistanceRequest {
 
 model SupportTicket {
   id         String  @id @default(cuid())
+  projectId  String?
   creatorId  String
   assigneeId String?
 
@@ -2471,23 +2673,29 @@ model SupportTicket {
   subject      String
   description  String
 
-  status   TicketStatus   @default(OPEN)
-  priority TicketPriority @default(NORMAL)
+  type       TicketType              @default(SUPPORT)
+  status     TicketStatus            @default(OPEN)
+  priority   TicketPriority          @default(NORMAL)
+  visibility ProjectUpdateVisibility @default(CLIENT)
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   resolvedAt DateTime?
   closedAt   DateTime?
 
-  creator  User  @relation("TicketCreator", fields: [creatorId], references: [id], onDelete: Restrict)
-  assignee User? @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  project  Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  creator  User     @relation("TicketCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  assignee User?    @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
 
   conversations Conversation[]
 
+  @@index([projectId])
   @@index([creatorId])
   @@index([assigneeId])
+  @@index([type])
   @@index([status])
   @@index([priority])
+  @@index([visibility])
   @@index([createdAt])
 }
 
@@ -2509,7 +2717,7 @@ model Notification {
   metadata   Json?
 
   readAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2649,7 +2857,7 @@ model MediaAsset {
 
   alt       String?
   caption   String?
-  sortOrder Int @default(0)
+  sortOrder Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

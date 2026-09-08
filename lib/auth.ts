@@ -1,34 +1,46 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/prisma';
 
 export const auth = betterAuth({
-  appName: "rcentz",
+  appName: 'rcentz',
   baseURL: process.env.BETTER_AUTH_URL,
 
   database: prismaAdapter(prisma, {
-    provider: "postgresql",
+    provider: 'postgresql'
   }),
 
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false
   },
 
   user: {
     additionalFields: {
       role: {
-        type: ["USER", "CLIENT", "STAFF", "ADMIN", "SUPER_ADMIN"],
+        type: [
+          'USER',
+          'CLIENT',
+          'STAFF',
+          'ADMIN',
+          'SUPER_ADMIN'
+        ],
         required: false,
-        defaultValue: "USER",
-        input: false,
+        defaultValue: 'USER',
+        input: false
       },
+
       status: {
-        type: ["ACTIVE", "SUSPENDED", "DEACTIVATED"],
+        type: [
+          'ACTIVE',
+          'SUSPENDED',
+          'DEACTIVATED'
+        ],
         required: false,
-        defaultValue: "ACTIVE",
-        input: false,
-      },
-    },
-  },
+        defaultValue: 'ACTIVE',
+        input: false
+      }
+    }
+  }
 });

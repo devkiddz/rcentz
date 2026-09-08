@@ -11,6 +11,8 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+import { resolveSafeRedirect } from '@/features/auth/lib/resolve-safe-redirect';
+
 import { authClient } from '@/lib/auth-client';
 
 export function AdminLoginForm() {
@@ -43,9 +45,9 @@ export function AdminLoginForm() {
     }
 
     const next = searchParams.get('next');
+    const destination = resolveSafeRedirect(next, '/admin');
 
-    router.push(next?.startsWith('/') ? next : '/admin');
-
+    router.push(destination);
     router.refresh();
   }
 
