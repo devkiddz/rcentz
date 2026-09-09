@@ -1,0 +1,9 @@
+RCENTZ SYSTEMS
+Test Digital Product Delivery
+
+Product:
+Rcentz Client Portal Starter
+
+This file exists only to verify the protected Rcentz digital delivery flow.
+
+It is not a production software package.

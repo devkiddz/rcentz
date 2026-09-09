@@ -17,32 +17,37 @@ type AdminHeaderProps = {
     name: string;
     email: string;
     image: string | null;
+
     role: 'ADMIN' | 'SUPER_ADMIN';
   };
 };
 
 export function AdminHeader({ user }: AdminHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 bg-background/90 px-3 py-2.5 backdrop-blur-md sm:px-4">
-      <div className="flex min-w-0 items-center gap-2">
+    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur-md">
+      <div className="flex min-h-14 min-w-0 items-center gap-2 px-3 sm:px-4">
         <Tooltip>
           <TooltipTrigger
             render={
               <SidebarTrigger
-                aria-label="Toggle sidebar"
-                className="size-8 shrink-0 cursor-w-resize rounded-lg border-0 bg-transparent text-muted shadow-none transition-colors hover:bg-surface-muted hover:text-foreground"
+                aria-label="Open admin navigation"
+                className="size-8 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent text-muted shadow-none transition-colors hover:bg-surface-muted hover:text-foreground md:cursor-w-resize"
               />
             }>
             <Menu aria-hidden="true" className="size-4" />
           </TooltipTrigger>
 
-          <TooltipContent>Toggle sidebar</TooltipContent>
+          <TooltipContent>Admin navigation</TooltipContent>
         </Tooltip>
 
-        <div className="hidden min-w-0 sm:block">
-          <p className="truncate text-[12px] font-medium tracking-[-0.02em] text-foreground">Admin</p>
+        <div className="h-5 w-px shrink-0 bg-border" />
 
-          <p className="truncate text-[9px] text-muted">Rcentz Systems</p>
+        <div className="min-w-0">
+          <p className="truncate text-[11px] font-semibold tracking-[-0.02em] text-foreground sm:text-[12px]">
+            Admin
+          </p>
+
+          <p className="hidden truncate text-[9px] text-muted sm:block">Rcentz Systems</p>
         </div>
 
         <div className="ml-auto flex min-w-0 items-center gap-0.5">

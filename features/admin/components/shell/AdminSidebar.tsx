@@ -17,6 +17,7 @@ import {
   MessagesSquare,
   ReceiptText,
   Settings,
+  ShieldCheck,
   UsersRound,
   WalletCards,
   Wrench
@@ -35,7 +36,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
+  SidebarRail,
+  useSidebar
 } from '@/components/ui/sidebar';
 
 import { RcentzLogo } from '@/ui-shell/brand/RcentzLogo';
@@ -157,18 +159,20 @@ function isActiveRoute(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function AdminNavigationGroup({
-  label,
-  items,
-  pathname
-}: {
+type AdminNavigationGroupProps = {
   label: string;
+
   items: AdminNavigationItem[];
+
   pathname: string;
-}) {
+
+  onNavigate: () => void;
+};
+
+function AdminNavigationGroup({ label, items, pathname, onNavigate }: AdminNavigationGroupProps) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-sidebar-foreground/60">{label}</SidebarGroupLabel>
 
       <SidebarGroupContent>
         <SidebarMenu>
@@ -182,41 +186,36 @@ function AdminNavigationGroup({
                 <SidebarMenuButton
                   isActive={isActive}
                   tooltip={item.label}
-                  render={<Link href={item.href} aria-current={isActive ? 'page' : undefined} />}
-                  className={`
-                    group/nav-item
-                    relative
-                    transition-colors
-                    duration-150
+                  render={
+                    <Link
+                      href={item.href}
+                      onClick={onNavigate}
+                      aria-current={isActive ? 'page' : undefined}
+                    />
+                  }
+                  className={[
+                    'group/admin-nav',
+                    'relative',
+                    'transition-colors',
+                    'duration-150',
 
-                    ${
-                      isActive
-                        ? `
-                          bg-theme-accent-faint
-                          text-theme-accent
-                          hover:bg-theme-accent-soft
-                          hover:text-theme-accent
-                        `
-                        : `
-                          text-sidebar-foreground/70
-                          hover:bg-surface-muted
-                          hover:text-sidebar-foreground
-                        `
-                    }
-                  `}>
+                    isActive
+                      ? [
+                          'bg-theme-accent-faint',
+                          'text-theme-accent',
+                          'hover:bg-theme-accent-soft',
+                          'hover:text-theme-accent'
+                        ].join(' ')
+                      : [
+                          'text-sidebar-foreground/72',
+                          'hover:bg-sidebar-accent',
+                          'hover:text-sidebar-foreground'
+                        ].join(' ')
+                  ].join(' ')}>
                   {isActive ? (
                     <span
                       aria-hidden="true"
-                      className="
-                        absolute
-                        left-0
-                        top-1/2
-                        h-5
-                        w-[2px]
-                        -translate-y-1/2
-                        rounded-full
-                        bg-theme-accent
-                      "
+                      className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-theme-accent"
                     />
                   ) : null}
 
@@ -225,7 +224,7 @@ function AdminNavigationGroup({
                     className={
                       isActive
                         ? 'text-theme-accent'
-                        : 'text-sidebar-foreground/55 transition-colors group-hover/nav-item:text-sidebar-foreground'
+                        : 'text-sidebar-foreground/55 transition-colors group-hover/admin-nav:text-sidebar-foreground'
                     }
                   />
 
@@ -245,53 +244,85 @@ function AdminNavigationGroup({
 export function AdminSidebar() {
   const pathname = usePathname();
 
+  const { isMobile, setOpenMobile } = useSidebar();
+
   const t = useTranslations('AdminNavigation');
 
+  function handleNavigate() {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
+
   return (
-    <Sidebar collapsible="icon" variant="sidebar" className="border-r border-sidebar-border">
-      <SidebarHeader>
+    <Sidebar collapsible="icon" variant="sidebar" className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border bg-sidebar">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               tooltip={t('workspace')}
-              render={<Link href="/admin" />}
-              className="
-                transition-colors
-                duration-150
-                hover:bg-surface-muted
-              ">
+              render={<Link href="/admin" onClick={handleNavigate} />}
+              className="transition-colors duration-150 hover:bg-sidebar-accent">
               <div className="flex size-8 shrink-0 items-center justify-center">
                 <RcentzLogo compact />
               </div>
 
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold tracking-[-0.02em]">Rcentz Systems</span>
+              <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold tracking-[-0.02em] text-sidebar-foreground">
+                  Rcentz Systems
+                </span>
 
-                <span className="truncate text-[11px] text-sidebar-foreground/60">{t('workspace')}</span>
+                <span className="truncate text-[10px] text-sidebar-foreground/55">Admin workspace</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
-        <AdminNavigationGroup label="Workspace" items={workspaceNavigation} pathname={pathname} />
+      <SidebarContent className="bg-sidebar">
+        <AdminNavigationGroup
+          label="Workspace"
+          items={workspaceNavigation}
+          pathname={pathname}
+          onNavigate={handleNavigate}
+        />
 
-        <AdminNavigationGroup label="Communication" items={communicationNavigation} pathname={pathname} />
+        <AdminNavigationGroup
+          label="Communication"
+          items={communicationNavigation}
+          pathname={pathname}
+          onNavigate={handleNavigate}
+        />
 
-        <AdminNavigationGroup label="Finance" items={financeNavigation} pathname={pathname} />
+        <AdminNavigationGroup
+          label="Finance"
+          items={financeNavigation}
+          pathname={pathname}
+          onNavigate={handleNavigate}
+        />
 
-        <AdminNavigationGroup label="Management" items={managementNavigation} pathname={pathname} />
+        <AdminNavigationGroup
+          label="Management"
+          items={managementNavigation}
+          pathname={pathname}
+          onNavigate={handleNavigate}
+        />
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="px-2 py-1 text-[10px] leading-4 text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden">
-          {t('protected')}
-        </div>
-      </SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border bg-sidebar">
+        <div className="mx-2 mb-1 rounded-xl border border-sidebar-border bg-sidebar-accent px-3 py-3 group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0 text-theme-accent" />
 
-      <SidebarRail />
+            <p className="text-[10px] font-semibold text-sidebar-foreground">Protected administration</p>
+          </div>
+
+          <p className="mt-1.5 text-[9px] leading-4 text-sidebar-foreground/55">{t('protected')}</p>
+        </div>
+
+        <SidebarRail />
+      </SidebarFooter>
     </Sidebar>
   );
 }

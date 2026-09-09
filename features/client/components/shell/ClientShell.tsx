@@ -7,22 +7,20 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import {
-  Activity,
-  BarChart3,
   Bell,
   ChevronDown,
   CircleUserRound,
+  ClipboardList,
   ExternalLink,
   FileStack,
   FolderKanban,
   LayoutDashboard,
-  ListChecks,
-  ListTodo,
   LoaderCircle,
   LogOut,
   Menu,
   MessageSquareText,
-  PanelsTopLeft,
+  Package,
+  ReceiptText,
   Settings,
   Sparkles
 } from 'lucide-react';
@@ -98,34 +96,19 @@ const projectNavigation = [
     icon: FolderKanban
   },
   {
-    label: 'Milestones',
-    href: '/dashboard/milestones',
-    icon: ListChecks
+    label: 'Products',
+    href: '/dashboard/products',
+    icon: Package
   },
   {
-    label: 'Features',
-    href: '/dashboard/features',
-    icon: PanelsTopLeft
+    label: 'Billing',
+    href: '/dashboard/billing',
+    icon: ReceiptText
   },
   {
-    label: 'Tasks',
-    href: '/dashboard/tasks',
-    icon: ListTodo
-  },
-  {
-    label: 'Updates',
-    href: '/dashboard/updates',
-    icon: Activity
-  },
-  {
-    label: 'Files',
-    href: '/dashboard/files',
-    icon: FileStack
-  },
-  {
-    label: 'Analytics',
-    href: '/dashboard/analytics',
-    icon: BarChart3
+    label: 'Requests',
+    href: '/dashboard/requests',
+    icon: ClipboardList
   }
 ] satisfies ClientNavigationItem[];
 
@@ -134,6 +117,11 @@ const workspaceNavigation = [
     label: 'Messages',
     href: '/dashboard/messages',
     icon: MessageSquareText
+  },
+  {
+    label: 'Files',
+    href: '/dashboard/files',
+    icon: FileStack
   },
   {
     label: 'Notifications',
@@ -157,56 +145,35 @@ const dashboardHeaderRoutes: Array<{
     exact: true,
     identity: {
       title: 'Overview',
-      description: 'Project workspace'
+      description: 'Account command overview'
     }
   },
   {
     path: '/dashboard/projects',
     identity: {
       title: 'Projects',
-      description: 'Project portfolio'
+      description: 'Your Rcentz projects'
     }
   },
   {
-    path: '/dashboard/milestones',
+    path: '/dashboard/products',
     identity: {
-      title: 'Milestones',
-      description: 'Delivery checkpoints'
+      title: 'Products',
+      description: 'Rcentz product collection'
     }
   },
   {
-    path: '/dashboard/features',
+    path: '/dashboard/billing',
     identity: {
-      title: 'Features',
-      description: 'Project capabilities'
+      title: 'Billing',
+      description: 'Invoices and payments'
     }
   },
   {
-    path: '/dashboard/tasks',
+    path: '/dashboard/requests',
     identity: {
-      title: 'Tasks',
-      description: 'Delivery work'
-    }
-  },
-  {
-    path: '/dashboard/updates',
-    identity: {
-      title: 'Updates',
-      description: 'Project activity'
-    }
-  },
-  {
-    path: '/dashboard/files',
-    identity: {
-      title: 'Files',
-      description: 'Project resources'
-    }
-  },
-  {
-    path: '/dashboard/analytics',
-    identity: {
-      title: 'Analytics',
-      description: 'Project intelligence'
+      title: 'Requests',
+      description: 'Actions and service requests'
     }
   },
   {
@@ -214,6 +181,13 @@ const dashboardHeaderRoutes: Array<{
     identity: {
       title: 'Messages',
       description: 'Client communication'
+    }
+  },
+  {
+    path: '/dashboard/files',
+    identity: {
+      title: 'Files',
+      description: 'Documents and project resources'
     }
   },
   {
@@ -277,7 +251,7 @@ function getInitials(name: string) {
 
 export function ClientShell({ children, user }: ClientShellProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="bg-background">
       <ClientSidebar />
 
       <SidebarInset className="min-w-0 bg-background">
@@ -293,21 +267,23 @@ function ClientSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" className="border-r border-sidebar-border">
-      <SidebarHeader>
+    <Sidebar collapsible="icon" variant="sidebar" className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border bg-sidebar">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
               tooltip="Rcentz workspace"
               render={<Link href="/dashboard" />}
-              className="transition-colors duration-150 hover:bg-surface-muted">
+              className="transition-colors duration-150 hover:bg-sidebar-accent">
               <div className="flex size-8 shrink-0 items-center justify-center">
                 <RcentzLogo compact />
               </div>
 
               <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold tracking-[-0.02em]">Rcentz</span>
+                <span className="truncate font-semibold tracking-[-0.02em] text-sidebar-foreground">
+                  Rcentz
+                </span>
 
                 <span className="truncate text-[10px] text-sidebar-foreground/55">Client workspace</span>
               </div>
@@ -316,22 +292,22 @@ function ClientSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-sidebar">
         <ClientNavigationGroup label="Project" items={projectNavigation} pathname={pathname} />
 
         <ClientNavigationGroup label="Workspace" items={workspaceNavigation} pathname={pathname} />
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="mx-2 mb-1 rounded-xl border border-sidebar-border bg-sidebar-accent/25 px-3 py-3 group-data-[collapsible=icon]:hidden">
+      <SidebarFooter className="border-t border-sidebar-border bg-sidebar">
+        <div className="mx-2 mb-1 rounded-xl border border-sidebar-border bg-sidebar-accent px-3 py-3 group-data-[collapsible=icon]:hidden">
           <div className="flex items-center gap-2">
             <Sparkles aria-hidden="true" className="size-3.5 shrink-0 text-theme-accent" />
 
             <p className="text-[10px] font-medium text-sidebar-foreground">Rcentz Client</p>
           </div>
 
-          <p className="mt-1.5 text-[9px] leading-4 text-sidebar-foreground/50">
-            Project information reflects the latest Rcentz workspace state.
+          <p className="mt-1.5 text-[9px] leading-4 text-sidebar-foreground/55">
+            Your workspace reflects the latest Rcentz account state.
           </p>
         </div>
 
@@ -352,7 +328,7 @@ function ClientNavigationGroup({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-sidebar-foreground/60">{label}</SidebarGroupLabel>
 
       <SidebarGroupContent>
         <SidebarMenu>
@@ -372,6 +348,7 @@ function ClientNavigationGroup({
                     'relative',
                     'transition-colors',
                     'duration-150',
+
                     active
                       ? [
                           'bg-theme-accent-faint',
@@ -380,8 +357,8 @@ function ClientNavigationGroup({
                           'hover:text-theme-accent'
                         ].join(' ')
                       : [
-                          'text-sidebar-foreground/70',
-                          'hover:bg-surface-muted',
+                          'text-sidebar-foreground/72',
+                          'hover:bg-sidebar-accent',
                           'hover:text-sidebar-foreground'
                         ].join(' ')
                   ].join(' ')}>
