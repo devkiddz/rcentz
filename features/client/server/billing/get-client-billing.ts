@@ -4,7 +4,6 @@ import { cache } from 'react';
 
 import { prisma } from '@/lib/prisma';
 
-
 function decimalToNumber(
   value: { toString(): string } | null | undefined
 ) {
@@ -13,30 +12,27 @@ function decimalToNumber(
   }
 
   const number = Number(value.toString());
-
   return Number.isFinite(number) ? number : 0;
 }
 
-
-const nonBillableInvoiceStatuses: string[] = [
+const nonBillableInvoiceStatuses = [
   'DRAFT',
   'VOID',
   'CANCELLED',
 ];
 
-const closedInvoiceStatuses: string[] = [
+const closedInvoiceStatuses = [
   'PAID',
   'VOID',
   'CANCELLED',
   'REFUNDED',
 ];
 
-const activeSubscriptionStatuses: string[] = [
+const activeSubscriptionStatuses = [
   'TRIALING',
   'ACTIVE',
   'PAST_DUE',
 ];
-
 
 type NextPayment = {
   type: 'INVOICE' | 'SUBSCRIPTION';
@@ -47,7 +43,6 @@ type NextPayment = {
   dueAt: Date | null;
 } | null;
 
-
 export const getClientBilling = cache(async (userId: string) => {
   const now = new Date();
 
@@ -55,7 +50,6 @@ export const getClientBilling = cache(async (userId: string) => {
     prisma.invoice.findMany({
       where: {
         clientId: userId,
-
         status: {
           not: 'DRAFT',
         },
@@ -75,6 +69,7 @@ export const getClientBilling = cache(async (userId: string) => {
         invoiceNumber: true,
         sourceType: true,
         status: true,
+
         currency: true,
         subtotal: true,
         discount: true,
@@ -82,6 +77,7 @@ export const getClientBilling = cache(async (userId: string) => {
         total: true,
         amountPaid: true,
         balanceDue: true,
+
         issuedAt: true,
         dueAt: true,
         paidAt: true,
@@ -104,6 +100,30 @@ export const getClientBilling = cache(async (userId: string) => {
             quantity: true,
             unitPrice: true,
             total: true,
+          },
+        },
+
+        revisions: {
+          where: {
+            status: {
+              in: ['PENDING', 'REJECTED'],
+            },
+          },
+
+          orderBy: {
+            revisionNumber: 'desc',
+          },
+
+          take: 1,
+
+          select: {
+            id: true,
+            revisionNumber: true,
+            status: true,
+            title: true,
+            proposedTotal: true,
+            proposedCurrency: true,
+            createdAt: true,
           },
         },
 
@@ -245,7 +265,6 @@ export const getClientBilling = cache(async (userId: string) => {
     }),
   ]);
 
-
   const resolvedInvoices = invoices.map((invoice) => {
     const subtotal = decimalToNumber(invoice.subtotal);
     const discount = decimalToNumber(invoice.discount);
@@ -262,12 +281,13 @@ export const getClientBilling = cache(async (userId: string) => {
       invoice.dueAt !== null &&
       invoice.dueAt < now;
 
-    const effectiveStatus = isOverdue ? 'OVERDUE' : invoice.status;
+    const effectiveStatus = isOverdue
+      ? 'OVERDUE'
+      : invoice.status;
 
     let sourceId: string | null = null;
     let sourceLabel = 'Manual invoice';
     let sourceReference: string | null = null;
-
 
     switch (invoice.sourceType) {
       case 'ORDER':
@@ -285,7 +305,8 @@ export const getClientBilling = cache(async (userId: string) => {
       case 'SUBSCRIPTION':
         sourceId = invoice.subscription?.id ?? null;
         sourceLabel = invoice.subscription?.plan.name ?? 'Subscription';
-        sourceReference = invoice.subscription?.subscriptionNumber ?? null;
+        sourceReference =
+          invoice.subscription?.subscriptionNumber ?? null;
         break;
 
       case 'PROJECT':
@@ -296,13 +317,14 @@ export const getClientBilling = cache(async (userId: string) => {
 
       case 'SERVICE_REQUEST':
         sourceId = invoice.serviceRequest?.id ?? null;
-        sourceLabel = invoice.serviceRequest?.title ?? 'Service request';
+        sourceLabel =
+          invoice.serviceRequest?.title ??
+          'Service request';
         break;
 
       case 'MANUAL':
         break;
     }
-
 
     const itemPreview = invoice.items.map((item) => {
       return {
@@ -316,12 +338,51 @@ export const getClientBilling = cache(async (userId: string) => {
       };
     });
 
-
     const hiddenItemCount = Math.max(
       invoice._count.items - itemPreview.length,
       0
     );
 
+    const unresolvedRevision =
+      invoice.revisions[0]
+        ? {
+            id: invoice.revisions[0].id,
+            revisionNumber:
+              invoice.revisions[0].revisionNumber,
+            status: invoice.revisions[0].status,
+            title: invoice.revisions[0].title,
+            proposedTotal: decimalToNumber(
+              invoice.revisions[0].proposedTotal
+            ),
+            proposedCurrency:
+              invoice.revisions[0].proposedCurrency,
+            createdAt:
+              invoice.revisions[0].createdAt,
+          }
+        : null;
+
+    let paymentState:
+      | 'READY'
+      | 'REVISION_PENDING'
+      | 'REVISION_REJECTED'
+      | 'SETTLED'
+      | 'NOT_PAYABLE';
+
+    if (unresolvedRevision?.status === 'PENDING') {
+      paymentState = 'REVISION_PENDING';
+    } else if (unresolvedRevision?.status === 'REJECTED') {
+      paymentState = 'REVISION_REJECTED';
+    } else if (balanceDue <= 0) {
+      paymentState = 'SETTLED';
+    } else if (
+      ['ISSUED', 'PARTIALLY_PAID', 'OVERDUE'].includes(
+        effectiveStatus
+      )
+    ) {
+      paymentState = 'READY';
+    } else {
+      paymentState = 'NOT_PAYABLE';
+    }
 
     return {
       id: invoice.id,
@@ -336,6 +397,8 @@ export const getClientBilling = cache(async (userId: string) => {
 
       status: invoice.status,
       effectiveStatus,
+      paymentState,
+      unresolvedRevision,
 
       currency: invoice.currency,
       subtotal,
@@ -358,7 +421,6 @@ export const getClientBilling = cache(async (userId: string) => {
       updatedAt: invoice.updatedAt,
     };
   });
-
 
   const resolvedPayments = recentPayments.map((payment) => {
     return {
@@ -395,7 +457,6 @@ export const getClientBilling = cache(async (userId: string) => {
     };
   });
 
-
   const resolvedSubscriptions = subscriptions.map((subscription) => {
     return {
       id: subscription.id,
@@ -427,7 +488,6 @@ export const getClientBilling = cache(async (userId: string) => {
     };
   });
 
-
   const currencySummaryMap = new Map<
     string,
     {
@@ -443,9 +503,9 @@ export const getClientBilling = cache(async (userId: string) => {
     }
   >();
 
-
   for (const invoice of resolvedInvoices) {
-    const existingSummary = currencySummaryMap.get(invoice.currency);
+    const existingSummary =
+      currencySummaryMap.get(invoice.currency);
 
     const summary = existingSummary ?? {
       currency: invoice.currency,
@@ -461,122 +521,145 @@ export const getClientBilling = cache(async (userId: string) => {
 
     summary.invoiceCount += 1;
 
-    const isBillable = !nonBillableInvoiceStatuses.includes(invoice.status);
+    const isBillable =
+      !nonBillableInvoiceStatuses.includes(
+        invoice.status
+      );
 
     if (isBillable) {
       summary.billed += invoice.total;
       summary.paid += invoice.amountPaid;
     }
 
-
     const hasOutstandingBalance =
       invoice.balanceDue > 0 &&
-      !closedInvoiceStatuses.includes(invoice.status);
+      !closedInvoiceStatuses.includes(
+        invoice.status
+      );
 
     if (hasOutstandingBalance) {
       summary.outstanding += invoice.balanceDue;
       summary.openInvoiceCount += 1;
     }
 
-
     if (invoice.effectiveStatus === 'OVERDUE') {
       summary.overdue += invoice.balanceDue;
       summary.overdueInvoiceCount += 1;
     }
 
-
     if (invoice.status === 'PAID') {
       summary.paidInvoiceCount += 1;
     }
 
-    currencySummaryMap.set(invoice.currency, summary);
+    currencySummaryMap.set(
+      invoice.currency,
+      summary
+    );
   }
 
-
-  const totalsByCurrency = Array.from(currencySummaryMap.values());
-
+  const totalsByCurrency =
+    Array.from(currencySummaryMap.values());
 
   const primaryCurrency =
     resolvedInvoices[0]?.currency ??
     resolvedSubscriptions[0]?.currency ??
     'NGN';
 
+  const existingPrimarySummary =
+    totalsByCurrency.find((summary) => {
+      return (
+        summary.currency === primaryCurrency
+      );
+    });
 
-  const existingPrimarySummary = totalsByCurrency.find((summary) => {
-    return summary.currency === primaryCurrency;
-  });
+  const primarySummary =
+    existingPrimarySummary ?? {
+      currency: primaryCurrency,
+      billed: 0,
+      paid: 0,
+      outstanding: 0,
+      overdue: 0,
+      invoiceCount: 0,
+      openInvoiceCount: 0,
+      overdueInvoiceCount: 0,
+      paidInvoiceCount: 0,
+    };
 
-
-  const primarySummary = existingPrimarySummary ?? {
-    currency: primaryCurrency,
-    billed: 0,
-    paid: 0,
-    outstanding: 0,
-    overdue: 0,
-    invoiceCount: 0,
-    openInvoiceCount: 0,
-    overdueInvoiceCount: 0,
-    paidInvoiceCount: 0,
-  };
-
-
-  const activeSubscriptionCount = resolvedSubscriptions.filter(
-    (subscription) => {
-      return activeSubscriptionStatuses.includes(subscription.status);
-    }
-  ).length;
-
-
-  const payableInvoices = resolvedInvoices.filter((invoice) => {
-    const hasBalance = invoice.balanceDue > 0;
-    const isClosed = closedInvoiceStatuses.includes(invoice.status);
-    const hasDueDate = invoice.dueAt !== null;
-
-    return hasBalance && !isClosed && hasDueDate;
-  });
-
-
-  payableInvoices.sort((firstInvoice, secondInvoice) => {
-    if (!firstInvoice.dueAt || !secondInvoice.dueAt) {
-      return 0;
-    }
-
-    return firstInvoice.dueAt.getTime() - secondInvoice.dueAt.getTime();
-  });
-
-
-  const nextInvoicePayment = payableInvoices[0] ?? null;
-
-
-  const billableSubscriptions = resolvedSubscriptions.filter(
-    (subscription) => {
-      const isActive = activeSubscriptionStatuses.includes(
+  const activeSubscriptionCount =
+    resolvedSubscriptions.filter((subscription) => {
+      return activeSubscriptionStatuses.includes(
         subscription.status
       );
+    }).length;
 
-      const hasBillingDate = subscription.nextBillingAt !== null;
+  const paymentUpdateCount =
+    resolvedInvoices.filter((invoice) => {
+      return (
+        invoice.paymentState === 'REVISION_PENDING' ||
+        invoice.paymentState === 'REVISION_REJECTED'
+      );
+    }).length;
 
-      return isActive && hasBillingDate;
+  const payableInvoices =
+    resolvedInvoices.filter((invoice) => {
+      return (
+        invoice.paymentState === 'READY' &&
+        invoice.dueAt !== null
+      );
+    });
+
+  payableInvoices.sort(
+    (firstInvoice, secondInvoice) => {
+      if (
+        !firstInvoice.dueAt ||
+        !secondInvoice.dueAt
+      ) {
+        return 0;
+      }
+
+      return (
+        firstInvoice.dueAt.getTime() -
+        secondInvoice.dueAt.getTime()
+      );
     }
   );
 
+  const nextInvoicePayment =
+    payableInvoices[0] ?? null;
 
-  billableSubscriptions.sort((firstSubscription, secondSubscription) => {
-    if (!firstSubscription.nextBillingAt || !secondSubscription.nextBillingAt) {
-      return 0;
+  const billableSubscriptions =
+    resolvedSubscriptions.filter((subscription) => {
+      const isActive =
+        activeSubscriptionStatuses.includes(
+          subscription.status
+        );
+
+      const hasBillingDate =
+        subscription.nextBillingAt !== null;
+
+      return isActive && hasBillingDate;
+    });
+
+  billableSubscriptions.sort(
+    (firstSubscription, secondSubscription) => {
+      if (
+        !firstSubscription.nextBillingAt ||
+        !secondSubscription.nextBillingAt
+      ) {
+        return 0;
+      }
+
+      return (
+        firstSubscription.nextBillingAt.getTime() -
+        secondSubscription.nextBillingAt.getTime()
+      );
     }
+  );
 
-    return (
-      firstSubscription.nextBillingAt.getTime() -
-      secondSubscription.nextBillingAt.getTime()
-    );
-  });
-
-
-  const nextSubscriptionPayment = billableSubscriptions[0] ?? null;
+  const nextSubscriptionPayment =
+    billableSubscriptions[0] ?? null;
 
   let nextPayment: NextPayment = null;
-
 
   if (nextInvoicePayment) {
     nextPayment = {
@@ -598,7 +681,6 @@ export const getClientBilling = cache(async (userId: string) => {
     };
   }
 
-
   return {
     generatedAt: now,
     primaryCurrency,
@@ -606,6 +688,7 @@ export const getClientBilling = cache(async (userId: string) => {
     summary: {
       ...primarySummary,
       activeSubscriptionCount,
+      paymentUpdateCount,
     },
 
     totalsByCurrency,
@@ -615,7 +698,6 @@ export const getClientBilling = cache(async (userId: string) => {
     subscriptions: resolvedSubscriptions,
   };
 });
-
 
 export type ClientBillingData = Awaited<
   ReturnType<typeof getClientBilling>

@@ -4,6 +4,8 @@ import { cache } from 'react';
 
 import { prisma } from '@/lib/prisma';
 
+import { parseInvoiceApprovalSnapshot } from '@/features/billing/server/invoice-approval-snapshot';
+import { parseInvoiceRevisionItems } from '@/features/billing/server/invoice-revision-snapshot';
 
 function decimalToNumber(
   value: { toString(): string } | null | undefined
@@ -15,7 +17,6 @@ function decimalToNumber(
   const number = Number(value.toString());
   return Number.isFinite(number) ? number : 0;
 }
-
 
 function formatAddress(value: unknown) {
   if (!value) {
@@ -34,6 +35,7 @@ function formatAddress(value: unknown) {
   const address = value as Record<string, unknown>;
 
   const parts = [
+    address.address,
     address.line1,
     address.line2,
     address.address1,
@@ -55,14 +57,19 @@ function formatAddress(value: unknown) {
     : null;
 }
 
-
-const closedInvoiceStatuses: string[] = [
+const closedInvoiceStatuses = [
   'PAID',
   'VOID',
   'CANCELLED',
   'REFUNDED',
 ];
 
+const financiallyEditableStatuses = [
+  'DRAFT',
+  'ISSUED',
+  'PARTIALLY_PAID',
+  'OVERDUE',
+];
 
 export const getAdminInvoice = cache(async (invoiceId: string) => {
   const invoice = await prisma.invoice.findFirst({
@@ -75,6 +82,9 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
       invoiceNumber: true,
       sourceType: true,
       status: true,
+
+      clientId: true,
+      projectId: true,
 
       currency: true,
       subtotal: true,
@@ -128,7 +138,16 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
           quantity: true,
           unitPrice: true,
           total: true,
+          serviceId: true,
           createdAt: true,
+
+          service: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
         },
       },
 
@@ -158,6 +177,140 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
           paidAt: true,
           failedAt: true,
           createdAt: true,
+        },
+      },
+
+      approvals: {
+        where: {
+          entityType: 'INVOICE',
+        },
+
+        orderBy: {
+          version: 'desc',
+        },
+
+        select: {
+          id: true,
+          version: true,
+          status: true,
+
+          title: true,
+          summary: true,
+          snapshot: true,
+          response: true,
+
+          requestedAt: true,
+          respondedAt: true,
+          cancelledAt: true,
+          createdAt: true,
+
+          client: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          requestedBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          respondedBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          cancelledBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+
+      revisions: {
+        orderBy: {
+          revisionNumber: 'desc',
+        },
+
+        select: {
+          id: true,
+          revisionNumber: true,
+          status: true,
+
+          title: true,
+          explanation: true,
+          clientResponse: true,
+
+          previousCurrency: true,
+          proposedCurrency: true,
+
+          previousSubtotal: true,
+          proposedSubtotal: true,
+
+          previousDiscount: true,
+          proposedDiscount: true,
+
+          previousTax: true,
+          proposedTax: true,
+
+          previousTotal: true,
+          proposedTotal: true,
+
+          amountPaidAtProposal: true,
+
+          previousBalanceDue: true,
+          proposedBalanceDue: true,
+
+          previousDueAt: true,
+          proposedDueAt: true,
+
+          previousItems: true,
+          proposedItems: true,
+
+          createdAt: true,
+          acceptedAt: true,
+          rejectedAt: true,
+          cancelledAt: true,
+
+          proposedBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          acceptedBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+
+          rejectedBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+
+          cancelledBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
 
@@ -194,6 +347,7 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
           id: true,
           name: true,
           slug: true,
+          status: true,
         },
       },
 
@@ -206,11 +360,9 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
     },
   });
 
-
   if (!invoice) {
     return null;
   }
-
 
   const subtotal = decimalToNumber(invoice.subtotal);
   const discount = decimalToNumber(invoice.discount);
@@ -221,7 +373,9 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
 
   const now = new Date();
 
-  const isClosed = closedInvoiceStatuses.includes(invoice.status);
+  const isClosed = closedInvoiceStatuses.includes(
+    invoice.status
+  );
 
   const isOverdue =
     !isClosed &&
@@ -233,11 +387,9 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
     ? 'OVERDUE'
     : invoice.status;
 
-
   let sourceId: string | null = null;
   let sourceLabel = 'Manual invoice';
   let sourceReference: string | null = null;
-
 
   switch (invoice.sourceType) {
     case 'ORDER':
@@ -254,25 +406,33 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
 
     case 'SUBSCRIPTION':
       sourceId = invoice.subscription?.id ?? null;
-      sourceLabel = invoice.subscription?.plan.name ?? 'Subscription';
-      sourceReference = invoice.subscription?.subscriptionNumber ?? null;
+      sourceLabel =
+        invoice.subscription?.plan.name ??
+        'Subscription';
+      sourceReference =
+        invoice.subscription?.subscriptionNumber ??
+        null;
       break;
 
     case 'PROJECT':
       sourceId = invoice.project?.id ?? null;
-      sourceLabel = invoice.project?.name ?? 'Project';
-      sourceReference = invoice.project?.slug ?? null;
+      sourceLabel =
+        invoice.project?.name ?? 'Project';
+      sourceReference =
+        invoice.project?.slug ?? null;
       break;
 
     case 'SERVICE_REQUEST':
-      sourceId = invoice.serviceRequest?.id ?? null;
-      sourceLabel = invoice.serviceRequest?.title ?? 'Service request';
+      sourceId =
+        invoice.serviceRequest?.id ?? null;
+      sourceLabel =
+        invoice.serviceRequest?.title ??
+        'Service request';
       break;
 
     case 'MANUAL':
       break;
   }
-
 
   const clientDisplayName =
     invoice.client?.clientProfile?.companyName ??
@@ -290,7 +450,6 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
     invoice.client?.image ??
     null;
 
-
   const items = invoice.items.map((item) => {
     return {
       id: item.id,
@@ -300,10 +459,11 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
       quantity: decimalToNumber(item.quantity),
       unitPrice: decimalToNumber(item.unitPrice),
       total: decimalToNumber(item.total),
+      serviceId: item.serviceId,
+      service: item.service,
       createdAt: item.createdAt,
     };
   });
-
 
   const payments = invoice.payments.map((payment) => {
     return {
@@ -334,6 +494,203 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
     };
   });
 
+  const approvals = invoice.approvals.map((approval) => {
+    return {
+      id: approval.id,
+      version: approval.version,
+      status: approval.status,
+
+      title: approval.title,
+      summary: approval.summary,
+      response: approval.response,
+
+      snapshot:
+        parseInvoiceApprovalSnapshot(
+          approval.snapshot
+        ),
+
+      client: approval.client,
+      requestedBy: approval.requestedBy,
+      respondedBy: approval.respondedBy,
+      cancelledBy: approval.cancelledBy,
+
+      requestedAt: approval.requestedAt,
+      respondedAt: approval.respondedAt,
+      cancelledAt: approval.cancelledAt,
+      createdAt: approval.createdAt,
+    };
+  });
+
+  const revisions = invoice.revisions.map((revision) => {
+    const previousItems =
+      parseInvoiceRevisionItems(
+        revision.previousItems
+      );
+
+    const proposedItems =
+      parseInvoiceRevisionItems(
+        revision.proposedItems
+      );
+
+    return {
+      id: revision.id,
+      revisionNumber:
+        revision.revisionNumber,
+      status: revision.status,
+
+      title: revision.title,
+      explanation: revision.explanation,
+      clientResponse:
+        revision.clientResponse,
+
+      previousCurrency:
+        revision.previousCurrency,
+      proposedCurrency:
+        revision.proposedCurrency,
+
+      previousSubtotal:
+        decimalToNumber(
+          revision.previousSubtotal
+        ),
+
+      proposedSubtotal:
+        decimalToNumber(
+          revision.proposedSubtotal
+        ),
+
+      previousDiscount:
+        decimalToNumber(
+          revision.previousDiscount
+        ),
+
+      proposedDiscount:
+        decimalToNumber(
+          revision.proposedDiscount
+        ),
+
+      previousTax:
+        decimalToNumber(
+          revision.previousTax
+        ),
+
+      proposedTax:
+        decimalToNumber(
+          revision.proposedTax
+        ),
+
+      previousTotal:
+        decimalToNumber(
+          revision.previousTotal
+        ),
+
+      proposedTotal:
+        decimalToNumber(
+          revision.proposedTotal
+        ),
+
+      amountPaidAtProposal:
+        decimalToNumber(
+          revision.amountPaidAtProposal
+        ),
+
+      previousBalanceDue:
+        decimalToNumber(
+          revision.previousBalanceDue
+        ),
+
+      proposedBalanceDue:
+        decimalToNumber(
+          revision.proposedBalanceDue
+        ),
+
+      previousDueAt:
+        revision.previousDueAt,
+
+      proposedDueAt:
+        revision.proposedDueAt,
+
+      previousItems:
+        previousItems ?? [],
+
+      proposedItems:
+        proposedItems ?? [],
+
+      snapshotValid:
+        previousItems !== null &&
+        proposedItems !== null,
+
+      proposedBy:
+        revision.proposedBy,
+
+      acceptedBy:
+        revision.acceptedBy,
+
+      rejectedBy:
+        revision.rejectedBy,
+
+      cancelledBy:
+        revision.cancelledBy,
+
+      createdAt:
+        revision.createdAt,
+
+      acceptedAt:
+        revision.acceptedAt,
+
+      rejectedAt:
+        revision.rejectedAt,
+
+      cancelledAt:
+        revision.cancelledAt,
+    };
+  });
+
+  const latestApproval =
+    approvals[0] ?? null;
+
+  const acceptedApproval =
+    approvals.find((approval) => {
+      return approval.status === 'ACCEPTED';
+    }) ?? null;
+
+  const pendingApproval =
+    approvals.find((approval) => {
+      return approval.status === 'PENDING';
+    }) ?? null;
+
+  const rejectedApproval =
+    !acceptedApproval
+      ? approvals.find((approval) => {
+          return approval.status === 'REJECTED';
+        }) ?? null
+      : null;
+
+  const latestUnresolvedRevision =
+    revisions.find((revision) => {
+      return (
+        revision.status === 'PENDING' ||
+        revision.status === 'REJECTED'
+      );
+    }) ?? null;
+
+  let agreementState:
+    | 'DRAFT'
+    | 'NOT_REQUESTED'
+    | 'PENDING'
+    | 'ACCEPTED'
+    | 'REJECTED';
+
+  if (invoice.status === 'DRAFT') {
+    agreementState = 'DRAFT';
+  } else if (acceptedApproval) {
+    agreementState = 'ACCEPTED';
+  } else if (pendingApproval) {
+    agreementState = 'PENDING';
+  } else if (rejectedApproval) {
+    agreementState = 'REJECTED';
+  } else {
+    agreementState = 'NOT_REQUESTED';
+  }
 
   return {
     id: invoice.id,
@@ -349,6 +706,17 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
       reference: sourceReference,
     },
 
+    association: {
+      project: invoice.project
+        ? {
+            id: invoice.project.id,
+            name: invoice.project.name,
+            slug: invoice.project.slug,
+            status: invoice.project.status,
+          }
+        : null,
+    },
+
     client: {
       id: invoice.client?.id ?? null,
       displayName: clientDisplayName,
@@ -360,7 +728,11 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
       name: invoice.customerName,
       email: invoice.customerEmail,
       phone: invoice.customerPhone,
-      billingAddress: formatAddress(invoice.billingAddress),
+
+      billingAddress:
+        formatAddress(
+          invoice.billingAddress
+        ),
     },
 
     currency: invoice.currency,
@@ -374,6 +746,36 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
     items,
     payments,
 
+    approvals,
+    latestApproval,
+    acceptedApproval,
+    pendingApproval,
+    rejectedApproval,
+    agreementState,
+
+    revisions,
+    latestUnresolvedRevision,
+
+    permissions: {
+      canIssue:
+        invoice.status === 'DRAFT',
+
+      canRequestAgreement:
+        invoice.status !== 'DRAFT' &&
+        !acceptedApproval &&
+        !pendingApproval,
+
+      canEditFinancials:
+        financiallyEditableStatuses.includes(
+          invoice.status
+        ),
+
+      financialsLocked:
+        !financiallyEditableStatuses.includes(
+          invoice.status
+        ),
+    },
+
     notes: invoice.notes,
     pdfUrl: invoice.pdfUrl,
 
@@ -386,7 +788,8 @@ export const getAdminInvoice = cache(async (invoiceId: string) => {
   };
 });
 
-
 export type AdminInvoiceData = NonNullable<
-  Awaited<ReturnType<typeof getAdminInvoice>>
+  Awaited<
+    ReturnType<typeof getAdminInvoice>
+  >
 >;

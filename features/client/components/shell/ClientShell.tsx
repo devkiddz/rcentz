@@ -58,6 +58,13 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+import { ClientCommandSearch } from '@/features/client/components/shell/ClientCommandSearch';
+import { ClientMessagesMenu } from '@/features/client/components/shell/ClientMessagesMenu';
+import { ClientNotificationsMenu } from '@/features/client/components/shell/ClientNotificationsMenu';
+import { ClientWorkspaceHeader } from '@/features/client/components/shell/ClientWorkspaceHeader';
+
+import type { ClientHeaderFeed } from '@/features/client/types/client-header';
+
 import { authClient } from '@/lib/auth-client';
 
 import { RcentzLogo } from '@/ui-shell/brand/RcentzLogo';
@@ -71,6 +78,8 @@ type ClientShellProps = {
     email: string;
     image: string | null;
   };
+
+  headerFeed: ClientHeaderFeed;
 };
 
 type ClientNavigationItem = {
@@ -249,13 +258,15 @@ function getInitials(name: string) {
   return initials || 'R';
 }
 
-export function ClientShell({ children, user }: ClientShellProps) {
+export function ClientShell({ children, user, headerFeed }: ClientShellProps) {
   return (
     <SidebarProvider className="bg-background">
       <ClientSidebar />
 
       <SidebarInset className="min-w-0 bg-background">
-        <ClientHeader user={user} />
+        <ClientHeader user={user} headerFeed={headerFeed} />
+
+        <ClientWorkspaceHeader user={user} />
 
         <div className="min-w-0 flex-1">{children}</div>
       </SidebarInset>
@@ -391,7 +402,13 @@ function ClientNavigationGroup({
   );
 }
 
-function ClientHeader({ user }: { user: ClientShellProps['user'] }) {
+function ClientHeader({
+  user,
+  headerFeed
+}: {
+  user: ClientShellProps['user'];
+  headerFeed: ClientHeaderFeed;
+}) {
   const pathname = usePathname();
 
   const headerIdentity = getHeaderIdentity(pathname);
@@ -423,23 +440,15 @@ function ClientHeader({ user }: { user: ClientShellProps['user'] }) {
           <p className="hidden truncate text-[9px] text-muted sm:block">{headerIdentity.description}</p>
         </div>
 
-        <div className="ml-auto flex min-w-0 items-center gap-1">
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Link
-                  href="/dashboard/notifications"
-                  aria-label="Notifications"
-                  className="relative flex size-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
-                />
-              }>
-              <Bell aria-hidden="true" className="size-3.5" />
+        <div className="ml-auto flex min-w-0 items-center gap-0.5">
+          <ClientCommandSearch />
 
-              <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-theme-accent" />
-            </TooltipTrigger>
+          <ClientMessagesMenu messages={headerFeed.messages} hasUnread={headerFeed.hasUnreadMessages} />
 
-            <TooltipContent>Notifications</TooltipContent>
-          </Tooltip>
+          <ClientNotificationsMenu
+            notifications={headerFeed.notifications}
+            unreadCount={headerFeed.unreadNotificationCount}
+          />
 
           <RcentzThemeControl />
 

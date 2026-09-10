@@ -308,6 +308,18 @@ enum InvoiceRevisionStatus {
   CANCELLED
 }
 
+enum ClientApprovalEntityType {
+  INVOICE
+  PROJECT
+}
+
+enum ClientApprovalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
 enum PaymentMethod {
   CARD
   BANK_TRANSFER
@@ -641,6 +653,11 @@ model User {
   acceptedInvoiceRevisions  InvoiceRevision[] @relation("InvoiceRevisionAccepter")
   rejectedInvoiceRevisions  InvoiceRevision[] @relation("InvoiceRevisionRejecter")
   cancelledInvoiceRevisions InvoiceRevision[] @relation("InvoiceRevisionCanceller")
+
+  clientApprovals          ClientApproval[] @relation("ClientApprovalClient")
+  requestedClientApprovals ClientApproval[] @relation("ClientApprovalRequester")
+  respondedClientApprovals ClientApproval[] @relation("ClientApprovalResponder")
+  cancelledClientApprovals ClientApproval[] @relation("ClientApprovalCanceller")
 
   orders Order[]
   carts  Cart[]
@@ -1462,6 +1479,7 @@ model Project {
   analyticsEvents AnalyticsEvent[]
 
   invoices       Invoice[]
+  approvals      ClientApproval[]
   conversations  Conversation[]
   supportTickets SupportTicket[]
   media          MediaAsset[]
@@ -2329,6 +2347,7 @@ model Invoice {
   items            InvoiceItem[]
   payments         Payment[]
   revisions        InvoiceRevision[]
+  approvals        ClientApproval[]
   projectProcesses ProjectProcess[]
 
   @@index([clientId])
@@ -2438,6 +2457,50 @@ model InvoiceRevision {
   @@index([rejectedById])
   @@index([cancelledById])
   @@index([createdAt])
+}
+
+model ClientApproval {
+  id         String                   @id @default(cuid())
+  entityType ClientApprovalEntityType
+  status     ClientApprovalStatus     @default(PENDING)
+  version    Int                      @default(1)
+
+  clientId      String
+  requestedById String
+  respondedById String?
+  cancelledById String?
+
+  invoiceId String?
+  projectId String?
+
+  title    String
+  summary  String?
+  snapshot Json
+  response String?
+
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client      User  @relation("ClientApprovalClient", fields: [clientId], references: [id], onDelete: Restrict)
+  requestedBy User  @relation("ClientApprovalRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+  respondedBy User? @relation("ClientApprovalResponder", fields: [respondedById], references: [id], onDelete: SetNull)
+  cancelledBy User? @relation("ClientApprovalCanceller", fields: [cancelledById], references: [id], onDelete: SetNull)
+
+  invoice Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([invoiceId, version])
+  @@unique([projectId, version])
+  @@index([clientId, status])
+  @@index([requestedById])
+  @@index([respondedById])
+  @@index([cancelledById])
+  @@index([entityType, status])
+  @@index([requestedAt])
 }
 
 model Payment {
