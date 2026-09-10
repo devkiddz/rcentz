@@ -301,6 +301,13 @@ enum InvoiceItemType {
   DISCOUNT
 }
 
+enum InvoiceRevisionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
 enum PaymentMethod {
   CARD
   BANK_TRANSFER
@@ -629,6 +636,11 @@ model User {
   invoices        Invoice[] @relation("InvoiceClient")
   createdInvoices Invoice[] @relation("InvoiceCreator")
   payments        Payment[] @relation("PaymentPayer")
+
+  proposedInvoiceRevisions  InvoiceRevision[] @relation("InvoiceRevisionProposer")
+  acceptedInvoiceRevisions  InvoiceRevision[] @relation("InvoiceRevisionAccepter")
+  rejectedInvoiceRevisions  InvoiceRevision[] @relation("InvoiceRevisionRejecter")
+  cancelledInvoiceRevisions InvoiceRevision[] @relation("InvoiceRevisionCanceller")
 
   orders Order[]
   carts  Cart[]
@@ -2316,6 +2328,7 @@ model Invoice {
 
   items            InvoiceItem[]
   payments         Payment[]
+  revisions        InvoiceRevision[]
   projectProcesses ProjectProcess[]
 
   @@index([clientId])
@@ -2361,6 +2374,70 @@ model InvoiceItem {
   @@index([productVariantId])
   @@index([serviceId])
   @@index([servicePlanId])
+}
+
+model InvoiceRevision {
+  id             String                @id @default(cuid())
+  invoiceId      String
+  revisionNumber Int
+  status         InvoiceRevisionStatus @default(PENDING)
+
+  title       String
+  explanation String
+
+  previousCurrency String
+  proposedCurrency String
+
+  previousSubtotal Decimal @db.Decimal(14, 2)
+  proposedSubtotal Decimal @db.Decimal(14, 2)
+
+  previousDiscount Decimal @db.Decimal(14, 2)
+  proposedDiscount Decimal @db.Decimal(14, 2)
+
+  previousTax Decimal @db.Decimal(14, 2)
+  proposedTax Decimal @db.Decimal(14, 2)
+
+  previousTotal Decimal @db.Decimal(14, 2)
+  proposedTotal Decimal @db.Decimal(14, 2)
+
+  amountPaidAtProposal Decimal @db.Decimal(14, 2)
+
+  previousBalanceDue Decimal @db.Decimal(14, 2)
+  proposedBalanceDue Decimal @db.Decimal(14, 2)
+
+  previousDueAt DateTime?
+  proposedDueAt DateTime?
+
+  previousItems Json
+  proposedItems Json
+
+  proposedById  String
+  acceptedById  String?
+  rejectedById  String?
+  cancelledById String?
+
+  clientResponse String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  cancelledAt DateTime?
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  proposedBy  User  @relation("InvoiceRevisionProposer", fields: [proposedById], references: [id], onDelete: Restrict)
+  acceptedBy  User? @relation("InvoiceRevisionAccepter", fields: [acceptedById], references: [id], onDelete: SetNull)
+  rejectedBy  User? @relation("InvoiceRevisionRejecter", fields: [rejectedById], references: [id], onDelete: SetNull)
+  cancelledBy User? @relation("InvoiceRevisionCanceller", fields: [cancelledById], references: [id], onDelete: SetNull)
+
+  @@unique([invoiceId, revisionNumber])
+  @@index([invoiceId, status])
+  @@index([proposedById])
+  @@index([acceptedById])
+  @@index([rejectedById])
+  @@index([cancelledById])
+  @@index([createdAt])
 }
 
 model Payment {
