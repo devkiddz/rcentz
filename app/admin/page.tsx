@@ -1,7 +1,6 @@
 import { AdminCurrentProjectProgress } from '@/features/admin/components/overview/AdminCurrentProjectProgress';
 import { AdminFinanceOverview } from '@/features/admin/components/overview/AdminFinanceOverview';
 import { AdminOperationsTabs } from '@/features/admin/components/overview/AdminOperationsTabs';
-import { AdminOverviewHeader } from '@/features/admin/components/overview/AdminOverviewHeader';
 import { AdminOverviewLayout } from '@/features/admin/components/overview/AdminOverviewLayout';
 import { AdminOverviewMetrics } from '@/features/admin/components/overview/AdminOverviewMetrics';
 import { AdminProjectsProgress } from '@/features/admin/components/overview/AdminProjectsProgress';
@@ -82,19 +81,9 @@ export default async function AdminPage() {
 
   return (
     <AdminOverviewLayout>
-      <AdminOverviewHeader
-        user={{
-          name: user.name,
-          email: user.email,
-          image: user.image
-        }}
-      />
-
       <AdminOverviewMetrics metrics={metrics} />
 
       <section className="grid items-start gap-5 lg:grid-cols-2">
-        {/* Left operational flow */}
-
         <div className="min-w-0 space-y-5">
           <AdminProjectsProgress projects={overviewProjects} />
 
@@ -105,14 +94,10 @@ export default async function AdminPage() {
           />
         </div>
 
-        {/* Right project intelligence monitor */}
-
         <div className="min-w-0">
           <AdminCurrentProjectProgress projects={activeProjectMonitors} />
         </div>
       </section>
-
-      {/* Financial intelligence */}
 
       <AdminFinanceOverview finance={financeOverview} />
     </AdminOverviewLayout>

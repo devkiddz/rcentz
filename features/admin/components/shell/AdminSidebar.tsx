@@ -1,20 +1,24 @@
 'use client';
 
-import Link from 'next/link';
+import { useState } from 'react';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import {
   BarChart3,
   Bell,
   BriefcaseBusiness,
+  ChevronDown,
   CreditCard,
+  Eye,
   FileText,
   FolderKanban,
   LayoutDashboard,
   ListTodo,
   MessageSquareText,
   MessagesSquare,
+  Plus,
   ReceiptText,
   Settings,
   ShieldCheck,
@@ -36,17 +40,28 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar';
 
 import { RcentzLogo } from '@/ui-shell/brand/RcentzLogo';
 
+type AdminNavigationAction = {
+  key: string;
+  label: string;
+  href: string;
+  icon: typeof Eye;
+};
+
 type AdminNavigationItem = {
   key: string;
   label: string;
   href: string;
   icon: typeof LayoutDashboard;
+  actions?: AdminNavigationAction[];
 };
 
 const workspaceNavigation = [
@@ -72,13 +87,41 @@ const workspaceNavigation = [
     key: 'projects',
     label: 'Projects',
     href: '/admin/projects',
-    icon: FolderKanban
+    icon: FolderKanban,
+    actions: [
+      {
+        key: 'view-projects',
+        label: 'View Projects',
+        href: '/admin/projects',
+        icon: Eye
+      },
+      {
+        key: 'create-project',
+        label: 'Create Project',
+        href: '/admin/projects/new',
+        icon: Plus
+      }
+    ]
   },
   {
     key: 'tasks',
     label: 'Tasks',
     href: '/admin/tasks',
-    icon: ListTodo
+    icon: ListTodo,
+    actions: [
+      {
+        key: 'view-tasks',
+        label: 'View Tasks',
+        href: '/admin/tasks',
+        icon: Eye
+      },
+      {
+        key: 'create-task',
+        label: 'Create Task',
+        href: '/admin/tasks/new',
+        icon: Plus
+      }
+    ]
   },
   {
     key: 'clients',
@@ -93,7 +136,21 @@ const communicationNavigation = [
     key: 'messages',
     label: 'Messages',
     href: '/admin/messages',
-    icon: MessageSquareText
+    icon: MessageSquareText,
+    actions: [
+      {
+        key: 'view-messages',
+        label: 'View Messages',
+        href: '/admin/messages',
+        icon: Eye
+      },
+      {
+        key: 'create-message',
+        label: 'Create Message',
+        href: '/admin/messages/new',
+        icon: Plus
+      }
+    ]
   },
   {
     key: 'notifications',
@@ -123,10 +180,24 @@ const financeNavigation = [
     icon: ReceiptText
   },
   {
-    key: 'invoices',
-    label: 'Invoices',
+    key: 'invoice',
+    label: 'Invoice',
     href: '/admin/invoices',
-    icon: FileText
+    icon: FileText,
+    actions: [
+      {
+        key: 'view-invoice',
+        label: 'View Invoice',
+        href: '/admin/invoices',
+        icon: Eye
+      },
+      {
+        key: 'create-invoice',
+        label: 'Create Invoice',
+        href: '/admin/invoices/new',
+        icon: Plus
+      }
+    ]
   },
   {
     key: 'subscriptions',
@@ -159,17 +230,41 @@ function isActiveRoute(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function isActionActive(pathname: string, action: AdminNavigationAction) {
+  return pathname === action.href;
+}
+
 type AdminNavigationGroupProps = {
   label: string;
-
   items: AdminNavigationItem[];
-
   pathname: string;
-
   onNavigate: () => void;
 };
 
 function AdminNavigationGroup({ label, items, pathname, onNavigate }: AdminNavigationGroupProps) {
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  function isExpanded(item: AdminNavigationItem) {
+    const override = expandedItems[item.key];
+
+    if (override !== undefined) {
+      return override;
+    }
+
+    return isActiveRoute(pathname, item.href);
+  }
+
+  function toggleItem(item: AdminNavigationItem) {
+    const currentlyExpanded = isExpanded(item);
+
+    setExpandedItems(current => {
+      return {
+        ...current,
+        [item.key]: !currentlyExpanded
+      };
+    });
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="text-sidebar-foreground/60">{label}</SidebarGroupLabel>
@@ -178,60 +273,150 @@ function AdminNavigationGroup({ label, items, pathname, onNavigate }: AdminNavig
         <SidebarMenu>
           {items.map(item => {
             const Icon = item.icon;
-
-            const isActive = isActiveRoute(pathname, item.href);
+            const hasActions = Boolean(item.actions?.length);
+            const active = isActiveRoute(pathname, item.href);
+            const expanded = hasActions && isExpanded(item);
 
             return (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  isActive={isActive}
-                  tooltip={item.label}
-                  render={
-                    <Link
-                      href={item.href}
-                      onClick={onNavigate}
-                      aria-current={isActive ? 'page' : undefined}
-                    />
-                  }
-                  className={[
-                    'group/admin-nav',
-                    'relative',
-                    'transition-colors',
-                    'duration-150',
+              <SidebarMenuItem key={item.key}>
+                {hasActions ? (
+                  <SidebarMenuButton
+                    type="button"
+                    isActive={active}
+                    tooltip={item.label}
+                    aria-expanded={expanded}
+                    onClick={() => toggleItem(item)}
+                    className={[
+                      'group/admin-nav relative cursor-pointer transition-colors duration-150',
+                      active
+                        ? [
+                            'bg-theme-accent-faint',
+                            'text-theme-accent',
+                            'hover:bg-theme-accent-soft',
+                            'hover:text-theme-accent'
+                          ].join(' ')
+                        : [
+                            'text-sidebar-foreground/72',
+                            'hover:bg-sidebar-accent',
+                            'hover:text-sidebar-foreground'
+                          ].join(' ')
+                    ].join(' ')}>
+                    {active ? (
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-theme-accent"
+                      />
+                    ) : null}
 
-                    isActive
-                      ? [
-                          'bg-theme-accent-faint',
-                          'text-theme-accent',
-                          'hover:bg-theme-accent-soft',
-                          'hover:text-theme-accent'
-                        ].join(' ')
-                      : [
-                          'text-sidebar-foreground/72',
-                          'hover:bg-sidebar-accent',
-                          'hover:text-sidebar-foreground'
-                        ].join(' ')
-                  ].join(' ')}>
-                  {isActive ? (
-                    <span
+                    <Icon
                       aria-hidden="true"
-                      className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-theme-accent"
+                      className={
+                        active
+                          ? 'text-theme-accent'
+                          : 'text-sidebar-foreground/55 transition-colors group-hover/admin-nav:text-sidebar-foreground'
+                      }
                     />
-                  ) : null}
 
-                  <Icon
-                    aria-hidden="true"
-                    className={
-                      isActive
-                        ? 'text-theme-accent'
-                        : 'text-sidebar-foreground/55 transition-colors group-hover/admin-nav:text-sidebar-foreground'
+                    <span className={active ? 'font-semibold text-theme-accent' : 'font-medium'}>
+                      {item.label}
+                    </span>
+
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={[
+                        'ml-auto size-3.5 shrink-0 transition-transform duration-150',
+                        active ? 'text-theme-accent' : 'text-sidebar-foreground/45',
+                        expanded ? 'rotate-0' : '-rotate-90'
+                      ].join(' ')}
+                    />
+                  </SidebarMenuButton>
+                ) : (
+                  <SidebarMenuButton
+                    isActive={active}
+                    tooltip={item.label}
+                    render={
+                      <Link
+                        href={item.href}
+                        onClick={onNavigate}
+                        aria-current={active ? 'page' : undefined}
+                      />
                     }
-                  />
+                    className={[
+                      'group/admin-nav relative transition-colors duration-150',
+                      active
+                        ? [
+                            'bg-theme-accent-faint',
+                            'text-theme-accent',
+                            'hover:bg-theme-accent-soft',
+                            'hover:text-theme-accent'
+                          ].join(' ')
+                        : [
+                            'text-sidebar-foreground/72',
+                            'hover:bg-sidebar-accent',
+                            'hover:text-sidebar-foreground'
+                          ].join(' ')
+                    ].join(' ')}>
+                    {active ? (
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-theme-accent"
+                      />
+                    ) : null}
 
-                  <span className={isActive ? 'font-semibold text-theme-accent' : 'font-medium'}>
-                    {item.label}
-                  </span>
-                </SidebarMenuButton>
+                    <Icon
+                      aria-hidden="true"
+                      className={
+                        active
+                          ? 'text-theme-accent'
+                          : 'text-sidebar-foreground/55 transition-colors group-hover/admin-nav:text-sidebar-foreground'
+                      }
+                    />
+
+                    <span className={active ? 'font-semibold text-theme-accent' : 'font-medium'}>
+                      {item.label}
+                    </span>
+                  </SidebarMenuButton>
+                )}
+
+                {hasActions && expanded ? (
+                  <SidebarMenuSub>
+                    {item.actions?.map(action => {
+                      const ActionIcon = action.icon;
+                      const actionActive = isActionActive(pathname, action);
+
+                      return (
+                        <SidebarMenuSubItem key={action.key}>
+                          <SidebarMenuSubButton
+                            isActive={actionActive}
+                            render={
+                              <Link
+                                href={action.href}
+                                onClick={onNavigate}
+                                aria-current={actionActive ? 'page' : undefined}
+                              />
+                            }
+                            className={[
+                              'group/admin-sub-nav transition-colors duration-150',
+                              actionActive
+                                ? 'bg-sidebar-accent font-semibold text-theme-accent'
+                                : 'text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                            ].join(' ')}>
+                            <ActionIcon
+                              aria-hidden="true"
+                              className={
+                                actionActive
+                                  ? 'text-theme-accent'
+                                  : 'text-sidebar-foreground/45 transition-colors group-hover/admin-sub-nav:text-sidebar-foreground'
+                              }
+                            />
+
+                            <span>{action.label}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
+                  </SidebarMenuSub>
+                ) : null}
               </SidebarMenuItem>
             );
           })}
@@ -243,9 +428,7 @@ function AdminNavigationGroup({ label, items, pathname, onNavigate }: AdminNavig
 
 export function AdminSidebar() {
   const pathname = usePathname();
-
   const { isMobile, setOpenMobile } = useSidebar();
-
   const t = useTranslations('AdminNavigation');
 
   function handleNavigate() {

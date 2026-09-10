@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 import { ChevronLeft, ChevronRight, ExternalLink, ImageIcon, Layers3 } from 'lucide-react';
 
-import type { ClientOverviewProject } from '@/features/client/server/overview/get-client-overview';
+import type { ClientProject } from '@/features/client/server/projects/get-client-project';
 
 type ProjectScreenshotCarouselProps = {
-  screenshots: ClientOverviewProject['media'];
+  screenshots: ClientProject['media'];
   projectName: string;
   projectTagline: string;
   liveUrl?: string | null;
@@ -22,17 +22,28 @@ export function ProjectScreenshotCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
 
   const hasScreenshots = screenshots.length > 0;
-
   const hasMultipleScreenshots = screenshots.length > 1;
 
   const activeScreenshot = hasScreenshots ? screenshots[activeIndex] : null;
 
   function showPrevious() {
-    setActiveIndex(currentIndex => (currentIndex === 0 ? screenshots.length - 1 : currentIndex - 1));
+    setActiveIndex(currentIndex => {
+      if (currentIndex === 0) {
+        return screenshots.length - 1;
+      }
+
+      return currentIndex - 1;
+    });
   }
 
   function showNext() {
-    setActiveIndex(currentIndex => (currentIndex === screenshots.length - 1 ? 0 : currentIndex + 1));
+    setActiveIndex(currentIndex => {
+      if (currentIndex === screenshots.length - 1) {
+        return 0;
+      }
+
+      return currentIndex + 1;
+    });
   }
 
   return (
@@ -109,21 +120,24 @@ export function ProjectScreenshotCarousel({
 
       {hasMultipleScreenshots ? (
         <div className="mt-3 flex justify-center gap-1.5">
-          {screenshots.map((screenshot, index) => (
-            <button
-              key={screenshot.id}
-              type="button"
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Show screenshot ${index + 1}`}
-              aria-current={index === activeIndex ? 'true' : undefined}
-              className={[
-                'h-1.5 rounded-full transition-all',
-                index === activeIndex
-                  ? 'w-5 bg-theme-accent'
-                  : 'w-1.5 bg-border-strong hover:bg-muted-foreground'
-              ].join(' ')}
-            />
-          ))}
+          {screenshots.map((screenshot, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <button
+                key={screenshot.id}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                aria-label={`Show screenshot ${index + 1}`}
+                aria-current={isActive ? 'true' : undefined}
+                className={
+                  isActive
+                    ? 'h-1.5 w-5 rounded-full bg-theme-accent transition-all'
+                    : 'h-1.5 w-1.5 rounded-full bg-border-strong transition-all hover:bg-muted-foreground'
+                }
+              />
+            );
+          })}
         </div>
       ) : null}
 
