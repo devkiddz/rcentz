@@ -4,15 +4,18 @@ Development Milestones
 
 Project: Rcentz System
 Document: Development Milestones
-Version: 1.5
+Version: 1.6
 Status: Active / Living Document
-Last Updated: 2026-09-06
+Last Updated: 2026-09-11
+Latest Verified Git Checkpoint: b818905b3fba99ba84c14594ea509b26263a03ce
 
-1. Purpose
+Purpose
 
-This document tracks the implementation progress of the Rcentz System.
+This document tracks the real implementation state of the Rcentz System.
 
-The Master Blueprint defines what Rcentz is and the long-term architectural direction. This milestone document defines:
+The Master Blueprint defines what Rcentz is and the long-term architectural direction.
+
+This milestone document defines:
 
 What is being built
 
@@ -20,37 +23,59 @@ The order of implementation
 
 What each milestone must accomplish
 
-What must be tested before moving forward
+What has actually been implemented
+
+What remains before closure
 
 Important architectural decisions
 
+Verified Git checkpoints
+
 Completed, active, deferred and pending work
 
-This is a living document and must reflect the real state of the codebase.
+This is a living document and must reflect the real codebase rather than an idealized plan.
 
-2. Development Philosophy
+Development Philosophy
 
-Rcentz is developed module by module and file by file.
+Rcentz is developed as a modular monolith with explicit business boundaries.
 
-PLAN
-  ↓
+The normal implementation rhythm is:
+
+SELECT ONE MANAGEMENT SYSTEM / FEATURE SLICE
+↓
+INSPECT CURRENT SOURCE
+↓
 ARCHITECT
-  ↓
-IMPLEMENT ONE FILE / MODULE
-  ↓
-AUDIT
-  ↓
-DISCUSS / MODIFY
-  ↓
-TEST
-  ↓
-DOCUMENT
-  ↓
+↓
+IMPLEMENT
+↓
+pnpm typecheck
+↓
+RUNTIME TEST
+↓
 COMMIT / PUSH
-  ↓
-NEXT MODULE / MILESTONE
+↓
+INSPECT EXACT PUSHED COMMIT
+↓
+UPDATE MILESTONES.md
+↓
+NEXT MANAGEMENT SYSTEM
 
-Important architectural decisions should remain:
+The normal rule is one Management System at a time.
+
+Cross-cutting segmentation is allowed only when a shared infrastructure concern must be completed across multiple surfaces before normal MS delivery can safely continue.
+
+Example:
+
+Notification Foundation
+Admin + Client readers
+Shared notification history
+Read/unread contract
+Reusable producer contract
+
+Once the shared foundation is closed, development returns immediately to the one-MS rhythm.
+
+Implementation principles:
 
 Understandable
 
@@ -60,159 +85,123 @@ Reusable
 
 Testable
 
+Database-backed where business truth is involved
+
+Server-authorized
+
 Consistent with the Master Blueprint
+
+Stable contracts should not be repeatedly reopened without a real defect or later architectural dependency.
 
 Milestone Closure Rule
 
-A milestone is a one-time implementation checkpoint.
+A milestone or Management System checkpoint is considered closed only when its intended implementation has been:
 
-When a milestone is complete:
+Implemented
 
-Its intended architecture and public contracts are considered settled.
+Typechecked
 
-It is tested.
+Runtime tested
 
-It is documented.
+Documented
 
-The implementation is committed and pushed.
+Committed and pushed
 
-Development moves forward.
+Inspected from the exact pushed Git checkpoint
 
-A completed milestone should only be reopened for a genuine defect or a demonstrated later architectural dependency.
+A completed checkpoint should only be reopened for:
 
-Future routes may be defined before their destination pages are implemented when the route contract belongs to an earlier shell or navigation milestone.
+A genuine defect
 
-Translation Closure Rule
+A security issue
 
-Translations are treated as a milestone/project closure gate, not a per-component interruption.
+A demonstrated later architectural dependency
 
-During active implementation:
+A deliberately approved architectural migration
 
-Temporary raw English strings may exist.
+Database Safety Rule
 
-TypeScript and production build checks continue normally.
+Prisma migrations must be deliberate.
 
-Translation JSON files are not repeatedly rewritten after every component.
+Do not reset production or development business data casually.
 
-At final translation closure:
+Do not use prisma db push as a substitute for tracked migrations in normal feature development.
 
-IMPLEMENTATION COMPLETE
-        ↓
-INSPECT FINAL UI COPY
-        ↓
-UPDATE EN / FR / ES / DE / PT
-        ↓
-RUN pnpm i18n:audit
-        ↓
-FIX MISSING / STALE KEYS
-        ↓
-CLOSE TRANSLATION GATE
+Every implementation phase must explicitly state whether a Prisma migration is required.
 
-For the current project direction, the full translation pass is intentionally deferred until the project is functionally complete.
-
-3. Status Legend
-
-Status
-
-Meaning
+Status Legend
 
 ⬜ Not Started
 
-Work has not started
+Work has not started.
 
 🟡 In Progress
 
-Currently being implemented
+Implementation exists but the milestone or MS is not yet closed.
 
 🟢 Completed
 
-Implemented and tested
-
-🔴 Blocked
-
-Cannot proceed because of an unresolved dependency
+Implemented, tested and considered settled.
 
 🔵 Review
 
-Implemented but awaiting review
+Implemented and awaiting verification or closure.
+
+🔴 Blocked
+
+Cannot proceed because of an unresolved dependency.
 
 ⚪ Deferred
 
-Intentionally postponed
+Intentionally postponed.
 
-4. Overall Roadmap
+Overall Roadmap
 
-M01  Project Foundation
- ↓
-M02  Architecture & Conventions
- ↓
-M03  Design System / UI Canvas
- ↓
-M04  Database Foundation
- ↓
-M05  Global Application Shell
- ↓
-M06  Public Homepage
- ↓
-M07  Portfolio Engine
- ↓
-M08  Services Engine
- ↓
-M09  Commerce Foundation
- ↓
-M10  Authentication & User System
- ↓
-M11  Client Project Management
- ↓
-M12  Admin Control Center
- ↓
-M13  Blog / Community Content
- ↓
-M14  Messaging / Support / Notifications
- ↓
-M15  Analytics
- ↓
-M16  SEO / Performance
- ↓
-M17  Production Hardening
- ↓
-M18  Mobile / Future Application Readiness
+M01  Project Foundation                         🟢
+↓
+M02  Architecture & Conventions                🟢
+↓
+M03  Design System / UI Canvas                 🟢
+↓
+M04  Database Foundation                       🟢
+↓
+M05  Global Application Shell                  🟢
+↓
+M06  Public Homepage                           🟢
+↓
+M07  Portfolio Engine                          🟢
+↓
+M08  Services Engine                           🟢
+↓
+M09  Commerce Foundation                       ⚪
+↓
+M10  Authentication & User System              🟡
+↓
+M11  Client Project Management                 🟡
+↓
+M12  Admin Control Center                      🟡 ACTIVE
+↓
+M13  Blog / Community Content                  ⬜
+↓
+M14  Messaging / Support / Notifications       🟡
+↓
+M15  Analytics                                 ⬜
+↓
+M16  SEO / Performance                         ⬜
+↓
+M17  Production Hardening                      ⬜
+↓
+M18  Mobile / Future Application Readiness     ⚪
 
-5. M01 — Project Foundation
+M01 — Project Foundation
 
-Status: 🟡 In Progress
+Status: 🟢 Completed
 
 Objective
 
-Create the initial Rcentz application and establish the fundamental development environment.
+Establish the Rcentz application and development environment.
 
-Scope
-
-Next.js application
-
-TypeScript
-
-Package manager
-
-Tailwind CSS
-
-shadcn/ui foundation
-
-Shared UI/icon dependencies
-
-Environment variables
-
-Development scripts
-
-Local development environment
-
-Git repository and main branch
-
-Current State
-
-Foundation is operational and actively supporting production-style feature work.
-
-Current validated stack includes:
+Validated Foundation
 
 Next.js 16.3.3
 
@@ -224,7 +213,7 @@ Prisma 7.10.0
 
 Tailwind CSS 4
 
-Motion 13.1.1
+Motion
 
 Better Auth
 
@@ -234,266 +223,147 @@ pnpm 11.1.1
 
 shadcn Base-UI / base-nova primitives
 
-Lucide icons
+Lucide
 
 Recharts
 
-Exit Criteria
+Git / GitHub main branch workflow
 
-Application starts locally
+Current Decision
 
-TypeScript compiles
+The project foundation is stable and no longer treated as active implementation work.
 
-Tailwind foundation is established
+M02 — Architecture & Folder Conventions
 
-shadcn/ui dependency checkpoint is formally closed
-
-Shared UI/icon dependencies are formally closed
-
-Environment configuration supports the current database/auth foundation
-
-Git repository and main branch are established
-
-Foundation dependencies are stable enough to stop treating M01 as active support work
-
-6. M02 — Architecture & Folder Conventions
-
-Status: 🟡 In Progress
+Status: 🟢 Completed
 
 Objective
 
-Establish the structural conventions that govern the Rcentz codebase.
+Establish the structural conventions that govern the codebase.
 
 Primary Boundaries
 
 app/
+
 features/
+
 components/
+
 server/
+
 lib/
-data/
+
 docs/
+
 ui-shell/
+
 prisma/
 
-Directories are created when real implementation requires them. Empty folders should not be added only to imitate intended architecture.
-
-Architectural Flow
+Architecture
 
 USER
- ↓
+↓
 APPLICATION SURFACE
- ↓
+↓
 FEATURE / ENGINE
- ↓
-BUSINESS LOGIC
- ↓
+↓
+SERVER BUSINESS LOGIC
+↓
 DATA ACCESS
- ↓
+↓
 DATABASE / PROVIDER
 
-Principles
+Confirmed Principles
 
-Business logic should not be scattered through UI components.
+app/ owns routing and composition.
 
-Feature boundaries should remain reusable.
+features/ owns domain-specific presentation and business boundaries.
 
-Server/data access should remain outside presentation components.
+Feature-local server folders or server/ own server/data behavior.
 
-Architecture should support Public Web, Client Dashboard, Admin System and future mobile/native applications.
+Shared UI primitives live outside business features.
 
-app/ owns routing/composition.
+Business logic must not be scattered through presentation components.
 
-features/ owns domain-specific presentation and engines.
+Database records remain the canonical source of business truth.
 
-server/ or feature-local server boundaries own business/data access.
+Client, Admin and Public surfaces may mirror the same underlying business state without duplicating ownership.
 
-Shared UI primitives live outside domain-specific features.
-
-Current Confirmed Pattern
-
-app/
-features/
-  admin/
-  auth/
-  home/
-  portfolio/
-  services/
-components/
-  ui/
-ui-shell/
-prisma/
-docs/
-
-Exit Criteria
-
-Folder architecture documented
-
-Responsibilities defined
-
-features/ business boundaries established
-
-Server/data-access conventions documented
-
-Architecture recorded in docs/ARCHITECTURE.md
-
-M02 closure checkpoint documented
-
-7. M03 — Rcentz UI Canvas & Design System
+M03 — Rcentz UI Canvas & Design System
 
 Status: 🟢 Completed
-
-Objective
-
-Establish the reusable visual foundation and persistent presentation environment for Rcentz application surfaces.
 
 Final Canvas Foundation
 
 Environmental Canvas: 1440px
-Public Content Axis:   1200px
 
-The application remains intentionally bounded on very large displays.
-
-Theme Foundation
-
-Semantic tokens exist for:
-
-Background / foreground
-
-Surfaces
-
-Raised surfaces
-
-Muted surfaces
-
-Borders
-
-Primary / secondary
-
-Accent
-
-Destructive states
-
-Theme accent
-
-Grid lines
-
-Radius values
-
-Cards
-
-Popovers
-
-Shell surfaces
-
-Theme Semantic Rule
-
-The Rcentz theme owns visual meaning while shadcn/Base-UI semantic tokens resolve into that theme.
-
-background       → page
-surface          → popovers / menus
-surface-raised   → elevated cards / panels
-surface-muted    → hover / focus / subtle interaction
-foreground       → primary text
-muted            → secondary text
-primary          → strong action
-accent           → interaction surface
-theme-accent     → Rcentz teal identity
-
-Base-UI Compatibility Decision
-
-Generated shadcn/Base-UI components may use semantic primitives such as:
-
-bg-popover
-text-popover-foreground
-bg-accent
-text-accent-foreground
-
-These must resolve into the Rcentz theme rather than introduce a second visual language.
+Public Content Axis: 1200px
 
 Visual Direction
 
 BLACK
- +
++
 WHITE
- +
++
 STRUCTURAL GRID
- +
++
 CONTROLLED LIGHT
- +
++
 RESTRAINED TEAL SIGNAL
 
-Verification
+Semantic Theme Rule
 
-TypeScript                PASS
-ESLint                    PASS
-Next.js production build  PASS
+Rcentz theme tokens own the visual meaning of generated shadcn/Base-UI primitives.
 
 Git Evidence
 
-Implementation Commit:
+Implementation:
 f880aa93f9423b7e572f6a424148332cfbc09252
 
-Milestone Tag:
+Tag:
 m03-ui-canvas-v1
 
-8. M04 — Database Foundation
+M04 — Database Foundation
 
 Status: 🟢 Completed
 
 Objective
 
-Establish PostgreSQL + Prisma as the central source of truth for the Rcentz System.
+Use PostgreSQL + Prisma as the central source of truth.
 
-Architecture
+Major Supported Domains
 
-                    DATABASE
-                       │
-          ┌────────────┼────────────┐
-          ↓            ↓            ↓
-       Website       Admin        Client
-          │            │            │
-      Portfolio     Management    Tracking
-          │
-      Public SEO
+Authentication
 
-Core Domains
+Users / Clients / Staff
 
-The database foundation supports:
+Services
 
-Users and authentication
-
-Roles and account status
-
-Services and service categories
-
-Multi-currency service pricing
-
-Service plans and subscriptions
-
-Service requests
+Service Requests
 
 Quotes
 
 Projects
 
-Project milestones
+Milestones
 
-Project features and tasks
+Features
 
-Portfolio profiles
+Tasks
 
-Products and commerce
+Portfolio
+
+Products
 
 Orders
 
 Invoices
 
-Payments and refunds
+Payments
 
-Crypto payment records
+Refunds
 
-Blog/content
+Subscriptions
 
 Messaging
 
@@ -507,339 +377,142 @@ Media
 
 SEO
 
-Data Ownership Principle
-
-DATABASE
-   ↓
-PUBLIC WEBSITE
-   ↓
-CLIENT EXPERIENCE
-   ↓
-ADMIN MANAGEMENT
-
-Project Structure
-
-Project
-   ↓
-Milestone
-   ↓
-Feature
-   ↓
-Task
-
 Billing Architecture
 
-ONE-OFF SERVICES
-Service
- ↓
-ServiceRequest
- ↓
-Quote
- ↓
-Project
-
-LONG-TERM SERVICES
-ServicePlan
- ↓
-ClientSubscription
- ↓
-Usage / Entitlements
- ↓
 Invoice
-
-COMMERCE
-Product
- ↓
-Order
- ↓
-Invoice
-
-BILLING
-Invoice
- ↓
+↓
 Payment
- ↓
+↓
 Refund
 
-CRYPTO
-Payment
- ↓
-CryptoPayment
- ↓
-CryptoTransaction
+Project Architecture
 
-Authentication Foundation
+Project
+↓
+Milestone
+↓
+Feature
+↓
+Task
 
-Better Auth is connected to Prisma/PostgreSQL persistence.
+Important Approval Extension
 
-The official Rcentz administrator is seeded as:
+The database now includes generic ClientApproval support for:
 
-SUPER_ADMIN
-ACTIVE
-EMAIL VERIFIED
+INVOICE
 
-Foundation Counts at M04 Closure
+PROJECT
 
-Projects             7
-Portfolio            7
-Technologies        61
-Milestones          26
+The invoice approval implementation uses immutable snapshots and approval versions.
 
-Service Categories   7
-Services             35
-Service Prices       70
+Latest approval migration:
 
-Verification
+20260910150744_client_approval_engine
 
-Prisma schema validation    PASS
-Prisma Client generation    PASS
-TypeScript                  PASS
-ESLint                      PASS
-Database migrations         PASS
-Database synchronization    PASS
-Admin seed                  PASS
-Project seed                PASS
-Service seed                PASS
-Repeated seed execution     PASS
-Next.js production build    PASS
-
-9. M05 — Global Application Shell
+M05 — Global Application Shell
 
 Status: 🟢 Completed
 
-Objective
+Established Surfaces
 
-Build the shared application structure used throughout Rcentz.
+Public shell
 
-Architecture
+Admin shell
 
-RootLayout
-    │
-    ├── Providers
-    │
-    ├── Public Route Group
-    │     └── RcentzShell
-    │           ├── RcentzDataField
-    │           ├── RcentzAce
-    │           ├── RcentzHeader
-    │           ├── RcentzContentFrame
-    │           └── RcentzFooter
-    │
-    ├── Admin Route
-    │     └── AdminShell
-    │
-    └── Admin Auth Route
-          └── Dedicated Admin Login Surface
+Client dashboard shell
 
-Implemented
-
-Global shell
-
-Public header/footer
+Dedicated authentication surfaces
 
 Responsive navigation
 
-Authentication-aware navigation foundation
+Theme controls
 
-Theme system
+Shared application canvas
 
-Runtime theme switching
+Mobile navigation system
 
-Theme-aware environment
-
-Shared UI foundation
-
-Persistent public canvas
-
-Dedicated admin shell boundary
-
-Public route grouping
-
-Admin auth route separation
-
-Canonical Public Navigation
-
-/                 Home
-/services         Services
-/portfolio        Work / Portfolio
-/store            Store / Commerce
-/blog             Blog / Community
-/about            About
-/login            Sign in
-/dashboard        Authenticated client system
-/admin            Administrative system
-/adminlogin/login Administrative sign in
+Public shell and dashboard geometry are intentionally coordinated.
 
 Git Evidence
 
-Implementation Checkpoint:
+Implementation:
 a7d9bdcd2097da87fc65c10e7db83df77c1d38ca
 
 Closure Documentation:
 8cf27a4d558d9152cf6a79c03298d5e83445937d
 
-Milestone Tag:
+Tag:
 m05-global-application-shell-v1
 
-10. M06 — Database-Driven Public Homepage
+M06 — Database-Driven Public Homepage
 
 Status: 🟢 Completed
 
 Initial Completion: 2026-09-02
-Final Presentation Closure: 2026-09-03
-
-Objective
-
-Create the first complete public-facing Rcentz experience powered by the database while preserving the shared shell, visual identity, responsive architecture and reusable data boundaries.
+Presentation Closure: 2026-09-03
 
 Homepage Architecture
 
 Public Home Route
-    ↓
+↓
 getHomepageData()
-    ↓
+↓
 HomeHero
-    ↓
+↓
 HomeServices
-    ↓
+↓
 HomeProjects
-    ↓
+↓
 HomeCTA
 
-Data Boundary
-
-The homepage consumes canonical database records for:
-
-Featured services
-
-Service categories
-
-Multi-currency pricing
-
-Featured portfolio projects
-
-Project status/progress
-
-Portfolio summaries
-
-Technologies
-
-Live/repository links
-
-Hero Story System
-
-Final sequence:
+Final Hero Story System
 
 01 Rcentz
+
 02 Rcentz × AI
+
 03 System
+
 04 Live Data
+
 05 Commerce
+
 06 Rcentz Core
-
-Presentation Principles
-
-Read-first storytelling
-
-Long variable dwell periods
-
-Reduced-motion support
-
-Wider mobile usable canvas
-
-Controlled hero composition
-
-Database-driven content
-
-No fake business metrics
-
-Real project references only
-
-Verification
-
-ESLint                     PASS
-Prisma Client generation   PASS
-Next.js compilation        PASS
-TypeScript                 PASS
-Static generation          PASS
-Production build           PASS
-Git push                   PASS
-Vercel deployment          PASS
 
 Git Evidence
 
-Initial Hero Checkpoint
+Initial Hero:
 2f3cd847b7e734ed6c9ea3d574b6db955e5aa490
 
-Expanded Hero / Public UI Checkpoint
+Expanded Hero:
 274c29e
 
-Final M06 Presentation Closure
+Final Presentation Closure:
 95fc78b7a5edc3a265b7466fe51485bff488294b
 
-11. M07 — Portfolio Engine
+M07 — Portfolio Engine
 
 Status: 🟢 Completed
 
-Objective
-
-Build the Rcentz portfolio as a real database-driven product engine.
-
-Core Architecture
-
-Project
-   ↓
-PortfolioProfile
-   ↓
-Public Portfolio Data Access
-   ↓
-/portfolio
-   ↓
-/portfolio/[slug]
-
 Implemented
 
-Database-driven /portfolio listing
+Database-driven portfolio index
 
-/portfolio/[slug] project detail route
+Project detail routes
 
-Public project visibility rules
+Published visibility rules
 
-Published-profile filtering
+Project technologies
 
-Database-driven technologies
+Project media/gallery
 
-Technology category, description, purpose and rationale
+Project architecture presentation
 
-Enriched technology seed catalogue
+Related projects
 
-Real project media/gallery
+Responsive presentation
 
-Full-screen gallery preview
-
-Project overview illustration
-
-Delivery-profile and readiness charts
-
-Floating project technology rail
-
-Detailed technology architecture presentation
-
-Related-project sliding carousel
-
-Dynamic project metadata
-
-Authentic missing-analytics handling
-
-Mobile responsiveness refinement
-
-Real AJ Logik / JobRcentz representation where supported by data
-
-Authentic Portfolio Principle
-
-Only genuine project information, screenshots, features, history, results and supported metrics may be shown.
-
-No project, client, result, metric or testimonial should be invented to make the portfolio appear larger.
+Authentic project information policy
 
 Git Evidence
 
@@ -849,688 +522,375 @@ d297c32ab332e2c7d5afdf5e3b561e0f070c8a2e
 Project Detail:
 4c871dfe1467e1e1be650aeda21a3759bd51225c
 
-Mobile Responsiveness:
+Mobile:
 45a6954fec9a355c36f4ef123058219fa2bb10f8
 
-Closure Note
-
-Portfolio implementation is considered functionally established. Later engagement/analytics enhancements belong to their owning later milestones unless a genuine portfolio defect is discovered.
-
-12. M08 — Services Engine
+M08 — Services Engine
 
 Status: 🟢 Completed
 
-Objective
+Implemented
 
-Create a database-driven services marketplace and public service discovery experience.
-
-Canonical Routes
-
-/services
-/services/[slug]
-
-Service Lifecycle
-
-Visitor
- ↓
-Explore Service
- ↓
-Request Service
- ↓
-Review
- ↓
-Quote
- ↓
-Approval
- ↓
-Project Creation
-
-Implemented Foundation
-
-Database-driven service categories
+Database-driven categories
 
 Database-driven service records
 
-Multi-currency pricing support
+Multi-currency prices
 
 Services listing
 
 Service detail routes
 
-Slug routing
+Public acquisition route contract
 
-Public service presentation
+Homepage integration
 
-Service acquisition route contract
+Responsive discovery
 
-Service request / quote architecture already represented in database
+Translation infrastructure integration
 
-Homepage service integration
+Management of services remains an M12 concern.
 
-Service discovery / public navigation integration
-
-Responsive presentation
-
-Translation integration checkpoint previously completed during public service work
-
-Remaining Work Ownership
-
-Actual administrative service CRUD belongs primarily to M12 Admin Control Center.
-
-Full client request-to-project workflow execution belongs across M10 / M11 / M12 depending on the surface.
-
-The public Services Engine itself should not be reopened merely because later management screens are still pending.
-
-13. M09 — Commerce Foundation
+M09 — Commerce Foundation
 
 Status: ⚪ Deferred
 
 Objective
 
-Create a shared commerce foundation supporting digital and physical products.
+Build shared digital and physical commerce.
 
-Digital Product Examples
+The database foundation already supports commerce concepts, but full commerce management remains deferred while Client and Admin operational systems are completed.
 
-Templates
+Existing later client product work does not automatically close M09.
 
-UI kits
+M10 — Authentication & User System
 
-Code
+Status: 🟡 In Progress — Core Infrastructure Stable
 
-Components
+Objective
 
-Design assets
+Establish identity, sessions, role-aware authorization and protected application surfaces.
 
-Documents
+Stable Foundation
 
-Digital resources
+Better Auth + Prisma persistence
 
-Physical Product Examples
+Server session retrieval
 
-Mice
+Role/status authorization
 
-PCs
+Protected Admin layout
 
-Batteries
+Protected Client dashboard
 
-Screens
+Dedicated Admin login
 
-Technology accessories
+Public login
 
-Canonical Route
+Seeded SUPER_ADMIN
 
-/store
+Admin sign-out
 
-Scope
+Client sign-out
 
-Product catalogue
+Role-aware protected surfaces
 
-Categories
+Production Admin domain migration
 
-Media
+Authenticated Client portal foundation
 
-Variants
+Verified Important Checkpoints
 
-Inventory
+Admin foundation:
+eeef24b8e9ac1b603f831379a34d0bb2a7351a28
 
-Cart
+Admin domain/auth checkpoint:
+3027dafc0126f71ee7dd2afa4623f40086258b1c
 
-Orders
+Client portal foundation:
+e3f2c550749cd37a69e348359ff036493ef097f0
 
-Payments
+Remaining Before Formal M10 Closure
 
-Digital delivery
+Email verification policy/flow closure
 
-Physical fulfilment
+Reusable account/profile completion
 
-Deferral Decision
+Staff profile decision/validation
 
-M09 is intentionally deferred while Rcentz authentication, client workflows and administrative operations are established.
+Final production auth hardening review
 
-The database already contains commerce foundations, so deferral does not require architectural redesign.
+Full runtime role matrix verification
 
-14. M10 — Authentication & User System
+Formal closure checkpoint
+
+Current Rule
+
+Do not reopen stable Admin or Client shell work merely because M10 still has final hardening tasks.
+
+M11 — Client Project Management
 
 Status: 🟡 In Progress
 
-Current Major Checkpoint: 2026-09-06
-Checkpoint Commit: eeef24b8e9ac1b603f831379a34d0bb2a7351a28
-
 Objective
 
-Establish identity, sessions, role-aware authorization and protected application shells throughout the platform.
+Allow clients to understand and interact with their projects.
 
-Roles
+Implemented Foundation
 
-USER
-CLIENT
-STAFF
-ADMIN
-SUPER_ADMIN
+Authenticated Client portal
 
-Authentication Architecture
+Client project overview
 
-IDENTITY
-   ↓
-SESSION
-   ↓
-ROLE
-   ↓
-STATUS
-   ↓
-SERVER AUTHORIZATION
-   ↓
-PROTECTED ROUTING
-   ↓
-ROLE-AWARE APPLICATION SHELL
+Real project delivery data
 
-Current Auth Foundation
+Project screenshot presentation
 
-Better Auth + Prisma + PostgreSQL/Neon persistence is validated.
+Project access information
 
-Implemented:
+Current delivery state
 
-Better Auth server configuration
+Project scope and development intelligence
 
-Better Auth client
+Milestone health
 
-Prisma adapter integration
+Technology rationale
 
-Canonical role/status persistence
+Shared project monitor architecture
 
-Current-user server helper
+Project detail experience
 
-Server-side admin authorization
+Milestone record request workflow
 
-Protected /admin layout
+Responsive Client dashboard presentation
 
-Dedicated /adminlogin/login
+Key Checkpoints
 
-Admin sign-out flow
+Client portal foundation:
+e3f2c550749cd37a69e348359ff036493ef097f0
 
-Auth-aware public navigation foundation
+Dashboard refinement:
+52bf214cde0c06b7a19016a08e5471bd08b6f237
 
-Public /login surface
+Shared project monitor:
+83d7a69b14a565591ef0f37825338da6fba51f77
 
-Official seeded SUPER_ADMIN account
+Milestone record requests:
+e3ea0ed70911fbc69c40d979fb462c24fa4664c9
 
-Admin shell user identity propagation
+Remaining M11 Ownership
 
-requireAdmin() Contract
+Full client feature/task interaction where required
 
-Current behavior:
+Project update experience
 
-NO SESSION
-  → /adminlogin/login?next=/admin
+Files/deliverables experience
 
-INACTIVE USER
-  → /
-
-NON ADMIN / SUPER_ADMIN
-  → /dashboard
-
-ADMIN / SUPER_ADMIN
-  → protected admin surface
-
-Admin Shell Foundation Established During M10
-
-Although full Admin CRUD belongs to M12, M10 now owns the protected Admin application foundation required to prove authorization and role-aware routing.
-
-Implemented:
-
-AdminShell
-
-AdminSidebar
-
-AdminHeader
-
-Sidebar collapse behavior
-
-Theme toggle
-
-Command search
-
-Account dropdown
-
-Messages dropdown foundation
-
-Notifications dropdown foundation
-
-Admin avatar/identity trigger
-
-Protected session presentation
-
-Admin overview composition
-
-Role-aware admin shell entry
-
-Admin Navigation Contract Established
-
-WORKSPACE
-├── Overview
-├── Analysis
-├── Service Requests
-├── Projects
-├── Tasks
-└── Clients
-
-OPERATIONS
-├── Messages
-├── Notifications
-└── Finance
-
-MANAGEMENT
-├── Services
-└── Settings
-
-Destination pages may be completed in later milestones. Defining these routes here does not mean all Admin CRUD is complete.
-
-Admin Overview Implemented
-
-Current overview includes:
-
-Service request metric
-
-Active project metric
-
-Client metric
-
-Open milestone metric
-
-Pending quote metric
-
-Projects progress
-
-Active project health monitor
-
-Tasks overview
-
-Clients overview
-
-Notifications overview
-
-Financial operations overview
-
-Preview fallback data where database records are absent
-
-Preview Data Rule
-
-Preview data is allowed for dashboard design only when:
-
-It is explicitly labeled Preview.
-
-It cannot be mistaken for real business records.
-
-It does not navigate to fake entity routes.
-
-Real database records automatically replace preview content when available.
-
-Finance Foundation
-
-The Admin financial overview uses existing schema foundations:
-
-Invoice
-
-Payment
-
-ClientSubscription
-
-Current overview covers:
-
-Gross received
-
-Net received
-
-Payment fees/deductions
-
-Outstanding receivables
-
-Overdue balances
-
-Recent payments
-
-Client subscriptions
-
-A dedicated company Expense model has not been introduced at this checkpoint.
-
-Theme / Base-UI Compatibility Fix
-
-During M10 Admin shell work, a semantic mismatch was identified between generated shadcn/Base-UI primitives and Rcentz theme tokens.
-
-Decision:
-
-shadcn semantic vocabulary
-        ↓
-Rcentz theme aliases
-        ↓
-consistent light / dark surfaces
-
-Base-UI dropdown focus behavior now uses Rcentz surface semantics rather than strong inverted accent colors.
-
-Verification — 2026-09-06 Checkpoint
-
-pnpm typecheck              PASS
-Prisma Client generation    PASS
-Next.js 16.3.3 compilation  PASS
-TypeScript build phase      PASS
-Static page generation      PASS
-Production build            PASS
-Git commit                  PASS
-Git push                    PASS
-
-Production build routes at checkpoint:
-
-/
-/_not-found
-/admin
-/adminlogin/login
-/api/auth/[...all]
-/login
-/portfolio
-/portfolio/[slug]
-/services
-/services/[slug]
-
-Git Evidence
-
-Checkpoint Commit:
-eeef24b8e9ac1b603f831379a34d0bb2a7351a28
-
-Commit Message:
-feat(admin): build dashboard overview finance and navigation shell
-
-M10 Remaining Work
-
-Tighten next redirect validation to reject protocol-relative destinations such as //example.com
-
-Complete email verification flow/policy
-
-Establish reusable authenticated-user guard for client dashboard
-
-Implement /dashboard
-
-Implement client dashboard shell
-
-Complete role-aware public navbar destination behavior
-
-Establish account/profile surface
-
-Validate client profile flow
-
-Decide/validate staff profile flow
-
-Confirm production-safe auth configuration
-
-Complete runtime authorization tests for all roles
-
-Final M10 verification
-
-Document closure
-
-Commit/push closure checkpoint
-
-Exit Criteria
-
-Registration validated
-
-Login validated
-
-Session retrieval validated
-
-Logout integrated
-
-Email verification completed
-
-Server-side role authorization established
-
-Client profile flow established
-
-Staff profile flow established or deliberately staged
-
-Auth-aware navigation established
-
-Protected admin surface established
-
-Protected client surface established
-
-Production-safe auth configuration verified
-
-M10 closure documented
-
-15. M11 — Client Project Management
-
-Status: ⬜ Not Started
-
-Objective
-
-Allow clients to interact with and track their projects.
-
-Project Information
-
-Projects may contain:
-
-Name
-
-Client
-
-Purpose
-
-Vision
-
-Description
-
-Expected outcome
-
-Start date
-
-Expected completion date
-
-Actual completion date
-
-Status
-
-Progress
-
-Key features
-
-Milestones
-
-Tasks
-
-Project phases
-
-Feature dependencies
-
-Assignments
-
-Activity history
-
-Attachments
-
-Deliverables
-
-Analytics
-
-Project Lifecycle
-
-PLANNING
- ↓
-DISCOVERY
- ↓
-DESIGN
- ↓
-DEVELOPMENT
- ↓
-TESTING
- ↓
-REVIEW
- ↓
-DEPLOYMENT
- ↓
-MAINTENANCE
- ↓
-COMPLETED
-
-Additional states:
-
-ON_HOLD
-CANCELLED
-
-Exit Criteria
-
-Client project dashboard
-
-Project overview
-
-Milestones
-
-Features
-
-Tasks
-
-Updates
-
-Activity history
-
-Files/deliverables
-
-Progress visualization
-
-Project analytics
+Client project analytics
 
 Authorization review
 
-Responsive review
+Final runtime/closure pass
 
-16. M12 — Admin Control Center
+M12 — Admin Control Center
 
-Status: 🟡 Foundation Started
+Status: 🟡 In Progress — PRIMARY ACTIVE MILESTONE
 
 Objective
 
-Build the central management system for Rcentz.
+Build the operational management system for Rcentz.
 
-Important Boundary
+Admin owns business mutation.
 
-M10 established the protected Admin shell and overview foundation.
+Client surfaces primarily consume and respond to the business truth created by Admin.
 
-M12 owns the full operational managers and CRUD workflows.
+Current Operational Areas
 
-This distinction prevents M10 from expanding indefinitely.
+Overview
 
-Current Admin Navigation Contract
+Analytics route contract
 
-ADMIN
-├── Overview
-├── Analysis
-├── Service Requests
-├── Projects
-├── Tasks
-├── Clients
-├── Messages
-├── Notifications
-├── Finance
-├── Services
-└── Settings
+Service Requests
 
-Future managers may add:
+Projects
 
-Portfolio
+Tasks
 
-Products
+Clients
 
-Orders
+Messages
 
-Content
+Notifications
 
-Blog
+Feedback route contract
 
-Comments
+Finance
 
-Support
+Transactions
 
-Analytics-specific modules
+Invoices
 
-Audit tooling
+Subscriptions
 
-Existing M12 Foundation
-
-Already available from the M10 checkpoint:
-
-Protected Admin shell
-
-Admin navigation
-
-Admin overview
-
-Database-backed metrics
-
-Project monitoring
-
-Task/client/notification overview surfaces
-
-Finance intelligence overview
-
-Preview fallback pattern
-
-Theme-aware Base-UI primitives
-
-M12 Scope
-
-Service request management
-
-Project management
-
-Milestone management
-
-Task management
-
-Client management
-
-Service management
-
-Portfolio management
-
-Product management
-
-Content management
-
-Order management
-
-Finance management
-
-Analytics access
+Services
 
 Settings
 
-Administrative mutations
+Current Active Management System
 
-Audit/security review
+INVOICE MANAGEMENT SYSTEM
 
-Principle
+Status: 🟡 In Progress
 
-Admin-managed data should drive:
+Invoice Architecture
 
-Public website
+ADMIN
+↓
+CREATE DRAFT
+↓
+EDIT DRAFT
+↓
+ISSUE
+↓
+CLIENT VERIFICATION
+↓
+ACCEPT / REJECT
+↓
+PAYMENT ELIGIBILITY
+↓
+OPTIONAL FINANCIAL REVISION
+↓
+CLIENT REVISION RESPONSE
+↓
+PAYMENT / SETTLEMENT
+↓
+PAID FINANCIAL LOCK
 
-Client experience
+Implemented Invoice Foundation
 
-Internal management
+Admin invoice listing/detail
 
-The Admin system should replace long-term dependence on seed files for business management.
+Invoice builder
 
-17. M13 — Blog / Community Content Engine
+Draft creation and editing
+
+Invoice issue action
+
+Client billing invoice reader
+
+Original invoice verification contract
+
+Generic ClientApproval engine
+
+Immutable approval snapshot
+
+Approval versioning
+
+Client Accept / Reject actions
+
+Admin approval request/cancel actions
+
+Invoice revision foundation
+
+Before/after revision snapshots
+
+Revision title and explanation contract
+
+Client revision Accept / Reject
+
+Revision cancellation
+
+Payment eligibility gate foundation
+
+Project and Service associations
+
+Paid financial lock behavior
+
+Post-payment currency change protection
+
+Admin and Client notification integration
+
+Agreement-aware invoice state presentation
+
+Duplicate draft/builder architecture removed
+
+Important Invoice Rule
+
+Before client acceptance:
+
+Issued invoice corrections mutate the original offer and create a new approval version.
+
+After client acceptance:
+
+Financial/client-facing changes require an InvoiceRevision.
+
+The accepted original approval remains historical evidence.
+
+Payment Rule
+
+Invoice must have an accepted original agreement.
+
+No unresolved revision may exist.
+
+Balance must remain payable.
+
+Status must permit payment.
+
+Current Invoice Git Checkpoints
+
+Admin draft/navigation:
+e0c4878510371588a94b49aac667172aa09af209
+
+Revision foundation:
+566a40e14ae9b712bc7f3097fb2239e509813669
+
+Client verification/header foundation:
+401be39845c76a9f2a8436ab1e832f424393034e
+
+Notification Foundation checkpoint:
+b818905b3fba99ba84c14594ea509b26263a03ce
+
+Remaining Before Invoice MS Closure
+
+Runtime verify the complete latest invoice lifecycle
+
+Runtime verify original Client verification on fresh invoices
+
+Runtime verify rejected-original correction and re-request flow
+
+Runtime verify post-payment currency guard
+
+Finish payment-gate integration into the real payment entry path
+
+Runtime verify revision payment blocking
+
+Confirm Client billing overview is fully agreement-aware and readable
+
+Finish Invoice builder optional associations/readability where required
+
+Replace remaining native window.confirm lifecycle prompts with Rcentz in-app confirmation dialogs
+
+Final responsive/readability pass
+
+Final typecheck
+
+Final runtime pass
+
+Push dedicated Invoice MS closure checkpoint
+
+Inspect exact closure commit
+
+Update this document
+
+Invoice MS must not be declared complete before these items are closed.
+
+M13 — Blog / Community Content Engine
 
 Status: ⬜ Not Started
 
 Objective
 
-Build an interactive content platform around the Rcentz blog.
-
-Routes
-
-/blog
-/blog/[slug]
+Build the interactive Rcentz content/community platform.
 
 Scope
 
@@ -1544,429 +904,230 @@ Authors
 
 Comments
 
-Threaded replies
+Replies
 
 Reactions
 
-Upvotes
-
-Saves/bookmarks
-
 Trending content
-
-Popular content
 
 Related content
 
 SEO metadata
 
-18. M14 — Messaging, Support & Notifications
+M14 — Messaging, Support & Notifications
 
-Status: ⬜ Not Started
+Status: 🟡 In Progress
 
 Objective
 
-Create full communication infrastructure between Rcentz, clients and users.
+Create the communication infrastructure shared by Admin, Clients and other users.
 
-Existing Foundation
+18.1 Notification Foundation
 
-The Admin header and overview now expose Messages and Notifications presentation contracts.
+Status: 🟢 Completed
 
-These are shell/navigation foundations only.
+Closure Date: 2026-09-11
 
-Full messaging, notification mutation, support workflows and real-time behavior remain M14 work.
+Verified Checkpoint:
+b818905b3fba99ba84c14594ea509b26263a03ce
 
-Messaging
+Commit:
+feat(notifications): complete admin and client notification foundation
 
-Support:
+Implemented
 
-Direct conversations
+Real Admin database notification feed
 
-Project conversations
+Real Client database notification feed
 
-Support conversations
+Admin unread count
 
-Service conversations
+Client unread count
 
-Order conversations
+Mark one notification read
 
-Group conversations
+Mark all notifications read
 
-Support
+Recipient ownership protection
+
+Admin notification history page
+
+Client notification history page
+
+Pagination
+
+Notification destination links
+
+Near-live refresh behavior
+
+Real Admin conversation preview feed
+
+Real Client conversation preview feed
+
+Conversation read state
+
+Removal of dummy Admin notification/message preview records
+
+Reusable notification producer contract
+
+Invoice used as the first stable end-to-end notification producer
+
+Notification Architecture
+
+STABLE BUSINESS EVENT
+↓
+createNotification(...)
+↓
+Notification table
+↓
+Recipient-specific reader
+↓
+Header unread state
+↓
+Dropdown / history page
+↓
+Business destination
+↓
+readAt
+
+Producer Rule
+
+A business domain must be stable before its full notification producer contract is wired.
+
+The Notification Engine is complete as shared infrastructure.
+
+Future Project, Service, Order, Payment, Subscription and Support producers are added when their owning Management System becomes stable.
+
+Do not wire unstable business workflows merely to populate notifications.
+
+18.2 Messaging
+
+Status: 🟡 Foundation Exists
+
+Existing
+
+Conversation
+
+ConversationParticipant
+
+Message
+
+Header conversation readers
+
+Participant lastReadAt handling
+
+Remaining
+
+Full message pages
+
+Conversation creation workflow
+
+Message sending
+
+Attachments
+
+Project/service/support/order conversation UX
+
+Authorization/runtime completion
+
+18.3 Support
+
+Status: ⬜ Not Started as a complete MS
+
+Existing database models do not equal completed support workflows.
+
+Remaining
 
 Assistance requests
 
 Support tickets
 
-Priorities
-
-Statuses
+Priorities/statuses
 
 Staff assignment
 
-Ticket messages
+Ticket conversations
 
 Attachments
 
-Notifications
+Notification producers
 
-Notifications may cover:
+18.4 Notification Preferences
 
-Messages
+Status: ⬜ Not Started
 
-Projects
+Preference model foundation exists.
 
-Project updates
+Full preference UI/business rules remain future work.
 
-Services
+M15 — Analytics Engine
 
-Orders
+Status: ⬜ Not Started
 
-Payments
+Operational summaries exist in Admin and Client surfaces, but this does not constitute full analytics milestone closure.
 
-Comments
+M16 — SEO / Performance
 
-Reactions
+Status: ⬜ Not Started
 
-Tickets
+Existing public SEO behavior does not automatically close the dedicated SEO/performance milestone.
 
-Assistance
+M17 — Production Hardening
 
-Commerce
+Status: ⬜ Not Started
 
-System events
+Includes:
 
-Exit Criteria
-
-Conversations
-
-Participants
-
-Messages
-
-Attachments
-
-Support tickets
-
-Ticket messaging
-
-Notifications
-
-Notification read/unread mutations
-
-Notification preferences
+Security review
 
 Authorization review
-
-19. M15 — Analytics Engine
-
-Status: ⬜ Not Started
-
-Objective
-
-Make analytics a first-class system within Rcentz.
-
-Existing Foundation
-
-An Admin Analysis navigation contract now exists.
-
-The current Admin overview already displays operational summaries and project health, but this does not constitute the full analytics milestone.
-
-Project Analytics
-
-Track:
-
-Views
-
-Milestone completion
-
-Feature completion
-
-Timeline performance
-
-Activity
-
-Downloads
-
-Engagement
-
-Portfolio Analytics
-
-Track:
-
-Views
-
-Unique views
-
-Reactions
-
-Comments
-
-Shares
-
-Downloads
-
-Trends
-
-Conversions
-
-Website Analytics
-
-Track:
-
-Page views
-
-Popular pages
-
-Search
-
-Engagement
-
-Conversions
-
-Product views
-
-Service views
-
-Portfolio views
-
-Purchases
-
-20. M16 — SEO / Superhero SEO
-
-Status: ⬜ Not Started
-
-Objective
-
-Make Rcentz highly discoverable while keeping SEO useful and genuine.
-
-Scope
-
-Semantic HTML
-
-Accessible structure
-
-Dynamic metadata
-
-Structured data
-
-Sitemap
-
-Robots configuration
-
-Canonical URLs
-
-Open Graph
-
-Social metadata
-
-Search-friendly routes
-
-Slugs
-
-Internal linking
-
-Related content
-
-Performance
-
-Indexability
-
-Priority Indexable Content
-
-Projects
-
-Services
-
-Products
-
-Blog articles
-
-Categories
-
-Other genuinely useful content
-
-Principle
-
-Do not create artificial SEO pages simply to increase page count.
-
-21. M17 — Production Hardening
-
-Status: ⬜ Not Started
-
-Objective
-
-Prepare the platform for real-world production use.
-
-Security
-
-Authentication review
-
-Authorization review
-
-Input validation
-
-File upload validation
-
-Server-side validation
 
 Rate limiting strategy
 
-Sensitive data protection
+Sensitive-data review
 
 Audit logging
 
-Performance
-
-Image optimization
+Performance review
 
 Database query review
 
-Caching strategy
-
-Server rendering review
-
-Client bundle review
-
-Loading states
+Caching review
 
 Error handling
 
-Reliability
-
-Error boundaries
-
-Logging
-
-Database backup strategy
-
-Recovery strategy
-
 Monitoring
 
-Known PostgreSQL Warning
+Backup/recovery strategy
 
-Current production builds emit a future compatibility warning concerning PostgreSQL SSL-mode interpretation.
+Known PostgreSQL SSL semantics should be reviewed before M17 closure.
 
-The warning does not currently block builds.
-
-Before M17 closure:
-
-Connection-string SSL semantics must be reviewed.
-
-Intended security behavior must be explicit.
-
-Current behavior should be preserved intentionally or migrated deliberately.
-
-22. M18 — Mobile / Future Application Readiness
+M18 — Mobile / Future Application Readiness
 
 Status: ⚪ Deferred
 
-Objective
+The application remains web-first.
 
-Ensure the architecture can support a future native/mobile application without unnecessary duplication.
+Architecture should preserve reusable business logic and data contracts for future mobile/native work.
 
-Principle
-
-The initial product is web-first.
-
-                Rcentz Business Logic
-                         │
-             ┌───────────┴───────────┐
-             ↓                       ↓
-           WEB                     MOBILE
-             │                       │
-        Web Interface          Native Interface
-
-Future Considerations
-
-Shared API/data contracts
-
-Reusable business logic
-
-Authentication compatibility
-
-Mobile-friendly interaction patterns
-
-Push notifications
-
-Installable applications
-
-PWA
-
-Native application possibilities
-
-23. Cross-Cutting Systems
-
-Media System
-
-Used by:
-
-Users
-
-Services
-
-Projects
-
-Project updates
-
-Portfolio
-
-Products
-
-Blog
-
-Tickets
-
-Messages
-
-SEO System
-
-Used by:
-
-Services
-
-Products
-
-Blog
-
-Portfolio
-
-Public pages
-
-Analytics System
-
-Used by:
-
-Website
-
-Portfolio
-
-Products
-
-Services
-
-Projects
-
-Content
+Cross-Cutting Systems
 
 Notification System
 
-Used by:
+Status: 🟢 Shared Foundation Completed
 
-Projects
+Used by stable business domains as they are completed.
 
-Services
+Current proven producer:
+Invoice
 
-Orders
+Messaging System
 
-Payments
+Status: 🟡 Foundation
 
-Messages
+Conversation/read-state infrastructure exists.
 
-Support
-
-Community
+Full communication MS remains open.
 
 Activity System
 
@@ -1974,59 +1135,47 @@ Used by:
 
 Projects
 
-Client management
+Clients
 
-Administrative actions
+Admin actions
 
-Important system events
+Important business events
 
-24. Project Update Visibility
+Approval System
 
-Project updates support three visibility levels:
+Current generic targets:
 
-INTERNAL
-CLIENT
-PUBLIC
+INVOICE
 
-The same update infrastructure can therefore support:
+PROJECT
 
-Internal staff communication
+Invoice is the first active implementation.
 
-Client project tracking
+Project approval will be added when its business workflow requires it.
 
-Public portfolio/project history
-
-25. Data Ownership Principle
+Data Ownership Principle
 
 Rcentz owns its business data and presentation.
 
-External services may act as integrations or data sources.
+External platforms are integrations, not canonical business truth.
 
-GitHub
-   ↓
-Optional Integration
-   ↓
-Rcentz Portfolio System
+DATABASE
+↓
+ADMIN CONTROL
+↓
+CLIENT / PUBLIC READ SURFACES
+↓
+CLIENT RESPONSES WHERE CONTRACT ALLOWS
 
-Vercel
-   ↓
-Optional Integration
-   ↓
-Rcentz Portfolio System
+Definition of Done
 
-Neither external platform should become the canonical portfolio presentation layer.
+A Management System or milestone is not complete merely because code exists.
 
-26. Definition of Done
-
-A milestone is not complete merely because code exists.
-
-A milestone should normally satisfy:
+Closure normally requires:
 
 Implementation complete
 
 TypeScript passes
-
-Application builds
 
 Runtime behavior tested
 
@@ -2036,417 +1185,527 @@ Database behavior tested where applicable
 
 Error states considered
 
-Security implications considered
+Authorization considered
 
 Architecture reviewed
 
-Route/navigation contracts finalized where applicable
-
 Documentation updated
 
-Git changes reviewed
+Git committed and pushed
 
-Implementation committed and pushed
+Exact pushed commit inspected
 
 No known blocking issue
 
-Once closed, a milestone remains closed unless a genuine defect or later architectural dependency requires a targeted correction.
+Prisma migration requirement explicitly recorded
 
-27. Architectural Decision Log
+Architectural Decision Log
 
 2026-08-31 — Modular Monolith
 
-Decision: Use a modular monolith with explicit internal boundaries.
-Reason: Preserve maintainability and reuse without premature distributed-system complexity.
-Status: Active
+Decision:
+Use a modular monolith with explicit internal boundaries.
+
+Status:
+Active
 
 2026-08-31 — PostgreSQL + Prisma Source of Truth
 
-Decision: PostgreSQL + Prisma are the persistent business-data source of truth.
-Reason: Public, client and admin surfaces must consume consistent underlying data.
-Status: Active
+Decision:
+PostgreSQL + Prisma remain the business-data source of truth.
+
+Status:
+Active
 
 2026-08-31 — Better Auth + Prisma
 
-Decision: Use Better Auth with Prisma persistence.
-Reason: Establish reusable identity/session infrastructure before protected surfaces.
-Status: Active
+Decision:
+Use Better Auth with Prisma persistence.
 
-2026-08-31 — Dedicated Auth Shell
+Status:
+Active
 
-Decision: Authentication uses dedicated application surfaces rather than depending entirely on the public Navbar.
-Reason: Keep authentication focused and preserve application-surface boundaries.
-Status: Active
+2026-09-03 — Rcentz × AI
 
-2026-08-31 — Create Boundaries When Needed
+Decision:
+AI collaboration is part of the Rcentz engineering method and is presented as human-directed acceleration.
 
-Decision: Create feature/component/server boundaries when real code requires them.
-Reason: Avoid empty-folder architecture while preserving documented responsibilities.
-Status: Active
+Status:
+Active
 
-2026-09-02 — Canonical Work Route
+2026-09-06 — Admin Foundation vs Admin CRUD
 
-Decision: Public Work destination is /portfolio.
-Reason: Preserve one canonical route across Navbar, Footer, Hero and M07.
-Status: Active
+Decision:
+Protected Admin shell/authorization may be established before complete Admin CRUD.
 
-2026-09-02 — Canonical Services Route
+Full operational management belongs to M12.
 
-Decision: Public service destination is /services.
-Reason: Keep homepage acquisition and M08 on one route contract.
-Status: Active
-
-2026-09-02 — Future Routes May Be Reserved Early
-
-Decision: Navigation may point to future routes before destination pages are implemented.
-Reason: Completed shell milestones define route contracts; later milestones build the experiences.
-Status: Active
-
-2026-09-02 — Database-Backed Homepage Content
-
-Decision: Homepage business content remains database-backed.
-Reason: Avoid duplicated hardcoded service/project truth.
-Status: Active
-
-2026-09-03 — Six-Story Hero with Rcentz × AI
-
-Decision: The homepage Hero uses six stories, with Rcentz × AI immediately after the main Rcentz introduction.
-Reason: AI collaboration is part of the Rcentz engineering method and should be presented as human-directed acceleration.
-Status: Active
-
-2026-09-03 — 1200px Public Content Axis
-
-Decision: Environmental canvas remains 1440px while public content is capped at 1200px.
-Reason: Preserve a premium wider presentation without stretching internal compositions.
-Status: Active
-
-2026-09-03 — Component Width Is Independent from Shell Width
-
-Decision: Individual compositions may be narrower than the application shell.
-Reason: Available space and useful composition width are not the same thing.
-Status: Active
-
-2026-09-03 — Long Hero Stillness
-
-Decision: Hero stories use long variable dwell periods and intentional quiet states.
-Reason: Rcentz should feel readable first and unexpectedly alive second.
-Status: Active
-
-2026-09-03 — Wider Mobile Usable Canvas
-
-Decision: Mobile public sections use reduced outer gutters.
-Reason: Protect useful width and future application-style information density.
-Status: Active
-
-2026-09-06 — Admin Foundation Belongs to M10, Full CRUD to M12
-
-Decision: M10 may establish the protected Admin shell, overview and navigation contracts needed to prove authentication and authorization. Full operational Admin CRUD remains M12.
-Reason: Authentication cannot be validated meaningfully without a protected destination, but M10 must not expand into the entire control center.
-Status: Active
+Status:
+Active
 
 2026-09-06 — Rcentz Theme Owns shadcn Semantic Meaning
 
-Decision: Generated shadcn/Base-UI semantic colors must resolve into Rcentz theme surfaces.
-Reason: Prevent component-library defaults from introducing inconsistent hover/focus/popover behavior.
-Status: Active
+Decision:
+Generated shadcn/Base-UI primitives resolve through Rcentz semantic theme surfaces.
 
-2026-09-06 — Preview Data Must Be Explicit
+Status:
+Active
 
-Decision: Dashboard preview records may be used only when clearly labeled and automatically replaced by real database data.
-Reason: Support interface development without fabricating business truth.
-Status: Active
+2026-09-06 — Translation Infrastructure vs Final Copy Pass
 
-2026-09-06 — Translation Pass Deferred to Final Project Closure
+Decision:
+Translation infrastructure is established, while final copy synchronization may be performed at final project closure where UI copy is still evolving.
 
-Decision: Complete all language JSON synchronization in one final project-level pass rather than repeatedly during active feature construction.
-Reason: Avoid churn while UI copy and Admin/client surfaces are still changing.
-Status: Active
+Status:
+Active
 
-28. Rejected Approaches
+2026-09-08 — Mirrored Admin / Client Project Truth
 
-Conventional Portfolio Website
+Decision:
+Admin controls project truth while Client surfaces consume a read-focused view of the same business state.
 
-Rejected: Treat Rcentz as a conventional portfolio website.
-Replacement: SaaS-like living business platform.
+Status:
+Active
+
+2026-09-10 — Original Invoice Agreement Before Payment
+
+Decision:
+An issued invoice requires Client verification before payment eligibility.
+
+Status:
+Active
+
+2026-09-10 — Invoice Revision After Agreement
+
+Decision:
+Financial changes after accepted original agreement use InvoiceRevision rather than silently mutating the accepted terms.
+
+Status:
+Active
+
+2026-09-10 — Immutable Approval Snapshot
+
+Decision:
+ClientApproval stores a snapshot and version so acceptance refers to the exact terms shown to the Client.
+
+Status:
+Active
+
+2026-09-11 — Notification Engine Is Shared Infrastructure
+
+Decision:
+Notification readers, read-state behavior, history and reusable producer infrastructure are completed as a shared cross-cutting foundation.
+
+Reason:
+Future stable Management Systems should plug into one notification contract rather than rebuild notifications separately.
+
+Status:
+Active
+
+2026-09-11 — Stable Domain Before Notification Producer
+
+Decision:
+Do not fully wire notifications for an unfinished business domain.
+
+Reason:
+Notification semantics should follow stable business rules rather than force premature coupling.
+
+Status:
+Active
+
+2026-09-11 — Resume One-MS Delivery
+
+Decision:
+After the Notification Foundation segmentation, return to the normal one-Management-System delivery cycle.
+
+Workflow:
+ONE MS
+↓
+BUILD
+↓
+TYPECHECK
+↓
+RUNTIME
+↓
+PUSH
+↓
+INSPECT
+↓
+UPDATE MILESTONES
+↓
+NEXT MS
+
+Status:
+Active
+
+Rejected Approaches
+
+Conventional Portfolio-Only Website
+
+Rejected.
+
+Rcentz remains a living SaaS-like business platform.
 
 Premature Microservices
 
-Rejected: Distributed microservices during the foundation stage.
-Replacement: Modular monolith with extractable boundaries.
+Rejected.
+
+Use modular monolith boundaries until extraction is justified.
 
 UI-Only Authorization
 
-Rejected: Protecting access by hiding UI elements only.
-Replacement: Server/business-layer authorization.
+Rejected.
 
-Temporary Homepage Anchors
+Authorization is server enforced.
 
-Rejected: Temporary homepage-anchor routing for canonical Hero actions.
-Replacement: Route directly to canonical product destinations.
+Fake Business Data Presented as Real
 
-/work as a Second Portfolio Route
+Rejected.
 
-Rejected: Add /work alongside /portfolio.
-Replacement: /portfolio.
+Preview states must be explicit.
 
-Fake Dashboard Business Data
+Premature Notification Producers
 
-Rejected: Presenting dummy records as if they are real clients, finances, messages, project outcomes or metrics.
-Replacement: Explicit Preview fallback states.
+Rejected.
 
-Per-Component Translation Churn
+Only stable business workflows should emit finalized notification contracts.
 
-Rejected: Rewriting all language JSON files every time a component changes during active implementation.
-Replacement: Final translation closure gate.
+Silent Mutation of Accepted Invoice Terms
 
-29. Lessons Learned
+Rejected.
 
-Living Documentation Can Become Stale Quickly
+Use InvoiceRevision after agreement.
 
-Impact: Verify milestone status against code and tested behavior before planning the next module.
+Payment Before Invoice Agreement
 
-Framework-Sensitive Work Must Match the Installed Version
+Rejected.
 
-Impact: Avoid relying on older Next.js or shadcn assumptions.
+Client agreement is a payment prerequisite.
 
-Local Validation Is Not Production Readiness
+Lessons Learned
 
-Impact: Track security, environment and deployment requirements explicitly.
+Living Documentation Becomes Stale Quickly
 
-Route Contracts Belong to Their Owning Milestone
+Impact:
+MILESTONES.md must be updated after every stable pushed Management System checkpoint.
 
-Impact: Prevent reopening shell/homepage work when later route milestones begin.
+Repeated Architecture Is Valuable
 
-Mobile Needs Different Density
+Impact:
+Business domains increasingly follow familiar chains:
 
-Impact: Compact presentation and controlled information density improve small-screen usability.
+BUSINESS RULE
+↓
+SCHEMA
+↓
+SERVER QUERY / MUTATION
+↓
+AUTHORIZATION
+↓
+UI
+↓
+REVALIDATION / FEED
+↓
+RUNTIME VERIFICATION
 
-Shell Width and Composition Width Are Different
+Shared Infrastructure Should Be Segmented Deliberately
 
-Impact: Treat shell geometry and component geometry separately.
+Impact:
+A short cross-cutting phase is acceptable when it closes a true shared dependency, but normal one-MS delivery should resume immediately afterward.
 
-Stillness Is Part of Animation Design
+Stable Domains Make Better Contracts
 
-Impact: Long quiet periods improve readability and make motion more meaningful.
+Impact:
+Invoice became the reference Notification contract because its workflow was stable enough to define meaningful events.
 
-AI Is Best Framed as Human-Directed Acceleration
+Source First, Override Second
 
-Impact: Present business context, technical judgment, AI execution and human review as one engineering workflow.
+Impact:
+When a Base-UI primitive behaves incorrectly, inspect its required structure and shared primitive semantics before adding local overrides.
 
-2026-09-06 — Primitive Semantics Can Override Feature Styling
+Example:
+DropdownMenuLabel / Menu.GroupLabel requires a Menu Group context.
 
-Impact: When a shadcn/Base-UI component behaves strangely, inspect the generated primitive and theme token semantics before adding feature-level overrides.
+Current Development State
 
-2026-09-06 — Source First, Override Second
-
-Impact: Fix reusable primitives or theme contracts at the source when the issue affects multiple components.
-
-2026-09-06 — Protected Destination Surfaces Help Validate Auth
-
-Impact: Authentication architecture becomes easier to validate when there is a real role-protected shell rather than only login forms.
-
-30. Current Development State
+Date:
+2026-09-11
 
 Primary Active Milestone:
-M10 — Authentication & User System
-
-Secondary Foundation Started:
 M12 — Admin Control Center
 
-Completed Public Milestones:
+Primary Active Management System:
+Invoice Management System
 
-M03  UI Canvas / Design System       ✅
-M04  Database Foundation             ✅
-M05  Global Application Shell        ✅
-M06  Public Homepage                 ✅
-M07  Portfolio Engine                ✅
-M08  Services Engine                 ✅
+Current Cross-Cutting Foundation:
+Notification Foundation — 🟢 CLOSED
 
-Deferred:
+Authentication:
+Core infrastructure stable; final M10 closure tasks remain.
 
-M09 Commerce Foundation              ⚪
-M18 Mobile / Future App Readiness    ⚪
+Client Project Management:
+Substantial implementation exists; formal M11 closure remains pending.
 
-Current Git Checkpoint:
+Notification Infrastructure:
+Complete shared foundation.
 
-eeef24b8e9ac1b603f831379a34d0bb2a7351a28
-feat(admin): build dashboard overview finance and navigation shell
+Current Verified Git Checkpoint:
+
+b818905b3fba99ba84c14594ea509b26263a03ce
+
+feat(notifications): complete admin and client notification foundation
 
 Checkpoint Validation:
 
 pnpm typecheck  PASS
-pnpm build      PASS
-git push        PASS
+pnpm typecheck  PASS
+Runtime          PASS
+git push         PASS
+Git inspection   PASS
 
-Current System Surface:
+Current Important Routes
 
 PUBLIC
-├── /
-├── /services
-├── /services/[slug]
-├── /portfolio
-├── /portfolio/[slug]
-└── /login
 
-AUTH
-├── /api/auth/[...all]
-└── /adminlogin/login
+/
+
+/services
+
+/services/[slug]
+
+/portfolio
+
+/portfolio/[slug]
+
+/login
+
+CLIENT
+
+/dashboard
+
+/dashboard/projects
+
+/dashboard/billing
+
+/dashboard/billing/invoices/[invoiceId]
+
+/dashboard/notifications
 
 ADMIN
-└── /admin
 
-Current Admin Shell Contracts:
+/admin
 
-Overview
-Analysis
-Service Requests
-Projects
-Tasks
-Clients
-Messages
-Notifications
-Finance
-Services
-Settings
+/admin/invoices
 
-Known Production Gap:
-PostgreSQL SSL-mode future compatibility warning remains tracked for M17.
+/admin/invoices/[invoiceId]
 
-Blocking Issues:
-None recorded.
+/admin/invoices/[invoiceId]/edit
 
-31. Immediate Next Steps
+/admin/notifications
 
-Current continuation sequence:
+AUTH
 
-M10 AUTH FOUNDATION
-        ↓
-tighten redirect safety
-        ↓
-email verification decision/flow
-        ↓
-require authenticated user
-        ↓
-/dashboard
-        ↓
-client dashboard shell
-        ↓
-role-aware navigation
-        ↓
-profile/account flow
-        ↓
-role/runtime authorization tests
-        ↓
-M10 verification
-        ↓
-M10 closure
+/api/auth/[...all]
 
-After M10 closure:
+/adminlogin/login
 
-M11 CLIENT PROJECT MANAGEMENT
-        ↓
-M12 ADMIN CRUD / OPERATIONS
-        ↓
-M14 MESSAGING / NOTIFICATIONS
-        ↓
-M15 ANALYTICS
+Known Blocking Issues:
 
-The Admin overview should not be repeatedly redesigned while M10 authentication foundations remain unfinished unless a genuine defect appears.
+None currently recorded.
 
-32. Relationship to the Master Blueprint
+Immediate Next Steps
+
+Resume the Invoice Management System.
+
+Do not begin another Management System until the Invoice MS receives its own closure checkpoint.
+
+Sequence:
+
+INVOICE MS
+↓
+verify original invoice agreement flow
+↓
+verify rejected-agreement correction / re-request
+↓
+verify revision lifecycle
+↓
+integrate and verify payment gate
+↓
+verify post-payment currency protection
+↓
+finish billing overview / builder readability
+↓
+replace native lifecycle confirms
+↓
+final responsive/runtime pass
+↓
+pnpm typecheck
+↓
+commit / push
+↓
+inspect exact pushed commit
+↓
+update MILESTONES.md
+↓
+close Invoice MS
+↓
+choose next Management System
+
+Documentation Maintenance Rule
+
+MILESTONES.md is again an active development instrument.
+
+From this checkpoint forward:
+
+Before starting a new Management System:
+
+Read the current development state.
+
+Confirm the active MS.
+
+Confirm dependencies.
+
+During implementation:
+
+Do not rewrite the milestone file after every tiny component.
+
+After a stable pushed checkpoint:
+
+Inspect the exact Git commit.
+
+Update implemented work.
+
+Update remaining work.
+
+Update verification state.
+
+Update the latest Git SHA.
+
+Update architectural decisions when needed.
+
+Then move to the next MS.
+
+The milestone file should remain synchronized with the real codebase.
+
+Relationship to the Master Blueprint
 
 MASTER-BLUEPRINT.md
-        │
-        │ defines
-        ↓
+│
+│ defines
+↓
 PRODUCT + ARCHITECTURAL VISION
-        │
-        ↓
+│
+↓
 MILESTONES.md
-        │
-        │ defines
-        ↓
-IMPLEMENTATION ROADMAP
-        │
-        ↓
+│
+│ defines
+↓
+IMPLEMENTATION STATE + NEXT WORK
+│
+↓
 ACTUAL CODEBASE
-        │
-        ↓
+│
+↓
 RUNNING RCENTZ SYSTEM
 
 The Master Blueprint answers:
 
 What are we building and why?
 
-The Milestones document answers:
+MILESTONES.md answers:
 
-What are we building next and how do we know it is complete?
+Where are we now, what is active, and what must happen before moving forward?
 
 The codebase answers:
 
 What has actually been implemented?
 
-33. Living Document Rule
-
-This document must evolve with the project.
-
-When a significant architectural change occurs:
-
-Update the relevant milestone
-
-Record the architectural decision
-
-Record rejected approaches where useful
-
-Record lessons learned
-
-Update the current development state
-
-Ensure the Master Blueprint remains consistent with implementation
-
-Documentation must describe the real Rcentz system, not an idealized version of what it was expected to become.
-
-A milestone closure is a durable checkpoint, not a temporary note that is silently reopened later.
-
 Current Handoff
 
+M01 PROJECT FOUNDATION
+✅ CLOSED
+
+M02 ARCHITECTURE & CONVENTIONS
+✅ CLOSED
+
+M03 UI CANVAS / DESIGN SYSTEM
+✅ CLOSED
+
+M04 DATABASE FOUNDATION
+✅ CLOSED
+
+M05 GLOBAL APPLICATION SHELL
+✅ CLOSED
+
 M06 PUBLIC HOMEPAGE
-        ✅ CLOSED
+✅ CLOSED
 
 M07 PORTFOLIO ENGINE
-        ✅ CLOSED
+✅ CLOSED
 
 M08 SERVICES ENGINE
-        ✅ CLOSED
+✅ CLOSED
 
 M09 COMMERCE FOUNDATION
-        ⚪ DEFERRED
+⚪ DEFERRED
 
 M10 AUTHENTICATION & USER SYSTEM
-        🟡 ACTIVE
-             │
-             ├── Auth persistence            ✅
-             ├── Admin authorization         ✅
-             ├── Protected Admin shell       ✅
-             ├── Admin overview foundation   ✅
-             ├── Admin navigation contract   ✅
-             ├── Finance overview            ✅
-             ├── Client dashboard            ⬜
-             ├── Email verification closure  ⬜
-             ├── Profile/account flow        ⬜
-             └── Final auth hardening         ⬜
+🟡 CORE STABLE / FORMAL CLOSURE PENDING
+
+M11 CLIENT PROJECT MANAGEMENT
+🟡 IN PROGRESS
 
 M12 ADMIN CONTROL CENTER
-        🟡 FOUNDATION STARTED
-        Full CRUD remains future work
+🟡 ACTIVE
+│
+└── INVOICE MANAGEMENT SYSTEM
+🟡 ACTIVE
+
+M13 BLOG / COMMUNITY
+⬜ NOT STARTED
+
+M14 MESSAGING / SUPPORT / NOTIFICATIONS
+🟡 IN PROGRESS
+│
+├── Notification Foundation
+│      ✅ CLOSED
+│
+├── Messaging
+│      🟡 FOUNDATION
+│
+└── Support
+⬜ NOT STARTED
+
+M15 ANALYTICS
+⬜ NOT STARTED
+
+M16 SEO / PERFORMANCE
+⬜ NOT STARTED
+
+M17 PRODUCTION HARDENING
+⬜ NOT STARTED
+
+M18 MOBILE / FUTURE APP READINESS
+⚪ DEFERRED
 
 Latest verified implementation checkpoint:
-eeef24b8e9ac1b603f831379a34d0bb2a7351a28
+
+b818905b3fba99ba84c14594ea509b26263a03ce
 
 Next development focus:
-Complete M10 Authentication & User System without reopening completed Admin overview work.
 
-Final project translation pass:
-Deferred until functional project completion.
+Complete the Invoice Management System.
+
+Documentation policy:
+
+Update this document after every stable pushed MS checkpoint.
+
+Prisma migration for the Notification Foundation:
+
+NOT REQUIRED.
+
+Final project translation synchronization:
+
+Deferred until functional project completion where required.
 
 END OF DOCUMENT
