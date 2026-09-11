@@ -1,9 +1,12 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
+
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 import { FolderKanban, House, LayoutDashboard, MessageCircle } from 'lucide-react';
+
+import { usePathname } from 'next/navigation';
 
 import { authClient } from '@/lib/auth-client';
 
@@ -37,12 +40,51 @@ function isRouteActive({
   });
 }
 
+function subscribeToHydration() {
+  return () => {};
+}
+
+function getClientHydrationSnapshot() {
+  return true;
+}
+
+function getServerHydrationSnapshot() {
+  return false;
+}
+
 export function RcentzMobileNavigationPill() {
   const pathname = usePathname();
 
   const { data: session } = authClient.useSession();
 
-  const authenticated = Boolean(session?.user);
+  /*
+   * Important:
+   *
+   * The server cannot reliably know the
+   * BetterAuth client-session snapshot.
+   *
+   * During SSR and the first hydration pass
+   * we therefore deliberately render the
+   * guest navigation contract.
+   *
+   * After hydration React switches to the
+   * client snapshot and may safely reveal
+   * authenticated destinations.
+   *
+   * This prevents:
+   *
+   * server: /services
+   * client: /dashboard/projects
+   *
+   * from producing a hydration mismatch.
+   */
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot
+  );
+
+  const authenticated = hydrated && Boolean(session?.user);
 
   const navigationItems: MobileNavigationItem[] = [
     {
@@ -52,18 +94,21 @@ export function RcentzMobileNavigationPill() {
       activeRoutes: ['/'],
       exact: true
     },
+
     {
       label: 'Projects',
       href: authenticated ? '/dashboard/projects' : '/services',
       icon: FolderKanban,
-      activeRoutes: ['/dashboard/projects']
+      activeRoutes: ['/dashboard/projects', '/services']
     },
+
     {
       label: 'Messages',
       href: authenticated ? '/dashboard/messages' : '/login?next=/dashboard/messages',
       icon: MessageCircle,
       activeRoutes: ['/dashboard/messages']
     },
+
     {
       label: 'Dashboard',
       href: authenticated ? '/dashboard' : '/login?next=/dashboard',
@@ -130,6 +175,7 @@ export function RcentzMobileNavigationPill() {
                 'transition-[background-color,color,transform]',
                 'duration-200',
                 'active:scale-[0.96]',
+
                 active
                   ? 'bg-surface-muted text-foreground'
                   : 'text-muted hover:bg-surface-muted/60 hover:text-foreground'
@@ -141,6 +187,7 @@ export function RcentzMobileNavigationPill() {
                   'size-6',
                   'items-center',
                   'justify-center',
+
                   active ? 'text-theme-accent' : 'text-current'
                 ].join(' ')}>
                 <Icon aria-hidden="true" className="size-[15px]" />

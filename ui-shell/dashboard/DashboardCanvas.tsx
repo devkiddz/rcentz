@@ -7,7 +7,19 @@ type DashboardCanvasProps = {
 
 export function DashboardCanvas({ children, className = '' }: DashboardCanvasProps) {
   return (
-    <div className={['mx-auto w-full max-w-[1440px]', 'px-4 pb-14 sm:px-6 lg:px-8', className].join(' ')}>
+    <div
+      className={[
+        'mx-auto',
+        'w-full',
+        'max-w-[var(--section-max)]',
+
+        'px-4',
+        'pb-14',
+        'sm:px-6',
+        'lg:px-8',
+
+        className
+      ].join(' ')}>
       {children}
     </div>
   );

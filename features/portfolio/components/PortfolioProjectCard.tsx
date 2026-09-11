@@ -1,26 +1,15 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Eye,
-  Flame,
-  Heart,
-  Lightbulb,
-  MessageCircle,
-  Share2,
-  ThumbsUp,
-  User
-} from 'lucide-react';
+import { ArrowUpRight, GitBranch, Images } from 'lucide-react';
 
 import { motion, useReducedMotion } from 'motion/react';
+
 import { useTranslations } from 'next-intl';
 
 import type { PortfolioProject } from '@/features/portfolio/server/get-portfolio-projects';
-
-import { PortfolioProjectVisual } from './PortfolioProjectVisual';
 
 type PortfolioProjectCardProps = {
   project: PortfolioProject;
@@ -36,822 +25,24 @@ function humanize(value: string) {
     .join(' ');
 }
 
-function initials(value: string | null) {
-  if (!value) {
-    return 'R';
-  }
-
-  return value
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(part => part.charAt(0).toUpperCase())
-    .join('');
-}
-
-/* =========================================================
-   CARD PREVIEW NAVIGATION
-   ========================================================= */
-
-function PortfolioPreviewOverlay({
-  project,
-  featured = false
-}: {
-  project: PortfolioProject;
-  featured?: boolean;
-}) {
-  const t = useTranslations('PortfolioCard');
-  return (
-    <Link
-      href={`/portfolio/${project.slug}`}
-      aria-label={t('openPreview', { project: project.name })}
-      className={[
-        'absolute inset-0 z-10',
-        featured ? 'rounded-[30px]' : 'rounded-[26px]',
-        'focus-visible:outline-none',
-        'focus-visible:ring-2',
-        'focus-visible:ring-theme-accent',
-        'focus-visible:ring-offset-2',
-        'focus-visible:ring-offset-background'
-      ].join(' ')}
-    />
-  );
-}
-
-function PortfolioPreviewButton({
-  project,
-  compact = false
-}: {
-  project: PortfolioProject;
-  compact?: boolean;
-}) {
-  const t = useTranslations('PortfolioCard');
-  return (
-    <Link
-      href={`/portfolio/${project.slug}`}
-      className={[
-        'group/preview inline-flex items-center justify-center gap-2',
-        'rounded-full bg-primary font-medium text-primary-foreground',
-        'transition-[opacity,transform] duration-200',
-        'hover:opacity-85 active:scale-[0.98]',
-        compact ? 'h-9 px-3.5 text-[10px]' : 'h-10 px-4 text-[11px]'
-      ].join(' ')}>
-      {t('goPreview')}
-      <ArrowRight
-        aria-hidden="true"
-        className={[
-          'transition-transform duration-300',
-          'group-hover/preview:translate-x-0.5',
-          compact ? 'size-3' : 'size-3.5'
-        ].join(' ')}
-      />
-    </Link>
-  );
-}
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-function PortfolioProgressChart({
-  progress,
-  status,
-  compact = false
-}: {
-  progress: number;
-  status: string;
-  compact?: boolean;
-}) {
-  const t = useTranslations('PortfolioCard');
-  const enumT = useTranslations('CommonEnums');
-  const reduceMotion = Boolean(useReducedMotion());
-
-  const safeProgress = Math.max(0, Math.min(100, progress));
-
-  const bars = [38, 58, 46, 72, 62, 86, 69, 82, 57, 76];
-
-  const activeBars = Math.max(1, Math.ceil((safeProgress / 100) * bars.length));
-
-  return (
-    <motion.div
-      initial={
-        reduceMotion
-          ? false
-          : {
-              opacity: 0,
-              y: 7
-            }
-      }
-      whileInView={{
-        opacity: 1,
-        y: 0
-      }}
-      viewport={{
-        once: true
-      }}
-      transition={{
-        duration: 0.4,
-        ease: [0.22, 1, 0.36, 1]
-      }}
-      className={[
-        'relative overflow-hidden rounded-[18px] border border-border',
-        'bg-background/55 backdrop-blur-sm',
-        compact ? 'w-[150px] p-3' : 'w-[190px] p-3.5'
-      ].join(' ')}>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-muted">{t('progress')}</p>
-
-          <p
-            className={[
-              'mt-1 font-semibold tracking-[-0.045em] text-foreground',
-              compact ? 'text-xl' : 'text-2xl'
-            ].join(' ')}>
-            {safeProgress}%
-          </p>
-        </div>
-
-        <motion.span
-          aria-label={enumT.has(`projectStatuses.${status.toLowerCase()}`) ? enumT(`projectStatuses.${status.toLowerCase()}`) : humanize(status)}
-          title={enumT.has(`projectStatuses.${status.toLowerCase()}`) ? enumT(`projectStatuses.${status.toLowerCase()}`) : humanize(status)}
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  scale: 0.65,
-                  opacity: 0
-                }
-          }
-          whileInView={{
-            scale: 1,
-            opacity: 1
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.35,
-            delay: reduceMotion ? 0 : 0.18
-          }}
-          className="mt-2 size-2.5 rounded-full bg-theme-accent"
-        />
-      </div>
-
-      <div
-        className={['mt-4 flex items-end gap-1.5 border-b border-border/70', compact ? 'h-12' : 'h-16'].join(
-          ' '
-        )}>
-        {bars.map((height, index) => {
-          const active = index < activeBars;
-
-          return (
-            <motion.span
-              key={`${height}-${index}`}
-              initial={
-                reduceMotion
-                  ? {
-                      height: `${height}%`
-                    }
-                  : {
-                      height: 0
-                    }
-              }
-              whileInView={{
-                height: `${height}%`
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.45,
-
-                delay: reduceMotion ? 0 : 0.08 + index * 0.035,
-
-                ease: [0.22, 1, 0.36, 1]
-              }}
-              className={[
-                'min-w-0 flex-1 rounded-t-[4px]',
-                active ? 'bg-foreground/72' : 'bg-foreground/14'
-              ].join(' ')}
-            />
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
-/* =========================================================
-   ENGAGEMENT
-   ========================================================= */
-
-function PortfolioEngagementMeta({ project }: { project: PortfolioProject }) {
-  const t = useTranslations('PortfolioCard');
-  const reduceMotion = Boolean(useReducedMotion());
-
-  const metrics = [
-    {
-      label: t('views'),
-      value: project.analytics.views,
-      icon: Eye
-    },
-    {
-      label: t('likes'),
-      value: project.reactions.like,
-      icon: ThumbsUp
-    },
-    {
-      label: t('reactions'),
-      value: project.analytics.reactions,
-      icon: Heart
-    },
-    {
-      label: t('comments'),
-      value: project.analytics.comments,
-      icon: MessageCircle
-    }
-  ];
-
-  return (
-    <motion.div
-      initial={
-        reduceMotion
-          ? false
-          : {
-              opacity: 0,
-              x: 10
-            }
-      }
-      whileInView={{
-        opacity: 1,
-        x: 0
-      }}
-      viewport={{
-        once: true
-      }}
-      transition={{
-        duration: 0.35,
-        ease: [0.22, 1, 0.36, 1]
-      }}
-      className={[
-        'absolute right-0 top-4 z-50',
-        'flex items-center gap-3',
-        'rounded-l-full',
-        'border border-r-0 border-border',
-        'bg-background/94',
-        'px-3 py-1.5',
-        'shadow-sm backdrop-blur-xl'
-      ].join(' ')}>
-      {metrics.map(metric => (
-        <span
-          key={metric.label}
-          title={metric.label}
-          className="inline-flex items-center gap-1 font-mono text-[7px] tabular-nums text-muted">
-          <metric.icon aria-hidden="true" className="size-2.5" />
-
-          <span className="font-medium text-foreground">{metric.value}</span>
-        </span>
-      ))}
-    </motion.div>
-  );
-}
-
-/* =========================================================
-   PROJECT SIGNALS
-   ========================================================= */
-
-function PortfolioProjectSignals({
-  project,
-  compact = false
-}: {
-  project: PortfolioProject;
-  compact?: boolean;
-}) {
-  const t = useTranslations('PortfolioCard');
-  const enumT = useTranslations('CommonEnums');
-  const reduceMotion = Boolean(useReducedMotion());
-
-  const activeReactionTypes = [
-    {
-      label: t('love'),
-      value: project.reactions.love,
-      icon: Heart
-    },
-    {
-      label: t('fire'),
-      value: project.reactions.fire,
-      icon: Flame
-    },
-    {
-      label: t('shares'),
-      value: project.analytics.shares,
-      icon: Share2
-    }
-  ].filter(item => item.value > 0);
-
-  const visibleCredits = project.credits
-    .filter(credit => credit.name || credit.role)
-    .slice(0, compact ? 2 : 4);
-
-  const visibleSuggestions = project.suggestions.slice(0, compact ? 1 : 2);
-
-  return (
-    <div className={compact ? 'mt-5 space-y-3' : 'mt-8 space-y-3'}>
-      {activeReactionTypes.length > 0 ? (
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  x: -8
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            x: 0
-          }}
-          viewport={{
-            once: true,
-            amount: 0.55
-          }}
-          transition={{
-            duration: 0.4,
-
-            delay: reduceMotion ? 0 : 0.15
-          }}
-          className="flex flex-wrap gap-1.5">
-          {activeReactionTypes.map(item => (
-            <span
-              key={item.label}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/45 px-2.5 py-1 font-mono text-[7px] text-muted">
-              <item.icon aria-hidden="true" className="size-2.5 text-theme-accent" />
-              {item.label} {item.value}
-            </span>
-          ))}
-        </motion.div>
-      ) : null}
-
-      <div className="grid grid-cols-2 gap-2">
-        {/* Credits */}
-
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 8
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true,
-            amount: 0.45
-          }}
-          transition={{
-            duration: 0.42,
-
-            delay: reduceMotion ? 0 : 0.18
-          }}
-          className="rounded-2xl border border-border bg-surface-muted/28 p-3.5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <User aria-hidden="true" className="size-3.5 text-theme-accent" />
-
-              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">{t('credits')}</p>
-            </div>
-
-            <span className="font-mono text-[7px] text-muted">{project.credits.length}</span>
-          </div>
-
-          {visibleCredits.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {visibleCredits.map((credit, creditIndex) => (
-                <motion.div
-                  key={credit.id}
-                  initial={
-                    reduceMotion
-                      ? false
-                      : {
-                          opacity: 0,
-                          scale: 0.92
-                        }
-                  }
-                  whileInView={{
-                    opacity: 1,
-                    scale: 1
-                  }}
-                  viewport={{
-                    once: true
-                  }}
-                  transition={{
-                    duration: 0.32,
-
-                    delay: reduceMotion ? 0 : 0.22 + creditIndex * 0.05
-                  }}
-                  className="flex min-w-0 items-center gap-2">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background font-mono text-[7px] font-medium text-foreground">
-                    {initials(credit.name)}
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="truncate text-[9px] font-medium">{credit.name ?? t('contributor')}</p>
-
-                    {credit.role ? <p className="truncate text-[7px] text-muted">{credit.role}</p> : null}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3 text-[9px] leading-4 text-muted">{t('noCredits')}</p>
-          )}
-        </motion.div>
-
-        {/* Suggestions */}
-
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 8
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true,
-            amount: 0.45
-          }}
-          transition={{
-            duration: 0.42,
-
-            delay: reduceMotion ? 0 : 0.24
-          }}
-          className="rounded-2xl border border-border bg-theme-accent-faint p-3.5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Lightbulb aria-hidden="true" className="size-3.5 text-theme-accent" />
-
-              <p className="font-mono text-[7px] uppercase tracking-[0.14em] text-muted">{t('suggestions')}</p>
-            </div>
-
-            <span className="font-mono text-[7px] text-muted">{project.suggestions.length}</span>
-          </div>
-
-          {visibleSuggestions.length > 0 ? (
-            <div className="mt-3 space-y-2">
-              {visibleSuggestions.map((suggestion, suggestionIndex) => (
-                <motion.div
-                  key={suggestion.id}
-                  initial={
-                    reduceMotion
-                      ? false
-                      : {
-                          opacity: 0,
-                          x: 7
-                        }
-                  }
-                  whileInView={{
-                    opacity: 1,
-                    x: 0
-                  }}
-                  viewport={{
-                    once: true
-                  }}
-                  transition={{
-                    duration: 0.34,
-
-                    delay: reduceMotion ? 0 : 0.28 + suggestionIndex * 0.06
-                  }}
-                  className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-[9px] font-medium">{suggestion.name}</p>
-
-                    <p className="mt-0.5 font-mono text-[6px] uppercase tracking-[0.12em] text-muted">
-                      {enumT.has(`featureStatuses.${suggestion.status.toLowerCase()}`) ? enumT(`featureStatuses.${suggestion.status.toLowerCase()}`) : humanize(suggestion.status)} · {enumT.has(`priorities.${suggestion.priority.toLowerCase()}`) ? enumT(`priorities.${suggestion.priority.toLowerCase()}`) : humanize(suggestion.priority)}
-                    </p>
-                  </div>
-
-                  <span className="shrink-0 rounded-full border border-theme-accent/20 bg-background/40 px-2 py-1 font-mono text-[6px] text-theme-accent">
-                    {suggestion.progress}%
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3 text-[9px] leading-4 text-muted">
-              {t('noSuggestions')}
-            </p>
-          )}
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-/* =========================================================
-   PROJECT CARD
-   ========================================================= */
-
 export function PortfolioProjectCard({ project, index, featured = false }: PortfolioProjectCardProps) {
   const t = useTranslations('PortfolioCard');
+
   const enumT = useTranslations('CommonEnums');
+
   const reduceMotion = Boolean(useReducedMotion());
 
-  const introDelay = Math.min(index * 0.055, 0.28);
+  const image = project.media[0];
 
-  /* =======================================================
-     FEATURED PROJECT
-     ======================================================= */
+  const typeLabel = enumT.has(`projectTypes.${project.type.toLowerCase()}`)
+    ? enumT(`projectTypes.${project.type.toLowerCase()}`)
+    : humanize(project.type);
 
-  if (featured) {
-    return (
-      <motion.article
-        initial={
-          reduceMotion
-            ? false
-            : {
-                opacity: 0,
-                y: 18,
-                scale: 0.995
-              }
-        }
-        whileInView={{
-          opacity: 1,
-          y: 0,
-          scale: 1
-        }}
-        viewport={{
-          once: true,
-          amount: 0.15
-        }}
-        transition={{
-          duration: 0.62,
-          ease: [0.22, 1, 0.36, 1]
-        }}
-        className={[
-          'group relative cursor-pointer overflow-hidden rounded-[30px]',
-          'border border-border bg-background/65 backdrop-blur-sm',
-          'transition-[background-color,border-color,box-shadow]',
-          'hover:border-border-strong hover:bg-surface-raised/60',
-          'hover:shadow-[0_18px_60px_-34px_var(--theme-accent)]'
-        ].join(' ')}>
-        {/* Entire card goes to the Rcentz case study */}
+  const statusLabel = enumT.has(`projectStatuses.${project.status.toLowerCase()}`)
+    ? enumT(`projectStatuses.${project.status.toLowerCase()}`)
+    : humanize(project.status);
 
-        <PortfolioPreviewOverlay project={project} featured />
-
-        <div className="grid md:grid-cols-[0.88fr_1.12fr]">
-          {/* Content */}
-
-          <div className="relative flex flex-col p-6 sm:p-8 lg:p-9">
-            <PortfolioEngagementMeta project={project} />
-
-            <motion.div
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      opacity: 0,
-                      y: 7
-                    }
-              }
-              whileInView={{
-                opacity: 1,
-                y: 0
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.4,
-
-                delay: reduceMotion ? 0 : 0.08
-              }}
-              className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-theme-accent">
-                {t('featuredProject')}
-              </span>
-
-              <span className="size-1 rounded-full bg-border-strong" />
-
-              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                {enumT.has(`projectTypes.${project.type.toLowerCase()}`) ? enumT(`projectTypes.${project.type.toLowerCase()}`) : humanize(project.type)}
-              </span>
-
-              <span className="size-1 rounded-full bg-border-strong" />
-
-              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                {enumT.has(`projectStatuses.${project.status.toLowerCase()}`) ? enumT(`projectStatuses.${project.status.toLowerCase()}`) : humanize(project.status)}
-              </span>
-            </motion.div>
-
-            <motion.h3
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      opacity: 0,
-                      y: 9
-                    }
-              }
-              whileInView={{
-                opacity: 1,
-                y: 0
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.5,
-
-                delay: reduceMotion ? 0 : 0.12
-              }}
-              className="mt-5 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              {project.name}
-            </motion.h3>
-
-            <motion.p
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      opacity: 0,
-                      y: 7
-                    }
-              }
-              whileInView={{
-                opacity: 1,
-                y: 0
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.45,
-
-                delay: reduceMotion ? 0 : 0.16
-              }}
-              className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              {project.tagline ?? project.description ?? t('publishedFallback')}
-            </motion.p>
-
-            {project.summary ? (
-              <motion.p
-                initial={
-                  reduceMotion
-                    ? false
-                    : {
-                        opacity: 0
-                      }
-                }
-                whileInView={{
-                  opacity: 1
-                }}
-                viewport={{
-                  once: true
-                }}
-                transition={{
-                  duration: 0.5,
-
-                  delay: reduceMotion ? 0 : 0.2
-                }}
-                className="mt-5 max-w-xl text-[12px] leading-6 text-muted">
-                {project.summary}
-              </motion.p>
-            ) : null}
-
-            <motion.div
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      opacity: 0,
-                      y: 6
-                    }
-              }
-              whileInView={{
-                opacity: 1,
-                y: 0
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.4,
-
-                delay: reduceMotion ? 0 : 0.22
-              }}
-              className="mt-7 flex flex-wrap gap-2">
-              {project.technologies.slice(0, 6).map(technology => (
-                <span
-                  key={technology.slug}
-                  className="rounded-full border border-border bg-surface-muted px-2.5 py-1 font-mono text-[8px] text-muted">
-                  {technology.name}
-                </span>
-              ))}
-            </motion.div>
-
-            <PortfolioProjectSignals project={project} />
-
-            <div className="mt-5">
-              <PortfolioProgressChart progress={project.progress} status={project.status} />
-            </div>
-
-            {/* Real actions stay above the card-wide overlay */}
-
-            <motion.div
-              initial={
-                reduceMotion
-                  ? false
-                  : {
-                      opacity: 0,
-                      y: 8
-                    }
-              }
-              whileInView={{
-                opacity: 1,
-                y: 0
-              }}
-              viewport={{
-                once: true
-              }}
-              transition={{
-                duration: 0.4,
-
-                delay: reduceMotion ? 0 : 0.34
-              }}
-              className="relative z-30 mt-auto flex flex-wrap items-center gap-3 pt-7">
-              <PortfolioPreviewButton project={project} />
-
-              {project.liveUrl ? (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface-muted px-4 text-[11px] font-medium text-foreground transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-secondary active:scale-[0.98]">
-                  {t('viewLive')}
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                </a>
-              ) : null}
-
-              {project.repositoryUrl ? (
-                <a
-                  href={project.repositoryUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface-muted px-4 text-[11px] font-medium text-foreground transition-[background-color,border-color,transform] hover:border-border-strong hover:bg-secondary active:scale-[0.98]">
-                  {t('source')}
-                  <ArrowRight aria-hidden="true" className="size-3.5" />
-                </a>
-              ) : null}
-            </motion.div>
-          </div>
-
-          {/* Visual */}
-
-          <motion.div
-            initial={
-              reduceMotion
-                ? false
-                : {
-                    opacity: 0,
-                    x: 14
-                  }
-            }
-            whileInView={{
-              opacity: 1,
-              x: 0
-            }}
-            viewport={{
-              once: true,
-              amount: 0.18
-            }}
-            transition={{
-              duration: 0.62,
-
-              delay: reduceMotion ? 0 : 0.08,
-
-              ease: [0.22, 1, 0.36, 1]
-            }}
-            className="min-h-[380px] border-t border-border md:min-h-[560px] md:border-l md:border-t-0 lg:min-h-[620px]">
-            <PortfolioProjectVisual project={project} featured />
-          </motion.div>
-        </div>
-      </motion.article>
-    );
-  }
-
-  /* =======================================================
-     STANDARD PROJECT
-     ======================================================= */
+  const introDelay = Math.min(index * 0.055, 0.25);
 
   return (
     <motion.article
@@ -860,8 +51,8 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
           ? false
           : {
               opacity: 0,
-              y: 16,
-              scale: 0.992
+              y: 18,
+              scale: 0.995
             }
       }
       whileInView={{
@@ -871,221 +62,139 @@ export function PortfolioProjectCard({ project, index, featured = false }: Portf
       }}
       viewport={{
         once: true,
-        amount: 0.12
+        amount: 0.15
       }}
       transition={{
-        duration: 0.52,
-
+        duration: 0.55,
         delay: reduceMotion ? 0 : introDelay,
-
         ease: [0.22, 1, 0.36, 1]
       }}
       whileHover={
         reduceMotion
           ? undefined
           : {
-              y: -4
+              y: -3
             }
       }
-      className={[
-        'group relative flex min-h-[610px] cursor-pointer flex-col overflow-hidden',
-        'rounded-[26px] border border-border bg-background/62 backdrop-blur-sm',
-        'transition-[background-color,border-color,box-shadow]',
-        'hover:border-border-strong hover:bg-surface-raised/70',
-        'hover:shadow-[0_18px_55px_-38px_var(--theme-accent)]'
-      ].join(' ')}>
-      {/* Whole card preview target */}
+      className="group relative flex h-full flex-col overflow-hidden rounded-[26px] border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-border-strong hover:shadow-xl">
+      <Link
+        href={`/portfolio/${project.slug}`}
+        aria-label={t('openPreview', {
+          project: project.name
+        })}
+        className="absolute inset-0 z-10 rounded-[26px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      />
 
-      <PortfolioPreviewOverlay project={project} />
+      <div className="relative aspect-[16/10] overflow-hidden bg-black">
+        {image ? (
+          <Image
+            src={image.url}
+            alt={image.alt ?? `${project.name} project screenshot`}
+            fill
+            sizes="(max-width: 767px) 100vw, 50vw"
+            className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-muted">
+            <div aria-hidden="true" className="absolute inset-0 opacity-60 rcentz-grid-fade" />
 
-      {/* Visual */}
-
-      <motion.div
-        initial={
-          reduceMotion
-            ? false
-            : {
-                opacity: 0,
-                scale: 1.01
-              }
-        }
-        whileInView={{
-          opacity: 1,
-          scale: 1
-        }}
-        viewport={{
-          once: true
-        }}
-        transition={{
-          duration: 0.55,
-
-          delay: reduceMotion ? 0 : introDelay + 0.05
-        }}
-        className="min-h-[245px] border-b border-border">
-        <PortfolioProjectVisual project={project} />
-      </motion.div>
-
-      {/* Content */}
-
-      <div className="relative flex flex-1 flex-col p-5">
-        <PortfolioEngagementMeta project={project} />
-
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 6
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.35,
-
-            delay: reduceMotion ? 0 : introDelay + 0.08
-          }}
-          className="flex items-center justify-between gap-4">
-          <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-muted">
-            {enumT.has(`projectTypes.${project.type.toLowerCase()}`) ? enumT(`projectTypes.${project.type.toLowerCase()}`) : humanize(project.type)} · {enumT.has(`projectStatuses.${project.status.toLowerCase()}`) ? enumT(`projectStatuses.${project.status.toLowerCase()}`) : humanize(project.status)}
-          </span>
-
-          <span className="font-mono text-[8px] text-muted">{String(index + 1).padStart(2, '0')}</span>
-        </motion.div>
-
-        <motion.h3
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 7
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.4,
-
-            delay: reduceMotion ? 0 : introDelay + 0.12
-          }}
-          className="mt-4 text-xl font-semibold tracking-[-0.035em]">
-          {project.name}
-        </motion.h3>
-
-        <motion.p
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0
-                }
-          }
-          whileInView={{
-            opacity: 1
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.4,
-
-            delay: reduceMotion ? 0 : introDelay + 0.15
-          }}
-          className="mt-3 line-clamp-3 text-[11px] leading-5 text-muted">
-          {project.tagline ?? project.summary ?? project.description ?? t('projectFallback')}
-        </motion.p>
-
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 5
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.38,
-
-            delay: reduceMotion ? 0 : introDelay + 0.18
-          }}
-          className="mt-5 flex flex-wrap gap-1.5">
-          {project.technologies.slice(0, 4).map(technology => (
-            <span
-              key={technology.slug}
-              className="rounded-full border border-border bg-surface-muted px-2 py-1 font-mono text-[7px] text-muted">
-              {technology.name}
-            </span>
-          ))}
-        </motion.div>
-
-        <PortfolioProjectSignals project={project} compact />
-
-        <motion.div
-          initial={
-            reduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 6
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0
-          }}
-          viewport={{
-            once: true
-          }}
-          transition={{
-            duration: 0.38,
-
-            delay: reduceMotion ? 0 : introDelay + 0.26
-          }}
-          className="mt-auto pt-5">
-          <div className="border-t border-border pt-4">
-            <div className="flex items-end justify-between gap-4">
-              <PortfolioProgressChart progress={project.progress} status={project.status} compact />
-
-              {/* Preview + live remain interactive above overlay */}
-
-              <div className="relative z-30 flex flex-wrap items-center justify-end gap-2">
-                <PortfolioPreviewButton project={project} compact />
-
-                {project.liveUrl ? (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={t('openLive', { project: project.name })}
-                    title={t('viewLive')}
-                    className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-surface-muted text-muted transition-[background-color,border-color,color,transform] hover:border-border-strong hover:bg-secondary hover:text-foreground active:scale-[0.97]">
-                    <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  </a>
-                ) : null}
+            <div className="relative z-[1] text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-xl border border-border bg-background">
+                <Images className="size-4 text-muted" />
               </div>
+
+              <p className="mt-3 text-[10px] text-muted">{project.name}</p>
             </div>
           </div>
-        </motion.div>
+        )}
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10"
+        />
+
+        <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
+          {featured || project.featured ? (
+            <span className="rounded-full border border-white/10 bg-black/45 px-2.5 py-1.5 font-mono text-[7px] uppercase tracking-[0.12em] text-white/80 backdrop-blur-md">
+              {t('featuredProject')}
+            </span>
+          ) : null}
+
+          <span className="rounded-full border border-white/10 bg-black/45 px-2.5 py-1.5 font-mono text-[7px] uppercase tracking-[0.12em] text-white/70 backdrop-blur-md">
+            {statusLabel}
+          </span>
+        </div>
+
+        {project.liveUrl || project.repositoryUrl ? (
+          <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2">
+            {project.liveUrl ? (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t('openLive', {
+                  project: project.name
+                })}
+                title={t('viewLive')}
+                className="inline-flex size-11 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white/85 shadow-sm backdrop-blur-md transition-[background-color,color,transform] hover:scale-105 hover:bg-black/65 hover:text-white">
+                <ArrowUpRight className="size-4" />
+              </a>
+            ) : null}
+
+            {project.repositoryUrl ? (
+              <a
+                href={project.repositoryUrl}
+                target="_blank"
+                rel="noreferrer"
+                title={t('source')}
+                className="inline-flex size-11 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white/85 shadow-sm backdrop-blur-md transition-[background-color,color,transform] hover:scale-105 hover:bg-black/65 hover:text-white">
+                <GitBranch className="size-4" />
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="relative flex flex-1 flex-col bg-surface-raised px-5 py-5 sm:px-6 sm:py-6">
+        <div className="flex items-start justify-between gap-5">
+          <div className="min-w-0">
+            <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-theme-accent">{typeLabel}</p>
+
+            <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-foreground sm:text-[22px]">
+              {project.name}
+            </h3>
+          </div>
+
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-[background-color,color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:bg-surface-muted group-hover:text-foreground">
+            <ArrowUpRight className="size-4" />
+          </span>
+        </div>
+
+        <p className="mt-4 line-clamp-3 max-w-2xl text-[11px] leading-5 text-muted">
+          {project.tagline ?? project.summary ?? project.description ?? t('projectFallback')}
+        </p>
+
+        {project.technologies.length > 0 ? (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.technologies.slice(0, 5).map(technology => (
+              <span
+                key={technology.slug}
+                className="rounded-full border border-border bg-surface-muted px-3 py-1.5 font-mono text-[8px] text-muted">
+                {technology.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="mt-auto flex items-center justify-between gap-4 pt-6">
+          <span className="font-mono text-[7px] uppercase tracking-[0.12em] text-muted">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <span className="text-[9px] font-medium text-muted transition-colors group-hover:text-foreground">
+            {t('goPreview')}
+          </span>
+        </div>
       </div>
     </motion.article>
   );

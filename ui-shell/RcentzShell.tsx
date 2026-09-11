@@ -1,11 +1,15 @@
 import type { CSSProperties, ReactNode } from 'react';
 
 import { RcentzDataField } from '@/ui-shell/layers/RcentzDataField';
+
 import { RcentzContentFrame } from '@/ui-shell/layout/RcentzContentFrame';
 
 import { RcentzBackToTop } from '@/ui-shell/navigation/RcentzBackToTop';
+
 import { RcentzFooter } from '@/ui-shell/navigation/RcentzFooter';
+
 import { RcentzHeader } from '@/ui-shell/navigation/RcentzHeader';
+
 import { RcentzMobileNavigationPill } from '@/ui-shell/navigation/RcentzMobileNavigationPill';
 
 type RcentzShellProps = {
@@ -13,26 +17,15 @@ type RcentzShellProps = {
   style?: CSSProperties;
 };
 
-type RcentzShellStyle = CSSProperties & {
-  '--content-max'?: string;
-  '--section-max'?: string;
-};
-
 export function RcentzShell({ children, style }: RcentzShellProps) {
-  const shellStyle: RcentzShellStyle = {
-    '--content-max': '1440px',
-    '--section-max': '1440px',
-    ...style
-  };
-
   return (
-    <div className="relative isolate min-h-screen overflow-x-hidden bg-background" style={shellStyle}>
+    <div className="relative isolate min-h-screen overflow-x-hidden bg-background" style={style}>
       <RcentzDataField />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <RcentzHeader />
 
-        <main className="flex-1 pt-5 sm:pt-6 pb-14 lg:pt-8">
+        <main className="flex-1 pb-14 pt-5 sm:pt-6 lg:pt-8">
           <RcentzContentFrame>{children}</RcentzContentFrame>
         </main>
 
