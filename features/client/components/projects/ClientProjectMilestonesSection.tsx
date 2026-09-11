@@ -1,7 +1,5 @@
 import { CalendarDays, CheckCircle2, CircleDot, FileText, Layers3, PackageCheck } from 'lucide-react';
 
-import { MilestoneHealthChart } from '@/features/client/components/overview/MilestoneHealthChart';
-
 import type { ClientProject } from '@/features/client/server/projects/get-client-project';
 
 import { MilestoneRecordAction } from './MilestoneRecordAction';
@@ -56,13 +54,6 @@ export function ClientProjectMilestonesSection({ project }: ClientProjectMilesto
 
   const completed = milestones.filter(milestone => milestone.status === 'COMPLETED').length;
 
-  const active = milestones.filter(
-    milestone =>
-      milestone.status === 'IN_PROGRESS' || milestone.status === 'REVIEW' || milestone.status === 'BLOCKED'
-  ).length;
-
-  const remaining = milestones.filter(milestone => milestone.status === 'PLANNED').length;
-
   const currentMilestone =
     milestones.find(milestone => milestone.status === 'IN_PROGRESS') ??
     milestones.find(milestone => milestone.status === 'REVIEW') ??
@@ -79,109 +70,94 @@ export function ClientProjectMilestonesSection({ project }: ClientProjectMilesto
     : [];
 
   return (
-    <section className="overflow-hidden rounded-[22px] border border-border bg-surface">
-      <div className="flex flex-col gap-4 border-b border-border px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="overflow-hidden rounded-xl border border-border bg-surface">
+      <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-            Delivery
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            Delivery roadmap
           </p>
 
-          <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.04em] text-foreground sm:text-[23px]">
-            Milestone progress
-          </h2>
-
-          <p className="mt-1.5 max-w-2xl text-[13px] leading-5.5 text-muted-foreground">
-            Key delivery headlines showing what is complete, what is active and what comes next.
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            Current progress, completed delivery and upcoming milestones.
           </p>
         </div>
 
-        <span className="w-fit rounded-full border border-border bg-background px-3 py-1.5 text-[11px] font-medium text-muted-foreground">
+        <span className="w-fit rounded-full border border-border bg-background px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
           {completed} of {milestones.length} completed
         </span>
       </div>
 
-      <div className="grid lg:grid-cols-[minmax(300px,0.72fr)_minmax(0,1.28fr)]">
-        <div className="border-b border-border lg:border-b-0 lg:border-r">
-          <MilestoneHealthChart
-            completed={completed}
-            active={active}
-            remaining={remaining}
-            total={milestones.length}
-          />
-        </div>
+      <div className="p-5 sm:p-6">
+        {currentMilestone ? (
+          <>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <CircleDot aria-hidden="true" className="size-4 text-theme-accent" />
 
-        <div className="p-5 sm:p-6">
-          {currentMilestone ? (
-            <>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <CircleDot aria-hidden="true" className="size-4 text-theme-accent" />
-
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Current milestone
-                    </p>
-                  </div>
-
-                  <h3 className="mt-2 text-[16px] font-semibold tracking-[-0.025em] text-foreground">
-                    {currentMilestone.title}
-                  </h3>
-
-                  {currentMilestone.description ? (
-                    <p className="mt-2 max-w-2xl text-[12px] leading-5 text-muted-foreground">
-                      {currentMilestone.description}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="shrink-0 sm:text-right">
-                  <p className="text-[30px] font-semibold tracking-[-0.055em] text-foreground">
-                    {clampProgress(currentMilestone.progress)}%
-                  </p>
-
-                  <p className="mt-1 text-[10px] font-medium text-muted-foreground">
-                    {humanize(currentMilestone.status)}
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Current milestone
                   </p>
                 </div>
+
+                <h3 className="mt-2 text-[16px] font-semibold tracking-[-0.025em] text-foreground">
+                  {currentMilestone.title}
+                </h3>
+
+                {currentMilestone.description ? (
+                  <p className="mt-2 max-w-2xl text-[12px] leading-5 text-muted-foreground">
+                    {currentMilestone.description}
+                  </p>
+                ) : null}
               </div>
 
-              <div className="mt-5 border-t border-border pt-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Key topics
+              <div className="shrink-0 sm:text-right">
+                <p className="text-[30px] font-semibold tracking-[-0.055em] text-foreground">
+                  {clampProgress(currentMilestone.progress)}%
                 </p>
 
-                {currentTopics.length > 0 ? (
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    {currentTopics.map(topic => (
-                      <div
-                        key={topic.id}
-                        className="flex items-start gap-2 rounded-lg border border-border bg-background/40 px-3 py-2.5">
-                        <CheckCircle2
-                          aria-hidden="true"
-                          className="mt-0.5 size-3.5 shrink-0 text-theme-accent"
-                        />
-
-                        <span className="text-[11px] leading-4 text-foreground">{topic.title}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="mt-3 text-[11px] text-muted-foreground">
-                    No delivery topics published for this milestone yet.
-                  </p>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="flex min-h-[230px] items-center justify-center">
-              <div className="text-center">
-                <CheckCircle2 aria-hidden="true" className="mx-auto size-6 text-theme-accent" />
-
-                <p className="mt-3 text-sm font-medium text-foreground">No active milestone</p>
+                <p className="mt-1 text-[10px] font-medium text-muted-foreground">
+                  {humanize(currentMilestone.status)}
+                </p>
               </div>
             </div>
-          )}
-        </div>
+
+            <div className="mt-5 border-t border-border pt-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                Key topics
+              </p>
+
+              {currentTopics.length > 0 ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {currentTopics.map(topic => (
+                    <div
+                      key={topic.id}
+                      className="flex items-start gap-2 rounded-lg border border-border bg-background/40 px-3 py-2.5">
+                      <CheckCircle2
+                        aria-hidden="true"
+                        className="mt-0.5 size-3.5 shrink-0 text-theme-accent"
+                      />
+
+                      <span className="text-[11px] leading-4 text-foreground">{topic.title}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-[11px] text-muted-foreground">
+                  No delivery topics published for this milestone yet.
+                </p>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="flex min-h-[180px] items-center justify-center">
+            <div className="text-center">
+              <CheckCircle2 aria-hidden="true" className="mx-auto size-6 text-theme-accent" />
+
+              <p className="mt-3 text-sm font-medium text-foreground">No active milestone</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid border-t border-border sm:grid-cols-2">
@@ -199,7 +175,7 @@ export function ClientProjectMilestonesSection({ project }: ClientProjectMilesto
         />
       </div>
 
-      <div className="border-t border-border px-5 py-5 sm:px-6">
+      <div className="border-t border-border px-4 py-5 sm:px-5">
         <div>
           <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">Delivery map</h3>
 
@@ -291,7 +267,7 @@ export function ClientProjectMilestonesSection({ project }: ClientProjectMilesto
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -330,14 +306,7 @@ function MilestoneHeadline({
   );
 }
 
-function MilestoneCount({
-  icon: Icon,
-  value
-}: {
-  icon: typeof FileText;
-
-  value: number;
-}) {
+function MilestoneCount({ icon: Icon, value }: { icon: typeof FileText; value: number }) {
   return (
     <div className="flex items-center gap-1.5 text-muted-foreground">
       <Icon aria-hidden="true" className="size-3" />

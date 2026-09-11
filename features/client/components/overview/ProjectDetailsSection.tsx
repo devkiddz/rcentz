@@ -4,7 +4,6 @@ import type { LucideIcon } from 'lucide-react';
 
 import {
   CalendarDays,
-  CheckCircle2,
   ChevronDown,
   CircleGauge,
   ExternalLink,
@@ -16,7 +15,10 @@ import {
 } from 'lucide-react';
 
 import { CopyProjectIdButton } from '@/features/client/components/overview/CopyProjectIdButton';
+import { MilestoneHealthChart } from '@/features/client/components/overview/MilestoneHealthChart';
 import { ProjectScreenshotCarousel } from '@/features/client/components/overview/ProjectScreenshotCarousel';
+
+import { ClientProjectMilestonesSection } from '@/features/client/components/projects/ClientProjectMilestonesSection';
 
 import type { ClientProject } from '@/features/client/server/projects/get-client-project';
 
@@ -60,16 +62,6 @@ function getHostname(value: string | null | undefined) {
   }
 }
 
-function getCurrentMilestone(project: ClientProject) {
-  return (
-    project.milestones.find(milestone => milestone.status === 'IN_PROGRESS') ??
-    project.milestones.find(milestone => milestone.status === 'REVIEW') ??
-    project.milestones.find(milestone => milestone.status === 'BLOCKED') ??
-    project.milestones.find(milestone => milestone.status === 'PLANNED') ??
-    null
-  );
-}
-
 function getCurrentDeliverable(project: ClientProject) {
   return (
     project.deliverables.find(deliverable => deliverable.status === 'IN_PROGRESS') ??
@@ -83,8 +75,6 @@ function getCurrentDeliverable(project: ClientProject) {
 }
 
 export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
-  const currentMilestone = getCurrentMilestone(project);
-
   const currentDeliverable = getCurrentDeliverable(project);
 
   const liveUrl = project.portfolio?.liveUrl ?? null;
@@ -103,6 +93,17 @@ export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
     technology =>
       Boolean(technology.purpose) || Boolean(technology.rationale) || Boolean(technology.description)
   );
+
+  const milestones = project.milestones.filter(milestone => milestone.status !== 'CANCELLED');
+
+  const completedMilestones = milestones.filter(milestone => milestone.status === 'COMPLETED').length;
+
+  const activeMilestones = milestones.filter(
+    milestone =>
+      milestone.status === 'IN_PROGRESS' || milestone.status === 'REVIEW' || milestone.status === 'BLOCKED'
+  ).length;
+
+  const remainingMilestones = milestones.filter(milestone => milestone.status === 'PLANNED').length;
 
   const hasScopeInformation =
     Boolean(project.purpose) ||
@@ -170,27 +171,23 @@ export function ProjectDetailsSection({ project }: ProjectDetailsSectionProps) {
               </div>
             </InformationPanel>
 
-            <InformationPanel title="Current Delivery" description="Work currently moving through delivery">
-              <div className="space-y-3.5">
-                <DeliveryRow label="Milestone" value={currentMilestone?.title ?? 'No active milestone'} />
-
-                <DeliveryRow
-                  label="Deliverable"
-                  value={currentDeliverable?.title ?? 'No active deliverable'}
-                />
-              </div>
-
-              {currentDeliverable?.summary || currentDeliverable?.description ? (
-                <div className="mt-4 border-t border-border pt-3.5">
-                  <p className="line-clamp-3 text-xs leading-5 text-muted-foreground">
-                    {currentDeliverable.summary ?? currentDeliverable.description}
-                  </p>
-                </div>
-              ) : null}
-            </InformationPanel>
+            <div className="min-h-[13rem] overflow-hidden rounded-xl border border-border bg-background">
+              <MilestoneHealthChart
+                completed={completedMilestones}
+                active={activeMilestones}
+                remaining={remainingMilestones}
+                total={milestones.length}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      <AnimatedDetails
+        title="Milestone progress"
+        meta={`${completedMilestones} of ${milestones.length} completed`}>
+        <ClientProjectMilestonesSection project={project} />
+      </AnimatedDetails>
 
       <AnimatedDetails title="Project Scope & Agreements" meta="Delivery context">
         {hasScopeInformation ? (
@@ -431,20 +428,6 @@ function ProjectIdRow({ projectId }: { projectId: string }) {
         </span>
 
         <CopyProjectIdButton value={projectId} />
-      </div>
-    </div>
-  );
-}
-
-function DeliveryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid min-w-0 grid-cols-[minmax(0,5.75rem)_minmax(0,1fr)] items-center gap-3">
-      <span className="text-xs text-muted-foreground">{label}</span>
-
-      <div className="flex min-w-0 items-center gap-2">
-        <CheckCircle2 aria-hidden="true" className="size-3.5 shrink-0 text-theme-accent" />
-
-        <span className="truncate text-xs font-semibold text-foreground">{value}</span>
       </div>
     </div>
   );

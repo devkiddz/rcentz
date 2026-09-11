@@ -9,7 +9,6 @@ import { ProjectDetailsSection } from '@/features/client/components/overview/Pro
 import type { ClientProject } from '@/features/client/server/projects/get-client-project';
 
 import { ClientProjectAnalyticsSection } from './ClientProjectAnalyticsSection';
-import { ClientProjectMilestonesSection } from './ClientProjectMilestonesSection';
 import { ClientProjectFinanceSection } from './ClientProjectFinanceSection';
 
 type ClientProjectPageProps = {
@@ -63,8 +62,6 @@ export function ClientProjectPage({ project, analytics }: ClientProjectPageProps
         <ClientProjectAnalyticsSection project={project} analytics={analytics} />
 
         <ProjectDetailsSection project={project} />
-
-        <ClientProjectMilestonesSection project={project} />
 
         <ClientProjectFinanceSection project={project} />
 
