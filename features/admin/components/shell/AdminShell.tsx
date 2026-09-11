@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
+import type { AdminHeaderFeed } from '@/features/admin/types/admin-header';
+
 import { AdminHeader } from './AdminHeader';
 import { AdminMobileNav } from './AdminMobileNav';
 import { AdminSidebar } from './AdminSidebar';
@@ -16,17 +18,20 @@ type AdminShellProps = {
     name: string;
     email: string;
     image: string | null;
+
     role: 'ADMIN' | 'SUPER_ADMIN';
   };
+
+  headerFeed: AdminHeaderFeed;
 };
 
-export function AdminShell({ children, user }: AdminShellProps) {
+export function AdminShell({ children, user, headerFeed }: AdminShellProps) {
   return (
     <SidebarProvider className="bg-background">
       <AdminSidebar />
 
       <SidebarInset className="min-w-0 bg-background">
-        <AdminHeader user={user} />
+        <AdminHeader user={user} headerFeed={headerFeed} />
 
         <AdminWorkspaceHeader
           user={{

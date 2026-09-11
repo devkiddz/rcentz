@@ -1,21 +1,26 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useTransition } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import {
   ArrowRight,
   Bell,
+  BriefcaseBusiness,
   CircleDollarSign,
   FolderKanban,
+  Headphones,
   MessageSquareText,
-  ReceiptText
+  Package,
+  ReceiptText,
+  Sparkles
 } from 'lucide-react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -24,80 +29,79 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-type NotificationIconName = 'project' | 'payment' | 'message' | 'invoice';
+import {
+  markAdminNotificationRead,
+  markAllAdminNotificationsRead
+} from '@/features/admin/server/dashboard/admin-header-actions';
 
-type PreviewNotification = {
-  id: string;
-  title: string;
-  message: string;
-  time: string;
-  unread: boolean;
-  iconName: NotificationIconName;
-};
+import type { AdminHeaderNotification } from '@/features/admin/types/admin-header';
 
-const previewNotifications: PreviewNotification[] = [
-  {
-    id: 'preview-notification-01',
-    title: 'Project milestone updated',
-    message: 'A project milestone moved into review.',
-    time: '12m',
-    unread: true,
-    iconName: 'project'
-  },
-  {
-    id: 'preview-notification-02',
-    title: 'Payment received',
-    message: 'A successful payment has been recorded.',
-    time: '1h',
-    unread: true,
-    iconName: 'payment'
-  },
-  {
-    id: 'preview-notification-03',
-    title: 'New client message',
-    message: 'A client sent a new project conversation message.',
-    time: '3h',
-    unread: false,
-    iconName: 'message'
-  },
-  {
-    id: 'preview-notification-04',
-    title: 'Invoice requires attention',
-    message: 'An outstanding invoice is approaching its due date.',
-    time: '5h',
-    unread: false,
-    iconName: 'invoice'
-  }
-];
+function NotificationIcon({ type }: { type: string }) {
+  const className = 'size-4';
 
-function NotificationIcon({ iconName }: { iconName: NotificationIconName }) {
-  const iconClassName = 'size-3.5';
+  switch (type) {
+    case 'INVOICE':
+      return <ReceiptText aria-hidden="true" className={className} />;
 
-  switch (iconName) {
-    case 'project':
-      return <FolderKanban aria-hidden="true" className={iconClassName} />;
+    case 'PAYMENT':
+      return <CircleDollarSign aria-hidden="true" className={className} />;
 
-    case 'payment':
-      return <CircleDollarSign aria-hidden="true" className={iconClassName} />;
+    case 'PROJECT':
+    case 'PROJECT_UPDATE':
+      return <FolderKanban aria-hidden="true" className={className} />;
 
-    case 'message':
-      return <MessageSquareText aria-hidden="true" className={iconClassName} />;
+    case 'MESSAGE':
+      return <MessageSquareText aria-hidden="true" className={className} />;
 
-    case 'invoice':
-      return <ReceiptText aria-hidden="true" className={iconClassName} />;
+    case 'TICKET':
+    case 'SUPPORT':
+    case 'ASSISTANCE':
+      return <Headphones aria-hidden="true" className={className} />;
+
+    case 'ORDER':
+    case 'COMMERCE':
+      return <Package aria-hidden="true" className={className} />;
+
+    case 'SERVICE':
+    case 'SERVICE_REQUEST':
+      return <BriefcaseBusiness aria-hidden="true" className={className} />;
+
+    default:
+      return <Sparkles aria-hidden="true" className={className} />;
   }
 }
 
-export function AdminNotificationsMenu() {
+export function AdminNotificationsMenu({
+  notifications,
+  unreadCount
+}: {
+  notifications: AdminHeaderNotification[];
+  unreadCount: number;
+}) {
   const router = useRouter();
 
-  const unreadCount = useMemo(
-    () => previewNotifications.filter(notification => notification.unread).length,
-    []
-  );
+  const [pending, startTransition] = useTransition();
 
-  function handleViewAllNotifications() {
-    router.push('/admin/notifications');
+  function handleNotification(notification: AdminHeaderNotification) {
+    startTransition(async () => {
+      if (notification.unread) {
+        await markAdminNotificationRead(notification.id);
+      }
+
+      if (notification.href) {
+        router.push(notification.href);
+      }
+
+      router.refresh();
+    });
+  }
+
+  function handleMarkAllRead() {
+    startTransition(async () => {
+      await markAllAdminNotificationsRead();
+
+      router.refresh();
+    });
   }
 
   return (
@@ -109,7 +113,7 @@ export function AdminNotificationsMenu() {
               render={
                 <button
                   type="button"
-                  aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+                  aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
                   className="relative flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent/40"
                 />
               }
@@ -133,75 +137,111 @@ export function AdminNotificationsMenu() {
         <TooltipContent>Notifications</TooltipContent>
       </Tooltip>
 
-      <DropdownMenuContent align="end" sideOffset={8} className="w-[360px] p-0">
-        <DropdownMenuLabel className="px-3 py-3">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[12px] font-semibold text-foreground">Notifications</p>
+      <DropdownMenuContent align="end" sideOffset={8} className="w-[370px] overflow-hidden p-0">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="px-4 py-3.5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[13px] font-semibold text-foreground">Notifications</p>
 
-              <p className="mt-0.5 text-[9px] font-normal text-muted">System and operational activity</p>
-            </div>
+                <p className="mt-0.5 text-[11px] font-normal text-muted">System and operational activity</p>
+              </div>
 
-            <div className="flex items-center gap-2">
               {unreadCount > 0 ? (
-                <span className="rounded-full bg-theme-accent-faint px-2 py-0.5 text-[8px] font-semibold text-theme-accent">
-                  {unreadCount} unread
-                </span>
-              ) : null}
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={event => {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-              <span className="rounded-full border border-border bg-surface-raised px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.08em] text-muted">
-                Preview
-              </span>
+                    handleMarkAllRead();
+                  }}
+                  className="shrink-0 text-[11px] font-semibold text-theme-accent transition-opacity hover:opacity-75 disabled:opacity-40">
+                  Mark all read
+                </button>
+              ) : null}
             </div>
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <div className="max-h-[350px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {previewNotifications.map(notification => (
-            <DropdownMenuItem
-              key={notification.id}
-              className="cursor-pointer items-start gap-3 rounded-none px-3 py-3">
-              <div
-                className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
-                  notification.unread
-                    ? 'bg-theme-accent-faint text-theme-accent'
-                    : 'bg-surface-muted text-muted'
-                }`}>
-                <NotificationIcon iconName={notification.iconName} />
-              </div>
+        {notifications.length === 0 ? (
+          <div className="px-5 py-10 text-center">
+            <div className="mx-auto flex size-10 items-center justify-center rounded-xl border border-border bg-surface-muted">
+              <Bell className="size-4 text-muted" />
+            </div>
 
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <p
-                    className={`truncate text-[11px] ${
-                      notification.unread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
-                    }`}>
-                    {notification.title}
-                  </p>
+            <p className="mt-3 text-[13px] font-semibold text-foreground">No notifications</p>
 
-                  <span className="shrink-0 text-[8px] text-muted">{notification.time}</span>
-                </div>
+            <p className="mt-1 text-[11px] leading-5 text-muted">
+              New client and system activity will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="max-h-[390px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {notifications.map(notification => {
+              return (
+                <DropdownMenuItem
+                  key={notification.id}
+                  disabled={pending}
+                  onClick={() => {
+                    handleNotification(notification);
+                  }}
+                  className="cursor-pointer items-start gap-3 rounded-none px-4 py-3.5">
+                  <div
+                    className={[
+                      'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl',
+                      notification.unread
+                        ? 'bg-theme-accent-faint text-theme-accent'
+                        : 'bg-surface-muted text-muted'
+                    ].join(' ')}>
+                    <NotificationIcon type={notification.type} />
+                  </div>
 
-                <p className="mt-1 line-clamp-2 text-[9px] leading-4 text-muted">{notification.message}</p>
-              </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <p
+                        className={[
+                          'line-clamp-1 text-[13px]',
+                          notification.unread
+                            ? 'font-semibold text-foreground'
+                            : 'font-medium text-foreground'
+                        ].join(' ')}>
+                        {notification.title}
+                      </p>
 
-              {notification.unread ? (
-                <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-theme-accent" />
-              ) : null}
-            </DropdownMenuItem>
-          ))}
-        </div>
+                      <span className="shrink-0 text-[10px] text-muted">{notification.timeLabel}</span>
+                    </div>
+
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-5 text-muted">
+                      {notification.message}
+                    </p>
+                  </div>
+
+                  {notification.unread ? (
+                    <span
+                      aria-hidden="true"
+                      className="mt-2 size-1.5 shrink-0 rounded-full bg-theme-accent"
+                    />
+                  ) : null}
+                </DropdownMenuItem>
+              );
+            })}
+          </div>
+        )}
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={handleViewAllNotifications}
-          className="cursor-pointer justify-between rounded-none px-3 py-2.5">
-          <span className="text-[10px] font-medium">View all notifications</span>
+          onClick={() => {
+            router.push('/admin/notifications');
+          }}
+          className="cursor-pointer justify-between rounded-none px-4 py-3">
+          <span className="text-[12px] font-medium">View all notifications</span>
 
-          <ArrowRight aria-hidden="true" className="size-3.5" />
+          <ArrowRight className="size-4" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

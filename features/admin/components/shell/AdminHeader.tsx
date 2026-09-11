@@ -1,10 +1,16 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { Menu } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
+import type { AdminHeaderFeed } from '@/features/admin/types/admin-header';
 
 import { AdminAccountMenu } from './AdminAccountMenu';
 import { AdminCommandSearch } from './AdminCommandSearch';
@@ -20,9 +26,37 @@ type AdminHeaderProps = {
 
     role: 'ADMIN' | 'SUPER_ADMIN';
   };
+
+  headerFeed: AdminHeaderFeed;
 };
 
-export function AdminHeader({ user }: AdminHeaderProps) {
+export function AdminHeader({ user, headerFeed }: AdminHeaderProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    function refreshHeader() {
+      if (document.visibilityState !== 'visible') {
+        return;
+      }
+
+      router.refresh();
+    }
+
+    const interval = window.setInterval(refreshHeader, 20_000);
+
+    window.addEventListener('focus', refreshHeader);
+
+    document.addEventListener('visibilitychange', refreshHeader);
+
+    return () => {
+      window.clearInterval(interval);
+
+      window.removeEventListener('focus', refreshHeader);
+
+      document.removeEventListener('visibilitychange', refreshHeader);
+    };
+  }, [router]);
+
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <div className="flex min-h-14 min-w-0 items-center gap-2 px-3 sm:px-4">
@@ -53,9 +87,12 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         <div className="ml-auto flex min-w-0 items-center gap-0.5">
           <AdminCommandSearch />
 
-          <AdminMessagesMenu />
+          <AdminMessagesMenu messages={headerFeed.messages} hasUnread={headerFeed.hasUnreadMessages} />
 
-          <AdminNotificationsMenu />
+          <AdminNotificationsMenu
+            notifications={headerFeed.notifications}
+            unreadCount={headerFeed.unreadNotificationCount}
+          />
 
           <AdminThemeToggle />
 

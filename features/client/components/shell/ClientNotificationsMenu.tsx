@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -125,25 +126,32 @@ export function ClientNotificationsMenu({
       </Tooltip>
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-[360px] overflow-hidden p-0">
-        <DropdownMenuLabel className="px-4 py-3">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[13px] font-semibold text-foreground">Notifications</p>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="px-4 py-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[13px] font-semibold text-foreground">Notifications</p>
 
-              <p className="mt-0.5 text-[11px] font-normal text-muted">Your latest Rcentz activity</p>
+                <p className="mt-0.5 text-[11px] font-normal text-muted">Your latest Rcentz activity</p>
+              </div>
+
+              {unreadCount > 0 ? (
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    markAllRead();
+                  }}
+                  className="text-[11px] font-semibold text-theme-accent disabled:opacity-50">
+                  Mark all read
+                </button>
+              ) : null}
             </div>
-
-            {unreadCount > 0 ? (
-              <button
-                type="button"
-                disabled={pending}
-                onClick={markAllRead}
-                className="text-[11px] font-semibold text-theme-accent disabled:opacity-50">
-                Mark all read
-              </button>
-            ) : null}
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
@@ -156,65 +164,73 @@ export function ClientNotificationsMenu({
             <p className="mt-1 text-[11px] text-muted">Your activity will appear here.</p>
           </div>
         ) : (
-          <div className="max-h-[360px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {notifications.map(notification => {
-              return (
-                <DropdownMenuItem
-                  key={notification.id}
-                  onClick={() => {
-                    openNotification(notification);
-                  }}
-                  className="cursor-pointer items-start gap-3 rounded-none px-4 py-3">
-                  <div
-                    className={[
-                      'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl',
-                      notification.unread
-                        ? 'bg-theme-accent-faint text-theme-accent'
-                        : 'bg-surface-muted text-muted'
-                    ].join(' ')}>
-                    <NotificationIcon type={notification.type} />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <p
-                        className={[
-                          'line-clamp-1 text-[13px]',
-                          notification.unread
-                            ? 'font-semibold text-foreground'
-                            : 'font-medium text-foreground'
-                        ].join(' ')}>
-                        {notification.title}
-                      </p>
-
-                      <span className="shrink-0 text-[10px] text-muted">{notification.timeLabel}</span>
+          <DropdownMenuGroup>
+            <div className="max-h-[360px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {notifications.map(notification => {
+                return (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    disabled={pending}
+                    onClick={() => {
+                      openNotification(notification);
+                    }}
+                    className="cursor-pointer items-start gap-3 rounded-none px-4 py-3">
+                    <div
+                      className={[
+                        'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl',
+                        notification.unread
+                          ? 'bg-theme-accent-faint text-theme-accent'
+                          : 'bg-surface-muted text-muted'
+                      ].join(' ')}>
+                      <NotificationIcon type={notification.type} />
                     </div>
 
-                    <p className="mt-1 line-clamp-2 text-[11px] leading-5 text-muted">
-                      {notification.message}
-                    </p>
-                  </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <p
+                          className={[
+                            'line-clamp-1 text-[13px]',
+                            notification.unread
+                              ? 'font-semibold text-foreground'
+                              : 'font-medium text-foreground'
+                          ].join(' ')}>
+                          {notification.title}
+                        </p>
 
-                  {notification.unread ? (
-                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-theme-accent" />
-                  ) : null}
-                </DropdownMenuItem>
-              );
-            })}
-          </div>
+                        <span className="shrink-0 text-[10px] text-muted">{notification.timeLabel}</span>
+                      </div>
+
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-5 text-muted">
+                        {notification.message}
+                      </p>
+                    </div>
+
+                    {notification.unread ? (
+                      <span
+                        aria-hidden="true"
+                        className="mt-2 size-1.5 shrink-0 rounded-full bg-theme-accent"
+                      />
+                    ) : null}
+                  </DropdownMenuItem>
+                );
+              })}
+            </div>
+          </DropdownMenuGroup>
         )}
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onClick={() => {
-            router.push('/dashboard/notifications');
-          }}
-          className="cursor-pointer justify-between rounded-none px-4 py-3">
-          <span className="text-[12px] font-medium">View all notifications</span>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => {
+              router.push('/dashboard/notifications');
+            }}
+            className="cursor-pointer justify-between rounded-none px-4 py-3">
+            <span className="text-[12px] font-medium">View all notifications</span>
 
-          <ArrowRight className="size-4" />
-        </DropdownMenuItem>
+            <ArrowRight className="size-4" />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,16 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useTransition } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { MessageSquareText } from 'lucide-react';
 
-import { ArrowRight, MessageSquareText } from 'lucide-react';
-
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -19,49 +18,34 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-type PreviewMessage = {
-  id: string;
-  senderName: string;
-  senderInitials: string;
-  message: string;
-  time: string;
-  unread: boolean;
-};
+import { markAdminConversationRead } from '@/features/admin/server/dashboard/admin-header-actions';
 
-const previewMessages: PreviewMessage[] = [
-  {
-    id: 'preview-message-01',
-    senderName: 'Atlas Studio',
-    senderInitials: 'AS',
-    message: 'Can we review the latest project delivery update?',
-    time: '8m',
-    unread: true
-  },
-  {
-    id: 'preview-message-02',
-    senderName: 'Nova Retail',
-    senderInitials: 'NR',
-    message: 'The revised milestone looks good from our side.',
-    time: '42m',
-    unread: true
-  },
-  {
-    id: 'preview-message-03',
-    senderName: 'Northstar Labs',
-    senderInitials: 'NL',
-    message: 'Please confirm the next available review window.',
-    time: '2h',
-    unread: false
-  }
-];
+import type { AdminHeaderMessage } from '@/features/admin/types/admin-header';
 
-export function AdminMessagesMenu() {
-  const router = useRouter();
+function getInitials(name: string) {
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part => part.charAt(0).toUpperCase())
+      .join('') || 'R'
+  );
+}
 
-  const unreadCount = useMemo(() => previewMessages.filter(message => message.unread).length, []);
+export function AdminMessagesMenu({
+  messages,
+  hasUnread
+}: {
+  messages: AdminHeaderMessage[];
+  hasUnread: boolean;
+}) {
+  const [pending, startTransition] = useTransition();
 
-  function handleViewAllMessages() {
-    router.push('/admin/messages');
+  function handleMessage(conversationId: string) {
+    startTransition(async () => {
+      await markAdminConversationRead(conversationId);
+    });
   }
 
   return (
@@ -73,7 +57,7 @@ export function AdminMessagesMenu() {
               render={
                 <button
                   type="button"
-                  aria-label={`Messages${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+                  aria-label="Messages"
                   className="relative flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent/40"
                 />
               }
@@ -81,83 +65,104 @@ export function AdminMessagesMenu() {
           }>
           <MessageSquareText aria-hidden="true" className="size-4" />
 
-          {unreadCount > 0 ? (
-            <>
-              <span
-                aria-hidden="true"
-                className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-theme-accent"
-              />
-
-              <span className="sr-only">{unreadCount} unread messages</span>
-            </>
+          {hasUnread ? (
+            <span
+              aria-hidden="true"
+              className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-theme-accent"
+            />
           ) : null}
         </TooltipTrigger>
 
         <TooltipContent>Messages</TooltipContent>
       </Tooltip>
 
-      <DropdownMenuContent align="end" sideOffset={8} className="w-[340px] p-0">
-        <DropdownMenuLabel className="px-3 py-3">
-          <div className="flex items-start justify-between gap-4">
+      <DropdownMenuContent align="end" sideOffset={8} className="w-[360px] overflow-hidden p-0">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="px-4 py-3.5">
             <div>
-              <p className="text-[12px] font-semibold text-foreground">Messages</p>
+              <p className="text-[13px] font-semibold text-foreground">Messages</p>
 
-              <p className="mt-0.5 text-[9px] font-normal text-muted">Recent client conversations</p>
+              <p className="mt-0.5 text-[11px] font-normal text-muted">Recent client conversations</p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        {messages.length === 0 ? (
+          <div className="px-5 py-10 text-center">
+            <div className="mx-auto flex size-10 items-center justify-center rounded-xl border border-border bg-surface-muted">
+              <MessageSquareText className="size-4 text-muted" />
             </div>
 
-            <span className="rounded-full border border-border bg-surface-raised px-2 py-0.5 text-[8px] font-medium uppercase tracking-[0.08em] text-muted">
-              Preview
-            </span>
+            <p className="mt-3 text-[13px] font-semibold text-foreground">No conversations yet</p>
+
+            <p className="mt-1 text-[11px] leading-5 text-muted">Client conversations will appear here.</p>
           </div>
-        </DropdownMenuLabel>
+        ) : (
+          <DropdownMenuGroup>
+            <div className="max-h-[370px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {messages.map(message => {
+                return (
+                  <DropdownMenuItem
+                    key={message.id}
+                    disabled={pending}
+                    onClick={() => {
+                      handleMessage(message.id);
+                    }}
+                    className="cursor-pointer gap-3 rounded-none px-4 py-3.5">
+                    <div className="relative shrink-0">
+                      <Avatar className="size-9">
+                        {message.senderImage ? (
+                          <AvatarImage src={message.senderImage} alt={message.senderName} />
+                        ) : null}
+
+                        <AvatarFallback className="bg-surface-muted text-[10px] font-semibold text-foreground">
+                          {getInitials(message.senderName)}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      {message.unread ? (
+                        <span
+                          aria-hidden="true"
+                          className="absolute -right-0.5 -top-0.5 size-2 rounded-full border-2 border-popover bg-theme-accent"
+                        />
+                      ) : null}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <p
+                          className={[
+                            'truncate text-[13px]',
+                            message.unread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
+                          ].join(' ')}>
+                          {message.title}
+                        </p>
+
+                        <span className="shrink-0 text-[10px] text-muted">{message.timeLabel}</span>
+                      </div>
+
+                      <p className="mt-0.5 text-[10px] font-medium text-muted">{message.senderName}</p>
+
+                      <p className="mt-1 line-clamp-2 text-[11px] leading-5 text-muted">{message.preview}</p>
+                    </div>
+
+                    {message.unread ? (
+                      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-theme-accent" />
+                    ) : null}
+                  </DropdownMenuItem>
+                );
+              })}
+            </div>
+          </DropdownMenuGroup>
+        )}
 
         <DropdownMenuSeparator />
 
-        <div className="max-h-[330px] overflow-y-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {previewMessages.map(message => (
-            <DropdownMenuItem key={message.id} className="cursor-pointer gap-3 rounded-none px-3 py-3">
-              <div className="relative shrink-0">
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-surface-muted text-[9px] font-semibold">
-                    {message.senderInitials}
-                  </AvatarFallback>
-                </Avatar>
-
-                {message.unread ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -right-0.5 -top-0.5 size-2 rounded-full border-2 border-popover bg-theme-accent"
-                  />
-                ) : null}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-3">
-                  <p
-                    className={`truncate text-[11px] ${
-                      message.unread ? 'font-semibold text-foreground' : 'font-medium text-foreground'
-                    }`}>
-                    {message.senderName}
-                  </p>
-
-                  <span className="shrink-0 text-[8px] text-muted">{message.time}</span>
-                </div>
-
-                <p className="mt-1 line-clamp-2 text-[9px] leading-4 text-muted">{message.message}</p>
-              </div>
-            </DropdownMenuItem>
-          ))}
+        <div className="px-4 py-3">
+          <p className="text-[10px] text-muted">Recent workspace conversations</p>
         </div>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          onClick={handleViewAllMessages}
-          className="cursor-pointer justify-between rounded-none px-3 py-2.5">
-          <span className="text-[10px] font-medium">View all messages</span>
-
-          <ArrowRight aria-hidden="true" className="size-3.5" />
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

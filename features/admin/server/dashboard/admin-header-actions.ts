@@ -2,26 +2,26 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth } from '@/features/auth/server/require-auth';
+import { requireAdmin } from '@/features/auth/server/require-admin';
 
 import { prisma } from '@/lib/prisma';
 
-function revalidateClientNotificationSurfaces() {
+function revalidateAdminNotificationSurfaces() {
   revalidatePath(
-    '/dashboard',
+    '/admin',
     'layout'
   );
 
   revalidatePath(
-    '/dashboard/notifications'
+    '/admin/notifications'
   );
 }
 
-export async function markClientNotificationRead(
+export async function markAdminNotificationRead(
   notificationId: string
 ) {
-  const user =
-    await requireAuth('/dashboard');
+  const admin =
+    await requireAdmin();
 
   const id =
     notificationId.trim();
@@ -35,7 +35,7 @@ export async function markClientNotificationRead(
   await prisma.notification.updateMany({
     where: {
       id,
-      userId: user.id,
+      userId: admin.id,
       readAt: null
     },
 
@@ -44,20 +44,20 @@ export async function markClientNotificationRead(
     }
   });
 
-  revalidateClientNotificationSurfaces();
+  revalidateAdminNotificationSurfaces();
 
   return {
     success: true as const
   };
 }
 
-export async function markAllClientNotificationsRead() {
-  const user =
-    await requireAuth('/dashboard');
+export async function markAllAdminNotificationsRead() {
+  const admin =
+    await requireAdmin();
 
   await prisma.notification.updateMany({
     where: {
-      userId: user.id,
+      userId: admin.id,
       readAt: null
     },
 
@@ -66,18 +66,18 @@ export async function markAllClientNotificationsRead() {
     }
   });
 
-  revalidateClientNotificationSurfaces();
+  revalidateAdminNotificationSurfaces();
 
   return {
     success: true as const
   };
 }
 
-export async function markClientConversationRead(
+export async function markAdminConversationRead(
   conversationId: string
 ) {
-  const user =
-    await requireAuth('/dashboard');
+  const admin =
+    await requireAdmin();
 
   const id =
     conversationId.trim();
@@ -91,7 +91,7 @@ export async function markClientConversationRead(
   await prisma.conversationParticipant.updateMany({
     where: {
       conversationId: id,
-      userId: user.id,
+      userId: admin.id,
       leftAt: null
     },
 
@@ -101,7 +101,7 @@ export async function markClientConversationRead(
   });
 
   revalidatePath(
-    '/dashboard',
+    '/admin',
     'layout'
   );
 

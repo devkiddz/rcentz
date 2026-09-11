@@ -8,6 +8,8 @@ import { ClientShell } from '@/features/client/components/shell/ClientShell';
 import { getClientDashboardIdentity } from '@/features/client/server/dashboard/get-client-dashboard-identity';
 import { getClientHeaderFeed } from '@/features/client/server/dashboard/get-client-header-feed';
 
+import { NotificationLiveRefresh } from '@/features/notifications/components/NotificationLiveRefresh';
+
 import { DashboardCanvas } from '@/ui-shell/dashboard/DashboardCanvas';
 import { RcentzMobileNavigationPill } from '@/ui-shell/navigation/RcentzMobileNavigationPill';
 
@@ -32,6 +34,8 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         image: user.image
       }}
       headerFeed={headerFeed}>
+      <NotificationLiveRefresh />
+
       <DashboardCanvas>
         <div className="pb-24 md:pb-0">
           <ClientDashboardIdentityRail summary={dashboardIdentity} />

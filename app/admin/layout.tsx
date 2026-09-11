@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 
 import { AdminShell } from '@/features/admin/components/shell/AdminShell';
+
+import { getAdminHeaderFeed } from '@/features/admin/server/dashboard/get-admin-header-feed';
+
 import { requireAdmin } from '@/features/auth/server/require-admin';
 
 type AdminLayoutProps = {
@@ -10,6 +13,8 @@ type AdminLayoutProps = {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const user = await requireAdmin();
 
+  const headerFeed = await getAdminHeaderFeed(user.id);
+
   return (
     <AdminShell
       user={{
@@ -17,7 +22,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         email: user.email,
         image: user.image,
         role: user.role
-      }}>
+      }}
+      headerFeed={headerFeed}>
       {children}
     </AdminShell>
   );
