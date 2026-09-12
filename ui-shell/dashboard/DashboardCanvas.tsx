@@ -11,7 +11,7 @@ export function DashboardCanvas({ children, className = '' }: DashboardCanvasPro
       className={[
         'mx-auto',
         'w-full',
-        'max-w-[var(--section-max)]',
+        'max-w-[1200px]',
 
         'px-4',
         'pb-14',

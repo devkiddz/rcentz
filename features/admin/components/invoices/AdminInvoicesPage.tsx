@@ -134,7 +134,7 @@ export function AdminInvoicesPage({ data }: AdminInvoicesPageProps) {
 
   return (
     <main className="px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-[1200px] space-y-6">
+      <div className="mx-auto w-full max-w-[var(--section-max)] space-y-6">
         <section>
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-theme-accent">Finance</p>
 

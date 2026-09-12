@@ -19,7 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-[1200px] space-y-5">
+      <div className="mx-auto w-full max-w-[var(--section-max)] space-y-5">
         <ClientOverviewHeader
           user={{
             name: user.name,

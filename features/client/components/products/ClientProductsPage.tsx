@@ -142,7 +142,7 @@ export function ClientProductsPage({ products }: ClientProductsPageProps) {
 
   return (
     <main className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto w-full max-w-[1200px] space-y-7">
+      <div className="mx-auto w-full max-w-[var(--section-max)] space-y-7">
         <section>
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-theme-accent">Products</p>
 

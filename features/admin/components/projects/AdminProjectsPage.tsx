@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import {
@@ -10,7 +11,7 @@ import {
   Clock3,
   Eye,
   FolderKanban,
-  Pencil,
+  ImageIcon,
   Plus,
   Search,
   UserRound
@@ -64,6 +65,7 @@ function formatDate(value: Date | null) {
 
 export function AdminProjectsPage({ data }: AdminProjectsPageProps) {
   const [filter, setFilter] = useState<ProjectFilter>('ALL');
+
   const [search, setSearch] = useState('');
 
   const projects = useMemo(() => {
@@ -119,15 +121,15 @@ export function AdminProjectsPage({ data }: AdminProjectsPageProps) {
               </h1>
 
               <p className="mt-1 max-w-2xl text-xs leading-5 text-muted">
-                View project delivery from the same perspective as the client, with administrative controls
-                layered on top.
+                View project delivery from the same truth as the client, with administrative controls layered
+                on top.
               </p>
             </div>
 
             <Link
               href="/admin/projects/new"
               className="inline-flex h-9 w-fit items-center justify-center gap-2 rounded-xl bg-foreground px-4 text-[10px] font-semibold text-background transition-opacity hover:opacity-90">
-              <Plus aria-hidden="true" className="size-3.5" />
+              <Plus className="size-3.5" />
               Create project
             </Link>
           </div>
@@ -185,7 +187,9 @@ export function AdminProjectsPage({ data }: AdminProjectsPageProps) {
               <div>
                 <p className="text-sm font-semibold text-foreground">Project register</p>
 
-                <p className="mt-1 text-[10px] text-muted">Search, preview and manage project delivery.</p>
+                <p className="mt-1 text-[10px] text-muted">
+                  Search, open, preview and manage project delivery.
+                </p>
               </div>
 
               <div className="relative w-full lg:max-w-[320px]">
@@ -253,9 +257,9 @@ export function AdminProjectsPage({ data }: AdminProjectsPageProps) {
 
           <div className="p-5 sm:p-6">
             <div className="grid gap-6 xl:grid-cols-2">
-              {projects.map(project => {
-                return <ProjectCard key={project.id} project={project} />;
-              })}
+              {projects.map(project => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
 
               {filter === 'ALL' && !search.trim() ? <CreateProjectPlaceholder /> : null}
             </div>
@@ -285,7 +289,41 @@ function ProjectCard({ project }: { project: AdminProjectListItem }) {
   const liveUrl = project.portfolio?.liveUrl ?? null;
 
   return (
-    <article className="overflow-hidden rounded-[22px] border border-border bg-surface shadow-sm">
+    <article className="group relative overflow-hidden rounded-[22px] border border-border bg-surface shadow-sm transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md">
+      <Link
+        href={`/admin/projects/${project.id}`}
+        aria-label={`Open ${project.name} admin workspace`}
+        className="absolute inset-0 z-10 rounded-[22px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent/40"
+      />
+
+      <div className="relative aspect-[16/6] overflow-hidden border-b border-border bg-surface-muted">
+        {project.screenshot ? (
+          <Image
+            src={project.screenshot.url}
+            alt={project.screenshot.alt ?? `${project.name} project`}
+            fill
+            sizes="(max-width: 1279px) 100vw, 50vw"
+            className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-xl border border-border bg-background">
+                <ImageIcon className="size-4 text-muted" />
+              </div>
+
+              <p className="mt-2 text-[9px] text-muted">No project image</p>
+            </div>
+          </div>
+        )}
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/5" />
+
+        <span className="absolute bottom-3 left-3 rounded-full border border-white/10 bg-black/45 px-2.5 py-1 font-mono text-[7px] uppercase tracking-[0.1em] text-white/80 backdrop-blur-md">
+          {humanize(project.type)}
+        </span>
+      </div>
+
       <header className="border-b border-border bg-surface-raised px-5 py-5 sm:px-6">
         <div className="flex items-start justify-between gap-5">
           <div className="min-w-0">
@@ -295,17 +333,13 @@ function ProjectCard({ project }: { project: AdminProjectListItem }) {
               <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted">
                 {humanize(project.status)}
               </span>
-
-              <span className="text-[9px] text-muted">·</span>
-
-              <span className="text-[9px] text-muted">{humanize(project.type)}</span>
             </div>
 
             <h2 className="mt-2.5 truncate text-[16px] font-semibold tracking-[-0.025em] text-foreground">
               {project.name}
             </h2>
 
-            <p className="mt-1.5 truncate font-mono text-[9px] text-muted">/portfolio/{project.slug}</p>
+            <p className="mt-1.5 truncate font-mono text-[9px] text-muted">{project.slug}</p>
           </div>
 
           <span className="shrink-0 rounded-full border border-border bg-background px-2.5 py-1 text-[8px] font-medium uppercase tracking-[0.08em] text-muted">
@@ -386,7 +420,7 @@ function ProjectCard({ project }: { project: AdminProjectListItem }) {
             <MetaItem label="Updated" value={formatDate(project.updatedAt)} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
+          <div className="relative z-20 flex flex-wrap items-center gap-2 border-t border-border pt-4">
             {canPreview ? (
               <Link
                 href={`/portfolio/${project.slug}`}
@@ -399,7 +433,6 @@ function ProjectCard({ project }: { project: AdminProjectListItem }) {
               <button
                 type="button"
                 disabled
-                title="Public preview requires a published public portfolio."
                 className="inline-flex h-8 cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-[9px] font-semibold text-muted opacity-50">
                 <Eye className="size-3.5" />
                 Preview
@@ -419,20 +452,18 @@ function ProjectCard({ project }: { project: AdminProjectListItem }) {
               <button
                 type="button"
                 disabled
-                title="No live project URL has been added yet."
                 className="inline-flex h-8 cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-[9px] font-semibold text-muted opacity-50">
                 <ArrowUpRight className="size-3.5" />
                 Live view
               </button>
             )}
 
-            <button
-              type="button"
-              title="Project editing is wired in the next CRUD slice."
+            <Link
+              href={`/admin/projects/${project.id}`}
               className="ml-auto inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-foreground px-3 text-[9px] font-semibold text-background transition-opacity hover:opacity-90">
-              <Pencil className="size-3.5" />
-              Edit
-            </button>
+              <FolderKanban className="size-3.5" />
+              Open workspace
+            </Link>
           </div>
         </div>
       </footer>
@@ -446,7 +477,7 @@ function CreateProjectPlaceholder() {
       href="/admin/projects/new"
       className="group flex min-h-[470px] items-center justify-center rounded-[22px] border border-dashed border-border bg-background/40 p-8 text-center transition-colors hover:border-theme-accent/30 hover:bg-theme-accent/[0.025]">
       <div>
-        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-border bg-surface transition-transform duration-200 group-hover:-translate-y-0.5">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-border bg-surface">
           <Plus className="size-5 text-theme-accent" />
         </div>
 
@@ -455,11 +486,6 @@ function CreateProjectPlaceholder() {
         <p className="mx-auto mt-2 max-w-[260px] text-[10px] leading-5 text-muted">
           Establish a new project workspace and connect its client, delivery and management records.
         </p>
-
-        <span className="mt-5 inline-flex items-center gap-1.5 text-[9px] font-semibold text-theme-accent">
-          Start project
-          <ArrowUpRight className="size-3" />
-        </span>
       </div>
     </Link>
   );
@@ -472,7 +498,7 @@ function StatusDot({ status }: { status: string }) {
       : status === 'ON_HOLD'
         ? 'bg-[var(--chart-warning)]'
         : status === 'CANCELLED'
-          ? 'bg-red-500'
+          ? 'bg-[var(--chart-danger)]'
           : 'bg-theme-accent';
 
   return <span aria-hidden="true" className={['size-1.5 shrink-0 rounded-full', className].join(' ')} />;
@@ -499,7 +525,6 @@ function SummaryCard({
       onClick={onClick}
       className={[
         'cursor-pointer rounded-2xl border p-4 text-left transition-colors',
-
         active
           ? 'border-theme-accent/30 bg-theme-accent/[0.04]'
           : 'border-border bg-surface hover:bg-surface-raised'
