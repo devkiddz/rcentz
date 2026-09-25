@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
 import { HomeHero } from '@/features/home/components/HomeHero';
+import { ProductShowcase } from '@/features/product-showcase';
 import { HomeProjects } from '@/features/home/components/HomeProjects';
 import { HomeServices } from '@/features/home/components/HomeServices';
 
@@ -14,6 +15,8 @@ import { getHomepageData } from '@/features/home/server/get-homepage-data';
 
 import { getResolvedLocale } from '@/features/i18n/server/get-resolved-locale';
 
+import { getProducts } from '@/features/products/server/get-products';
+
 import { PopularServicesCarousel } from '@/features/services/components/summary/PopularServicesCarousel';
 
 import { getPopularServices } from '@/features/services/server/get-popular-services';
@@ -23,9 +26,10 @@ export const revalidate = 300;
 export default async function Home() {
   const locale = await getResolvedLocale();
 
-  const [homepageData, popularServices, t] = await Promise.all([
+  const [homepageData, popularServices, products, t] = await Promise.all([
     getHomepageData(locale),
     getPopularServices(),
+    getProducts(),
     getTranslations('PopularServicesHome')
   ]);
 
@@ -36,6 +40,8 @@ export default async function Home() {
       <HomeHero />
 
       <HomeTechnologyEcosystem />
+
+      <ProductShowcase products={products} />
 
       <HomeServices services={services} />
 

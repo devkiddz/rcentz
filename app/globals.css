@@ -14,36 +14,36 @@
      --------------------------------------------------------- */
 
   --background: #fafafa;
-  --foreground: #101112;
+  --foreground: #101214;
 
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --surface-muted: #f4f5f5;
-  --surface-subtle: #f8f8f8;
+  --surface-muted: #f3f5f6;
+  --surface-subtle: #f7f8f8;
 
-  --muted: #717477;
-  --muted-foreground: #55595d;
+  --muted: #747b82;
+  --muted-foreground: #555d64;
 
-  --border: #e4e6e7;
-  --border-strong: #cdd0d2;
-  --border-emphasis: #b9bdc0;
+  --border: #e2e6e8;
+  --border-strong: #cbd1d5;
+  --border-emphasis: #aeb6bc;
 
-  --input: #dfe2e4;
+  --input: #dce1e4;
 
   /* ---------------------------------------------------------
      PRIMARY / SECONDARY
      --------------------------------------------------------- */
 
-  --primary: #111213;
+  --primary: #101214;
   --primary-foreground: #ffffff;
 
-  --secondary: #f1f2f3;
-  --secondary-foreground: #181a1c;
+  --secondary: #f0f2f3;
+  --secondary-foreground: #171a1d;
 
   --accent: var(--surface-muted);
   --accent-foreground: var(--foreground);
 
-  --destructive: #dc2626;
+  --destructive: #c94343;
   --destructive-foreground: #ffffff;
 
   /* ---------------------------------------------------------
@@ -58,29 +58,15 @@
 
   /* ---------------------------------------------------------
      RCENTZ BRAND ACCENT
-
-     Accent is intentionally scarce.
-
-     vivid
-     → primary CTA / strong status signal
-
-     normal
-     → icons / links / active states
-
-     soft
-     → subtle hover/focus surface
-
-     faint
-     → almost invisible atmospheric tint
      --------------------------------------------------------- */
 
-  --theme-accent-vivid: #17b8aa;
+  --theme-accent-vivid: #18b8aa;
   --theme-accent: #169f96;
-  --theme-accent-strong: #0f7f78;
+  --theme-accent-strong: #0f7e77;
 
   --theme-accent-soft: rgb(22 159 150 / 0.11);
   --theme-accent-faint: rgb(22 159 150 / 0.045);
-  --theme-accent-glow: rgb(22 159 150 / 0.18);
+  --theme-accent-glow: rgb(22 159 150 / 0.16);
 
   /* ---------------------------------------------------------
      SEMANTIC STATUS
@@ -89,11 +75,11 @@
   --status-success: #16866f;
   --status-success-soft: rgb(22 134 111 / 0.1);
 
-  --status-warning: #b7791f;
-  --status-warning-soft: rgb(183 121 31 / 0.1);
+  --status-warning: #b47822;
+  --status-warning-soft: rgb(180 120 34 / 0.1);
 
-  --status-danger: #c24141;
-  --status-danger-soft: rgb(194 65 65 / 0.1);
+  --status-danger: #c34343;
+  --status-danger-soft: rgb(195 67 67 / 0.1);
 
   --status-info: #4f6db8;
   --status-info-soft: rgb(79 109 184 / 0.1);
@@ -102,32 +88,30 @@
      INTERACTION
      --------------------------------------------------------- */
 
-  --ring: rgb(22 159 150 / 0.3);
+  --ring: rgb(22 159 150 / 0.48);
 
-  --hover-overlay: rgb(10 10 10 / 0.035);
-  --pressed-overlay: rgb(10 10 10 / 0.065);
+  --hover-overlay: rgb(15 23 42 / 0.035);
+  --pressed-overlay: rgb(15 23 42 / 0.065);
 
   /* ---------------------------------------------------------
      ELEVATION
+
+     Rcentz currently uses flat surfaces.
+     Tokens remain for backwards compatibility only.
      --------------------------------------------------------- */
 
-  --shadow-xs: 0 1px 2px rgb(15 23 42 / 0.03);
-
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px rgb(15 23 42 / 0.035);
-
-  --shadow-md: 0 4px 10px rgb(15 23 42 / 0.045), 0 14px 32px rgb(15 23 42 / 0.055);
-
-  --shadow-lg: 0 8px 20px rgb(15 23 42 / 0.055), 0 24px 60px rgb(15 23 42 / 0.075);
-
-  --shadow-accent: 0 16px 46px rgb(22 159 150 / 0.12);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-accent: none;
 
   /* ---------------------------------------------------------
      GLASS
      --------------------------------------------------------- */
 
-  --glass: rgb(255 255 255 / 0.78);
-
-  --glass-strong: rgb(255 255 255 / 0.9);
+  --glass: rgb(255 255 255 / 0.8);
+  --glass-strong: rgb(255 255 255 / 0.92);
 
   /* ---------------------------------------------------------
      MOTION
@@ -138,61 +122,52 @@
   --motion-slow: 360ms;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-
   --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* ---------------------------------------------------------
      SHELL
      --------------------------------------------------------- */
 
-  --shell-header: rgb(255 255 255 / 0.88);
-
-  --shell-footer: #fafafa;
+  --shell-header: rgb(255 255 255 / 0.9);
+  --shell-footer: var(--background);
 
   /* ---------------------------------------------------------
      BRAND
      --------------------------------------------------------- */
 
-  --brand-primary: #101112;
+  --brand-primary: #101214;
   --brand-primary-foreground: #ffffff;
 
   --brand-logo-background: var(--brand-primary);
-
   --brand-logo-foreground: var(--brand-primary-foreground);
 
   /* ---------------------------------------------------------
      ENVIRONMENT
      --------------------------------------------------------- */
 
-  --environment-rgb: 15 17 18;
+  --environment-rgb: 15 17 20;
   --environment-mask-rgb: 250 250 250;
 
-  --grid-line: rgb(var(--environment-rgb) / 0.042);
+  --grid-line: rgb(var(--environment-rgb) / 0.035);
+  --grid-line-strong: rgb(var(--environment-rgb) / 0.06);
 
-  --grid-line-strong: rgb(var(--environment-rgb) / 0.075);
+  --grid-size: 28px;
+  --grid-size-strong: 112px;
 
-  --environment-star: rgb(var(--environment-rgb) / 0.82);
+  --environment-star: rgb(var(--environment-rgb) / 0.8);
+  --environment-star-glow-strong: rgb(var(--environment-rgb) / 0.42);
+  --environment-star-glow: rgb(var(--environment-rgb) / 0.14);
+  --environment-star-glow-soft: rgb(var(--environment-rgb) / 0.035);
 
-  --environment-star-glow-strong: rgb(var(--environment-rgb) / 0.44);
+  --environment-signal-soft: rgb(var(--environment-rgb) / 0.025);
+  --environment-signal: rgb(var(--environment-rgb) / 0.2);
 
-  --environment-star-glow: rgb(var(--environment-rgb) / 0.15);
-
-  --environment-star-glow-soft: rgb(var(--environment-rgb) / 0.04);
-
-  --environment-signal-soft: rgb(var(--environment-rgb) / 0.03);
-
-  --environment-signal: rgb(var(--environment-rgb) / 0.22);
-
-  --environment-glow-top: rgb(var(--environment-rgb) / 0.055);
-
-  --environment-glow-bottom: rgb(var(--environment-rgb) / 0.038);
-
-  --environment-pulse: rgb(var(--environment-rgb) / 0.025);
+  --environment-glow-top: rgb(var(--environment-rgb) / 0.05);
+  --environment-glow-bottom: rgb(var(--environment-rgb) / 0.032);
+  --environment-pulse: rgb(var(--environment-rgb) / 0.022);
 
   --environment-mask-soft: rgb(var(--environment-mask-rgb) / 0.02);
-
   --environment-mask: rgb(var(--environment-mask-rgb) / 0.14);
-
   --environment-mask-strong: rgb(var(--environment-mask-rgb) / 0.38);
 
   /* ---------------------------------------------------------
@@ -200,13 +175,9 @@
      --------------------------------------------------------- */
 
   --ace-ink: rgb(var(--environment-rgb) / 0.94);
-
   --ace-ink-strong: rgb(var(--environment-rgb) / 0.5);
-
   --ace-ink-medium: rgb(var(--environment-rgb) / 0.18);
-
   --ace-ink-soft: rgb(var(--environment-rgb) / 0.05);
-
   --ace-ink-faint: rgb(var(--environment-rgb) / 0.015);
 
   /* ---------------------------------------------------------
@@ -223,6 +194,9 @@
     Environmental canvas
     ↓
     Canonical Rcentz content axis
+
+    Canvas geometry is intentionally preserved for now.
+    We will tune this separately.
   */
 
   --canvas-max: 1440px;
@@ -237,32 +211,25 @@
      --------------------------------------------------------- */
 
   --chart-positive: var(--theme-accent);
-
-  --chart-warning: #d18b28;
-
-  --chart-danger: #d45353;
-
+  --chart-warning: #cc892d;
+  --chart-danger: #cf5353;
   --chart-info: #637ec1;
-
   --chart-neutral: var(--border-strong);
 
   /* ---------------------------------------------------------
      SIDEBAR
      --------------------------------------------------------- */
 
-  --sidebar: #ffffff;
+  --sidebar: var(--surface-raised);
   --sidebar-foreground: var(--foreground);
 
   --sidebar-primary: var(--primary);
-
   --sidebar-primary-foreground: var(--primary-foreground);
 
-  --sidebar-accent: #f3f4f4;
-
+  --sidebar-accent: var(--surface-muted);
   --sidebar-accent-foreground: var(--foreground);
 
   --sidebar-border: var(--border);
-
   --sidebar-ring: var(--ring);
 }
 
@@ -275,39 +242,41 @@
 
   /* ---------------------------------------------------------
      CORE ENVIRONMENT
+
+     Deep navy / technical canvas.
      --------------------------------------------------------- */
 
-  --background: #090a0a;
-  --foreground: #f2f3f3;
+  --background: #050914;
+  --foreground: #f3f6fb;
 
-  --surface: #0e1010;
-  --surface-raised: #121414;
-  --surface-muted: #171919;
-  --surface-subtle: #0c0e0e;
+  --surface: #080e1a;
+  --surface-raised: #0d1524;
+  --surface-muted: #131d2d;
+  --surface-subtle: #070c16;
 
-  --muted: #989d9d;
-  --muted-foreground: #c5c8c8;
+  --muted: #8f9bad;
+  --muted-foreground: #bbc4d0;
 
-  --border: #252828;
-  --border-strong: #373b3b;
-  --border-emphasis: #4b5050;
+  --border: #273348;
+  --border-strong: #3a485f;
+  --border-emphasis: #53637c;
 
-  --input: #303434;
+  --input: #303e54;
 
   /* ---------------------------------------------------------
      PRIMARY / SECONDARY
      --------------------------------------------------------- */
 
-  --primary: #f2f3f3;
-  --primary-foreground: #0a0b0b;
+  --primary: #f3f6fb;
+  --primary-foreground: #070b12;
 
-  --secondary: #181b1b;
-  --secondary-foreground: #f2f3f3;
+  --secondary: #121c2c;
+  --secondary-foreground: #f3f6fb;
 
   --accent: var(--surface-muted);
   --accent-foreground: var(--foreground);
 
-  --destructive: #ee6262;
+  --destructive: #ef7373;
   --destructive-foreground: #ffffff;
 
   /* ---------------------------------------------------------
@@ -317,35 +286,33 @@
   --card: var(--surface-raised);
   --card-foreground: var(--foreground);
 
-  --popover: #111313;
+  --popover: var(--surface-raised);
   --popover-foreground: var(--foreground);
 
   /* ---------------------------------------------------------
      RCENTZ BRAND ACCENT
      --------------------------------------------------------- */
 
-  --theme-accent-vivid: #2bc9bc;
-  --theme-accent: #20b2a6;
-  --theme-accent-strong: #55d2c8;
+  --theme-accent-vivid: #2cc9bd;
+  --theme-accent: #20b5aa;
+  --theme-accent-strong: #63d9d0;
 
-  --theme-accent-soft: rgb(32 178 166 / 0.14);
-
-  --theme-accent-faint: rgb(32 178 166 / 0.065);
-
-  --theme-accent-glow: rgb(32 178 166 / 0.2);
+  --theme-accent-soft: rgb(32 181 170 / 0.14);
+  --theme-accent-faint: rgb(32 181 170 / 0.06);
+  --theme-accent-glow: rgb(32 181 170 / 0.18);
 
   /* ---------------------------------------------------------
      SEMANTIC STATUS
      --------------------------------------------------------- */
 
-  --status-success: #49b89c;
-  --status-success-soft: rgb(73 184 156 / 0.12);
+  --status-success: #50bda2;
+  --status-success-soft: rgb(80 189 162 / 0.12);
 
-  --status-warning: #e4aa51;
-  --status-warning-soft: rgb(228 170 81 / 0.12);
+  --status-warning: #e3a954;
+  --status-warning-soft: rgb(227 169 84 / 0.12);
 
-  --status-danger: #ef7777;
-  --status-danger-soft: rgb(239 119 119 / 0.12);
+  --status-danger: #ee7777;
+  --status-danger-soft: rgb(238 119 119 / 0.12);
 
   --status-info: #8298dc;
   --status-info-soft: rgb(130 152 220 / 0.12);
@@ -354,51 +321,43 @@
      INTERACTION
      --------------------------------------------------------- */
 
-  --ring: rgb(43 201 188 / 0.34);
+  --ring: rgb(44 201 189 / 0.52);
 
-  --hover-overlay: rgb(255 255 255 / 0.045);
-
-  --pressed-overlay: rgb(255 255 255 / 0.075);
+  --hover-overlay: rgb(255 255 255 / 0.042);
+  --pressed-overlay: rgb(255 255 255 / 0.07);
 
   /* ---------------------------------------------------------
      ELEVATION
      --------------------------------------------------------- */
 
-  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.32);
-
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px rgb(0 0 0 / 0.18);
-
-  --shadow-md: 0 5px 16px rgb(0 0 0 / 0.26), 0 18px 42px rgb(0 0 0 / 0.22);
-
-  --shadow-lg: 0 10px 24px rgb(0 0 0 / 0.32), 0 28px 72px rgb(0 0 0 / 0.3);
-
-  --shadow-accent: 0 18px 50px rgb(32 178 166 / 0.11);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-accent: none;
 
   /* ---------------------------------------------------------
      GLASS
      --------------------------------------------------------- */
 
-  --glass: rgb(13 15 15 / 0.76);
-
-  --glass-strong: rgb(13 15 15 / 0.9);
+  --glass: rgb(8 14 26 / 0.78);
+  --glass-strong: rgb(8 14 26 / 0.92);
 
   /* ---------------------------------------------------------
      SHELL
      --------------------------------------------------------- */
 
-  --shell-header: rgb(12 14 14 / 0.88);
-
-  --shell-footer: #090a0a;
+  --shell-header: rgb(7 12 22 / 0.9);
+  --shell-footer: var(--background);
 
   /* ---------------------------------------------------------
      BRAND
      --------------------------------------------------------- */
 
   --brand-primary: #ffffff;
-  --brand-primary-foreground: #0a0a0a;
+  --brand-primary-foreground: #070b12;
 
   --brand-logo-background: var(--brand-primary);
-
   --brand-logo-foreground: var(--brand-primary-foreground);
 
   /* ---------------------------------------------------------
@@ -406,81 +365,61 @@
      --------------------------------------------------------- */
 
   --environment-rgb: 255 255 255;
-  --environment-mask-rgb: 9 10 10;
+  --environment-mask-rgb: 5 9 20;
 
-  --grid-line: rgb(var(--environment-rgb) / 0.045);
+  --grid-line: rgb(var(--environment-rgb) / 0.026);
+  --grid-line-strong: rgb(var(--environment-rgb) / 0.048);
 
-  --grid-line-strong: rgb(var(--environment-rgb) / 0.075);
+  --environment-star: rgb(var(--environment-rgb) / 0.88);
+  --environment-star-glow-strong: rgb(var(--environment-rgb) / 0.64);
+  --environment-star-glow: rgb(var(--environment-rgb) / 0.28);
+  --environment-star-glow-soft: rgb(var(--environment-rgb) / 0.06);
 
-  --environment-star: rgb(var(--environment-rgb) / 0.92);
+  --environment-signal-soft: rgb(var(--environment-rgb) / 0.035);
+  --environment-signal: rgb(var(--environment-rgb) / 0.28);
 
-  --environment-star-glow-strong: rgb(var(--environment-rgb) / 0.72);
-
-  --environment-star-glow: rgb(var(--environment-rgb) / 0.34);
-
-  --environment-star-glow-soft: rgb(var(--environment-rgb) / 0.07);
-
-  --environment-signal-soft: rgb(var(--environment-rgb) / 0.04);
-
-  --environment-signal: rgb(var(--environment-rgb) / 0.32);
-
-  --environment-glow-top: rgb(var(--environment-rgb) / 0.25);
-
-  --environment-glow-bottom: rgb(var(--environment-rgb) / 0.17);
-
-  --environment-pulse: rgb(var(--environment-rgb) / 0.03);
+  --environment-glow-top: rgb(var(--environment-rgb) / 0.17);
+  --environment-glow-bottom: rgb(var(--environment-rgb) / 0.11);
+  --environment-pulse: rgb(var(--environment-rgb) / 0.025);
 
   --environment-mask-soft: rgb(var(--environment-mask-rgb) / 0.025);
-
   --environment-mask: rgb(var(--environment-mask-rgb) / 0.16);
-
-  --environment-mask-strong: rgb(var(--environment-mask-rgb) / 0.4);
+  --environment-mask-strong: rgb(var(--environment-mask-rgb) / 0.42);
 
   /* ---------------------------------------------------------
      ACE
      --------------------------------------------------------- */
 
-  --ace-ink: rgb(var(--environment-rgb) / 0.95);
-
-  --ace-ink-strong: rgb(var(--environment-rgb) / 0.58);
-
-  --ace-ink-medium: rgb(var(--environment-rgb) / 0.2);
-
-  --ace-ink-soft: rgb(var(--environment-rgb) / 0.055);
-
-  --ace-ink-faint: rgb(var(--environment-rgb) / 0.016);
+  --ace-ink: rgb(var(--environment-rgb) / 0.94);
+  --ace-ink-strong: rgb(var(--environment-rgb) / 0.56);
+  --ace-ink-medium: rgb(var(--environment-rgb) / 0.19);
+  --ace-ink-soft: rgb(var(--environment-rgb) / 0.05);
+  --ace-ink-faint: rgb(var(--environment-rgb) / 0.015);
 
   /* ---------------------------------------------------------
      CHARTS
      --------------------------------------------------------- */
 
   --chart-positive: var(--theme-accent);
-
-  --chart-warning: #e7b45f;
-
-  --chart-danger: #ee7777;
-
+  --chart-warning: #e5b15e;
+  --chart-danger: #eb7474;
   --chart-info: #879ae2;
-
   --chart-neutral: var(--border-strong);
 
   /* ---------------------------------------------------------
      SIDEBAR
      --------------------------------------------------------- */
 
-  --sidebar: #0d0f0f;
+  --sidebar: var(--surface);
   --sidebar-foreground: var(--foreground);
 
   --sidebar-primary: var(--primary);
-
   --sidebar-primary-foreground: var(--primary-foreground);
 
-  --sidebar-accent: #171919;
-
+  --sidebar-accent: var(--surface-muted);
   --sidebar-accent-foreground: var(--foreground);
 
   --sidebar-border: var(--border);
-
   --sidebar-ring: var(--ring);
 }
 
@@ -489,94 +428,123 @@
    ========================================================= */
 
 @theme inline {
-  --color-background: var(--background);
+  /* ---------------------------------------------------------
+     CORE COLORS
+     --------------------------------------------------------- */
 
+  --color-background: var(--background);
   --color-foreground: var(--foreground);
 
   --color-surface: var(--surface);
-
   --color-surface-raised: var(--surface-raised);
-
   --color-surface-muted: var(--surface-muted);
+  --color-surface-subtle: var(--surface-subtle);
 
   --color-muted: var(--muted);
-
   --color-muted-foreground: var(--muted-foreground);
 
   --color-border: var(--border);
-
   --color-border-strong: var(--border-strong);
+  --color-border-emphasis: var(--border-emphasis);
 
   --color-input: var(--input);
-
   --color-ring: var(--ring);
 
-  --color-primary: var(--primary);
+  /* ---------------------------------------------------------
+     PRIMARY / SECONDARY
+     --------------------------------------------------------- */
 
+  --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 
   --color-secondary: var(--secondary);
-
   --color-secondary-foreground: var(--secondary-foreground);
 
   --color-accent: var(--accent);
-
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive);
-
   --color-destructive-foreground: var(--destructive-foreground);
 
-  --color-card: var(--card);
+  /* ---------------------------------------------------------
+     COMPONENTS
+     --------------------------------------------------------- */
 
+  --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
   --color-popover: var(--popover);
-
   --color-popover-foreground: var(--popover-foreground);
 
+  /* ---------------------------------------------------------
+     RCENTZ ACCENT
+     --------------------------------------------------------- */
+
+  --color-theme-accent-vivid: var(--theme-accent-vivid);
   --color-theme-accent: var(--theme-accent);
-
   --color-theme-accent-strong: var(--theme-accent-strong);
-
   --color-theme-accent-soft: var(--theme-accent-soft);
-
   --color-theme-accent-faint: var(--theme-accent-faint);
+  --color-theme-accent-glow: var(--theme-accent-glow);
+
+  /* ---------------------------------------------------------
+     STATUS
+     --------------------------------------------------------- */
+
+  --color-status-success: var(--status-success);
+  --color-status-success-soft: var(--status-success-soft);
+
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-soft: var(--status-warning-soft);
+
+  --color-status-danger: var(--status-danger);
+  --color-status-danger-soft: var(--status-danger-soft);
+
+  --color-status-info: var(--status-info);
+  --color-status-info-soft: var(--status-info-soft);
+
+  /* ---------------------------------------------------------
+     SHELL
+     --------------------------------------------------------- */
 
   --color-shell-header: var(--shell-header);
-
   --color-shell-footer: var(--shell-footer);
 
-  --color-brand-primary: var(--brand-primary);
+  /* ---------------------------------------------------------
+     BRAND
+     --------------------------------------------------------- */
 
+  --color-brand-primary: var(--brand-primary);
   --color-brand-primary-foreground: var(--brand-primary-foreground);
 
   --color-brand-logo-background: var(--brand-logo-background);
-
   --color-brand-logo-foreground: var(--brand-logo-foreground);
 
-  --color-sidebar: var(--sidebar);
+  /* ---------------------------------------------------------
+     SIDEBAR
+     --------------------------------------------------------- */
 
+  --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
 
   --color-sidebar-primary: var(--sidebar-primary);
-
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
 
   --color-sidebar-accent: var(--sidebar-accent);
-
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
 
   --color-sidebar-border: var(--sidebar-border);
-
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-geist-sans);
+  /* ---------------------------------------------------------
+     FONTS
+     --------------------------------------------------------- */
 
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   /* ---------------------------------------------------------
-     Typography
+     TYPOGRAPHY
      --------------------------------------------------------- */
 
   --text-xs: 0.8125rem;
@@ -611,6 +579,7 @@
 
 html {
   min-height: 100%;
+
   background: var(--background);
 
   scroll-behavior: smooth;
@@ -620,6 +589,8 @@ body {
   min-height: 100%;
   margin: 0;
 
+  overflow-x: hidden;
+
   background: var(--background);
 
   color: var(--foreground);
@@ -627,9 +598,14 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   text-rendering: optimizeLegibility;
 }
+
+/* =========================================================
+   INTERACTIVE ELEMENTS
+   ========================================================= */
 
 button,
 a,
@@ -640,7 +616,6 @@ select {
     color var(--motion-fast) var(--ease-standard),
     background-color var(--motion-fast) var(--ease-standard),
     border-color var(--motion-fast) var(--ease-standard),
-    box-shadow var(--motion-base) var(--ease-standard),
     opacity var(--motion-fast) var(--ease-standard);
 }
 
@@ -656,9 +631,8 @@ a {
 }
 
 :where(button, a, input, textarea, select):focus-visible {
-  outline: none;
-
-  box-shadow: 0 0 0 3px var(--ring);
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 ::selection {
@@ -697,13 +671,15 @@ a {
 }
 
 /* =========================================================
-   PROFESSIONAL SURFACE PRIMITIVES
+   FLAT SURFACE PRIMITIVES
    ========================================================= */
 
 /*
-  Default interactive card.
+  Standard Rcentz interactive surface.
 
-  Use this on surfaces that should subtly rise on hover.
+  No elevation.
+  No fake depth.
+  Interaction is communicated by border and surface change.
 */
 
 .rcentz-card {
@@ -711,27 +687,22 @@ a {
 
   background: var(--surface-raised);
 
-  box-shadow: var(--shadow-xs);
-
   transition:
-    transform var(--motion-base) var(--ease-emphasized),
     border-color var(--motion-base) var(--ease-standard),
-    box-shadow var(--motion-base) var(--ease-standard),
     background-color var(--motion-base) var(--ease-standard);
 }
 
 .rcentz-card:hover {
   border-color: var(--border-strong);
 
-  box-shadow: var(--shadow-md);
-
-  transform: translateY(-2px);
+  background: var(--surface-muted);
 }
 
 /*
-  Subtle premium glass.
+  Translucent shell surface.
 
-  Good for headers, floating controls and overlays.
+  Blur is allowed.
+  Shadows are intentionally omitted.
 */
 
 .rcentz-glass {
@@ -739,23 +710,15 @@ a {
 
   background: var(--glass);
 
-  box-shadow: var(--shadow-sm);
-
   backdrop-filter: blur(18px);
 
   -webkit-backdrop-filter: blur(18px);
 }
 
-/*
-  Stronger glass for menus / floating panels.
-*/
-
 .rcentz-glass-strong {
   border: 1px solid var(--border-strong);
 
   background: var(--glass-strong);
-
-  box-shadow: var(--shadow-md);
 
   backdrop-filter: blur(22px);
 
@@ -763,90 +726,108 @@ a {
 }
 
 /*
-  Accent highlight.
+  Accent surface.
 
-  This is deliberately subtle.
+  Color is the signal rather than elevation.
 */
 
 .rcentz-highlight {
-  border-color: rgb(22 159 150 / 0.24);
+  border-color: color-mix(in srgb, var(--theme-accent) 28%, var(--border));
 
   background: var(--theme-accent-faint);
-
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
 }
 
 /*
-  Premium primary interaction.
+  Primary interaction.
 
-  Useful for CTA buttons.
+  Flat by design.
 */
 
 .rcentz-primary-action {
+  border: 1px solid transparent;
+
   background: var(--theme-accent-vivid);
 
   color: #06110f;
 
-  box-shadow: 0 8px 24px rgb(22 159 150 / 0.18);
-
   transition:
     transform var(--motion-fast) var(--ease-emphasized),
-    box-shadow var(--motion-base) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
     filter var(--motion-fast) var(--ease-standard);
 }
 
 .rcentz-primary-action:hover {
-  transform: translateY(-1px);
-
-  box-shadow: 0 12px 34px rgb(22 159 150 / 0.24);
-
-  filter: saturate(1.03);
+  filter: saturate(1.05);
 }
 
 .rcentz-primary-action:active {
-  transform: translateY(0) scale(0.985);
+  transform: scale(0.985);
 }
 
 /* =========================================================
-   DATA MATRIX
+   ENVIRONMENTAL GRID
    ========================================================= */
+
+/*
+  The grid is an optional environmental primitive.
+
+  It is never applied globally.
+
+  Small grid:
+    28px
+
+  Strong structural grid:
+    every fourth cell / 112px
+*/
 
 .rcentz-grid {
   background-image:
-    radial-gradient(circle at center, var(--grid-line-strong) 1px, transparent 1.2px),
-    radial-gradient(circle at center, var(--grid-line) 0.75px, transparent 1px);
+    linear-gradient(to right, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 
   background-size:
-    72px 72px,
-    18px 18px;
+    var(--grid-size-strong) var(--grid-size-strong),
+    var(--grid-size-strong) var(--grid-size-strong),
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
 
-  background-position:
-    0 0,
-    0 0;
+  background-position: 0 0;
 }
 
 .rcentz-grid-fade {
   background-image:
-    radial-gradient(circle at center, var(--grid-line-strong) 1px, transparent 1.2px),
-    radial-gradient(circle at center, var(--grid-line) 0.75px, transparent 1px);
+    linear-gradient(to right, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 
   background-size:
-    72px 72px,
-    18px 18px;
+    var(--grid-size-strong) var(--grid-size-strong),
+    var(--grid-size-strong) var(--grid-size-strong),
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
 
-  background-position:
-    0 0,
-    0 0;
+  background-position: 0 0;
 
   -webkit-mask-image: radial-gradient(
     ellipse at center,
     #000 0%,
-    #000 44%,
-    rgb(0 0 0 / 0.7) 68%,
-    transparent 95%
+    #000 34%,
+    rgb(0 0 0 / 0.72) 58%,
+    rgb(0 0 0 / 0.28) 78%,
+    transparent 96%
   );
 
-  mask-image: radial-gradient(ellipse at center, #000 0%, #000 44%, rgb(0 0 0 / 0.7) 68%, transparent 95%);
+  mask-image: radial-gradient(
+    ellipse at center,
+    #000 0%,
+    #000 34%,
+    rgb(0 0 0 / 0.72) 58%,
+    rgb(0 0 0 / 0.28) 78%,
+    transparent 96%
+  );
 }
 
 /* =========================================================
@@ -924,6 +905,59 @@ a {
   background: var(--border-emphasis);
 
   background-clip: padding-box;
+}
+
+/* =========================================================
+   UTILITY: HIDDEN SCROLLBAR
+   ========================================================= */
+
+.rcentz-scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rcentz-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
+   PRODUCT SHOWCASE MOTION
+   ========================================================= */
+
+@keyframes rcentz-product-swap {
+  from {
+    opacity: 0.58;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rcentz-product-swap {
+  animation: rcentz-product-swap var(--motion-slow) var(--ease-emphasized) both;
+}
+
+/* =========================================================
+   PRODUCT SHOWCASE
+   ========================================================= */
+
+@keyframes rcentz-product-swap {
+  from {
+    opacity: 0.5;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rcentz-product-swap {
+  animation: rcentz-product-swap var(--motion-slow) var(--ease-emphasized) both;
 }
 
 /* =========================================================
